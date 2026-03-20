@@ -1,15 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   return (
     <div className="dashboard-wrapper">
       <header className="dashboard-header">
         <h1>Welcome to UniHub</h1>
         <p>Your central destination for campus activities, updates, and community connection.</p>
         <div className="button-group">
-          <button className="primary-btn">Explore Lost & Found</button>
-          <button className="secondary-btn">View Latest Updates</button>
+          <button className="primary-btn" onClick={() => navigate('/lost-and-found')}>Explore Lost & Found</button>
+          <button className="secondary-btn" onClick={() => navigate('/updates')}>View Latest Updates</button>
         </div>
       </header>
       

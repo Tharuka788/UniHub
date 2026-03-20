@@ -1,0 +1,267 @@
+.lf-dashboard {
+  --lf-cyan: #e0f7fa;
+  --lf-blue: #6b84c2;
+  --lf-slate: #363a6a;
+  --lf-plum: #1d152e;
+  --lf-black: #100512;
+
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  color: var(--text-main);
+  animation: fadeIn 0.6s ease-out;
+}
+
+.lf-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 4rem 3rem;
+  border-radius: 24px;
+  background: linear-gradient(135deg, var(--lf-plum) 0%, var(--lf-slate) 100%);
+  color: var(--lf-cyan);
+  box-shadow: 0 20px 40px rgba(29, 21, 46, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.lf-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(107, 132, 194, 0.2) 0%, transparent 60%);
+  z-index: 0;
+}
+
+.lf-header h1, .lf-header p, .lf-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.lf-header h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #ffffff;
+  letter-spacing: -1px;
+}
+
+.lf-header p {
+  font-size: 1.25rem;
+  color: var(--lf-cyan);
+  opacity: 0.9;
+  margin-bottom: 2.5rem;
+}
+
+.lf-actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.lf-btn {
+  padding: 0.9rem 2.2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.lf-btn-primary {
+  background: var(--lf-cyan);
+  color: var(--lf-black);
+  box-shadow: 0 4px 15px rgba(224, 247, 250, 0.2);
+}
+
+.lf-btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(224, 247, 250, 0.4);
+  background: #ffffff;
+}
+
+.lf-btn-secondary {
+  background: transparent;
+  color: var(--lf-cyan);
+  border: 2px solid var(--lf-cyan);
+}
+
+.lf-btn-secondary:hover {
+  background: var(--lf-cyan);
+  color: var(--lf-black);
+  transform: translateY(-3px);
+}
+
+.lf-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3.5rem;
+  background: var(--card-bg);
+  padding: 0.5rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  width: max-content;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid rgba(107, 132, 194, 0.2);
+}
+
+.lf-tab {
+  padding: 0.8rem 2.5rem;
+  border-radius: 40px;
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lf-tab.active {
+  background: var(--lf-blue);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(107, 132, 194, 0.4);
+}
+
+.lf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2.5rem;
+}
+
+.lf-card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid rgba(107, 132, 194, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.lf-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(54, 58, 106, 0.15);
+  border-color: var(--lf-blue);
+}
+
+.lf-card-image-placeholder {
+  height: 180px;
+  background: linear-gradient(135deg, var(--lf-slate), var(--lf-plum));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  overflow: hidden;
+}
+
+.lf-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.lf-card:hover .lf-card-img {
+  transform: scale(1.05);
+}
+
+.lf-card-body {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.lf-badge {
+  align-self: flex-start;
+  background: rgba(107, 132, 194, 0.15);
+  color: var(--lf-blue);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lf-card-body h3 {
+  font-size: 1.4rem;
+  color: var(--text-main);
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.lf-card-body p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  flex-grow: 1;
+}
+
+.lf-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(107, 132, 194, 0.15);
+  padding-top: 1.2rem;
+}
+
+.lf-card-footer small {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.lf-btn-small {
+  background: var(--lf-slate);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lf-btn-small:hover {
+  background: var(--lf-plum);
+}
+
+.lf-empty, .lf-loader {
+  text-align: center;
+  padding: 5rem 2rem;
+  color: var(--text-muted);
+  grid-column: 1 / -1;
+  background: var(--card-bg);
+  border-radius: 20px;
+  border: 1px dashed rgba(107, 132, 194, 0.3);
+}
+
+.lf-empty h3 {
+  font-size: 1.5rem;
+  color: var(--lf-slate);
+  margin-bottom: 0.5rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(107, 132, 194, 0.2);
+  border-left-color: var(--lf-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
