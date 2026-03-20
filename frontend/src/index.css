@@ -1,0 +1,80 @@
+:root {
+  font-family: 'Segoe UI', sans-serif;
+  color: #132238;
+  background: #edf3f7;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 32px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at top left, rgba(18, 84, 120, 0.18), transparent 30%),
+    linear-gradient(180deg, #f6f9fb 0%, #e7eff5 100%);
+}
+
+.intro-panel {
+  max-width: 720px;
+  padding: 48px;
+  border: 1px solid rgba(19, 34, 56, 0.08);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 24px 60px rgba(33, 55, 84, 0.14);
+}
+
+.eyebrow {
+  margin: 0 0 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #2f6f8f;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  line-height: 0.98;
+}
+
+.intro-copy {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #47627b;
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 18px;
+  }
+
+  .intro-panel {
+    padding: 32px 24px;
+  }
+}
