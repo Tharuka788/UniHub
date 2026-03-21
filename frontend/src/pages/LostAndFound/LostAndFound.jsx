@@ -16,7 +16,7 @@ const LostAndFound = () => {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/items?itemType=${activeTab}`);
+      const response = await axios.get(`http://localhost:5050/api/items?itemType=${activeTab}`);
       setItems(response.data);
     } catch (error) {
       console.error('Error fetching items:', error);
@@ -63,7 +63,7 @@ const LostAndFound = () => {
                 <div className="lf-card" key={item._id}>
                   <div className="lf-card-image-placeholder">
                     {item.image ? (
-                      <img src={`http://localhost:5000${item.image}`} alt={item.title} className="lf-card-img" />
+                      <img src={`http://localhost:5050${item.image}`} alt={item.title} className="lf-card-img" />
                     ) : (
                       '📦'
                     )}
