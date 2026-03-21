@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
 const {
   getItems,
   getItemById,
@@ -9,6 +11,12 @@ const {
   updateItem,
   deleteItem
 } = require('../../controllers/lost-and-found/itemController');
+
+// Check and create uploads directory if it doesn't exist
+const uploadDir = 'uploads/';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Multer default configuration for local storage
 const storage = multer.diskStorage({

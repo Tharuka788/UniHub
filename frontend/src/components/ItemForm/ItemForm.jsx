@@ -37,7 +37,7 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
     }
 
     try {
-      await axios.post('http://localhost:5000/api/items', data, {
+      await axios.post('http://localhost:5050/api/items', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
