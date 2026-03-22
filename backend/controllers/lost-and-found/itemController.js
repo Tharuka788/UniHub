@@ -1,6 +1,7 @@
 const Item = require('../../models/lost-and-found/Item');
 const path = require('path');
 const fs = require('fs');
+const { generateImageEmbedding, cosineSimilarity } = require('../../utils/aiService');
 
 // @desc    Get all items
 // @route   GET /api/items
@@ -39,10 +40,15 @@ const createItem = async (req, res) => {
   try {
     const { title, category, description, itemType } = req.body;
     let imagePath = '';
+    let imageEmbedding = null;
 
     if (req.file) {
       // Store static path to the image
       imagePath = `/uploads/${req.file.filename}`;
+      
+      // Generate image embedding
+      const fullPath = path.join(__dirname, '../..', imagePath);
+      imageEmbedding = await generateImageEmbedding(fullPath);
     }
 
     const item = await Item.create({
@@ -50,10 +56,28 @@ const createItem = async (req, res) => {
       category,
       description,
       itemType,
-      image: imagePath
+      image: imagePath,
+      imageEmbedding
     });
 
-    res.status(201).json(item);
+    let matches = [];
+    // If it's a Lost item with an embedding, find potential Found matches
+    if (itemType === 'Lost' && imageEmbedding) {
+      const candidates = await Item.find({ itemType: 'Found', imageEmbedding: { $exists: true, $ne: [] } });
+      
+      const scoredCandidates = candidates.map(candidate => {
+        const score = cosineSimilarity(imageEmbedding, candidate.imageEmbedding);
+        return { item: candidate, score };
+      });
+
+      matches = scoredCandidates
+        .filter(c => c.score > 0.75) // Threshold for visual similarity
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3) // Get top 3
+        .map(c => ({...c.item.toObject(), similarityScore: c.score}));
+    }
+
+    res.status(201).json({ item, matches });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
