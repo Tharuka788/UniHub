@@ -1,0 +1,138 @@
+export const mockStudents = [
+  {
+    id: 'enr-001',
+    createdAt: '2026-03-18T08:30:00.000Z',
+    registrationStatus: 'confirmed',
+    paymentStatus: 'paid',
+    linkDeliveryStatus: 'pending',
+    linkSentAt: null,
+    student: {
+      fullName: 'Nimal Perera',
+      email: 'nimal.perera@example.com',
+    },
+    classOffering: {
+      id: 'class-physics-b1',
+      title: '2026 A/L Physics Support',
+      kuppiSession: '2026 A/L Physics Support - Batch 01',
+    },
+  },
+  {
+    id: 'enr-002',
+    createdAt: '2026-03-18T09:10:00.000Z',
+    registrationStatus: 'confirmed',
+    paymentStatus: 'paid',
+    linkDeliveryStatus: 'sent',
+    linkSentAt: '2026-03-20T07:15:00.000Z',
+    student: {
+      fullName: 'Tharushi De Silva',
+      email: 'tharushi.desilva@example.com',
+    },
+    classOffering: {
+      id: 'class-physics-b1',
+      title: '2026 A/L Physics Support',
+      kuppiSession: '2026 A/L Physics Support - Batch 01',
+    },
+  },
+  {
+    id: 'enr-003',
+    createdAt: '2026-03-19T06:45:00.000Z',
+    registrationStatus: 'confirmed',
+    paymentStatus: 'paid',
+    linkDeliveryStatus: 'failed',
+    linkSentAt: null,
+    student: {
+      fullName: 'Isuru Madushan',
+      email: 'isuru.madushan@example.com',
+    },
+    classOffering: {
+      id: 'class-chemistry-b2',
+      title: '2026 A/L Chemistry Clinic',
+      kuppiSession: '2026 A/L Chemistry Clinic - Batch 02',
+    },
+  },
+  {
+    id: 'enr-004',
+    createdAt: '2026-03-19T07:20:00.000Z',
+    registrationStatus: 'confirmed',
+    paymentStatus: 'paid',
+    linkDeliveryStatus: 'pending',
+    linkSentAt: null,
+    student: {
+      fullName: 'Piumi Fernando',
+      email: 'piumi.fernando@example.com',
+    },
+    classOffering: {
+      id: 'class-chemistry-b2',
+      title: '2026 A/L Chemistry Clinic',
+      kuppiSession: '2026 A/L Chemistry Clinic - Batch 02',
+    },
+  },
+  {
+    id: 'enr-005',
+    createdAt: '2026-03-19T10:05:00.000Z',
+    registrationStatus: 'confirmed',
+    paymentStatus: 'paid',
+    linkDeliveryStatus: 'sent',
+    linkSentAt: '2026-03-20T09:00:00.000Z',
+    student: {
+      fullName: 'Sachini Rathnayake',
+      email: 'sachini.rathnayake@example.com',
+    },
+    classOffering: {
+      id: 'class-physics-b1',
+      title: '2026 A/L Physics Support',
+      kuppiSession: '2026 A/L Physics Support - Batch 01',
+    },
+  },
+  {
+    id: 'enr-006',
+    createdAt: '2026-03-20T04:20:00.000Z',
+    registrationStatus: 'confirmed',
+    paymentStatus: 'paid',
+    linkDeliveryStatus: 'pending',
+    linkSentAt: null,
+    student: {
+      fullName: 'Kavindu Senanayake',
+      email: 'kavindu.senanayake@example.com',
+    },
+    classOffering: {
+      id: 'class-maths-b1',
+      title: '2026 Combined Maths Sprint',
+      kuppiSession: '2026 Combined Maths Sprint - Batch 01',
+    },
+  },
+  {
+    id: 'enr-007',
+    createdAt: '2026-03-20T11:40:00.000Z',
+    registrationStatus: 'confirmed',
+    paymentStatus: 'paid',
+    linkDeliveryStatus: 'failed',
+    linkSentAt: null,
+    student: {
+      fullName: 'Hashini Jayawardena',
+      email: 'hashini.jayawardena@example.com',
+    },
+    classOffering: {
+      id: 'class-maths-b1',
+      title: '2026 Combined Maths Sprint',
+      kuppiSession: '2026 Combined Maths Sprint - Batch 01',
+    },
+  },
+  {
+    id: 'enr-008',
+    createdAt: '2026-03-21T05:10:00.000Z',
+    registrationStatus: 'confirmed',
+    paymentStatus: 'paid',
+    linkDeliveryStatus: 'sent',
+    linkSentAt: '2026-03-21T08:30:00.000Z',
+    student: {
+      fullName: 'Dinuka Amarasinghe',
+      email: 'dinuka.amarasinghe@example.com',
+    },
+    classOffering: {
+      id: 'class-maths-b1',
+      title: '2026 Combined Maths Sprint',
+      kuppiSession: '2026 Combined Maths Sprint - Batch 01',
+    },
+  },
+]
