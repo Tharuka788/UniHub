@@ -1,81 +1,127 @@
-import { useState } from 'react'
+import { useCallback, useDeferredValue, useEffect, useState } from 'react'
+import {
+  getClassOfferings,
+  getDashboardSummary,
+  getEnrollments,
+  sendClassLinks,
+} from '../api/admin'
 import Button from '../components/Button'
 import ConfirmSendModal from '../components/ConfirmSendModal'
 import EmptyState from '../components/EmptyState'
 import FilterBar from '../components/FilterBar'
+import LoadingState from '../components/LoadingState'
+import PaginationControls from '../components/PaginationControls'
 import PageHeader from '../components/PageHeader'
 import StatCard from '../components/StatCard'
 import StudentTable from '../components/StudentTable'
 import Toast from '../components/Toast'
 import { isStandaloneMode } from '../app/config'
-import { mockStudents } from '../features/students/mockStudents'
+import { usePersistentState } from '../hooks/usePersistentState'
 import AppShell from '../layouts/AppShell'
 
 export default function DashboardPage() {
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = usePersistentState('kuppi-dashboard-filters', {
     search: '',
     kuppiSession: '',
     linkDeliveryStatus: '',
   })
+  const [page, setPage] = useState(1)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSending, setIsSending] = useState(false)
   const [toast, setToast] = useState(null)
-
-  const sessions = Array.from(
-    new Map(mockStudents.map((item) => [item.classOffering.id, item.classOffering])).values(),
-  )
-
-  const filteredStudents = mockStudents.filter((item) => {
-    const matchesSearch =
-      !filters.search ||
-      item.student.fullName.toLowerCase().includes(filters.search.toLowerCase()) ||
-      item.student.email.toLowerCase().includes(filters.search.toLowerCase())
-    const matchesSession =
-      !filters.kuppiSession || item.classOffering.kuppiSession === filters.kuppiSession
-    const matchesDelivery =
-      !filters.linkDeliveryStatus ||
-      item.linkDeliveryStatus === filters.linkDeliveryStatus
-
-    return matchesSearch && matchesSession && matchesDelivery
+  const [summary, setSummary] = useState(null)
+  const [classOfferings, setClassOfferings] = useState([])
+  const [listState, setListState] = useState({
+    items: [],
+    pagination: null,
   })
+  const [dispatchPreviewCount, setDispatchPreviewCount] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isRefreshingList, setIsRefreshingList] = useState(false)
+  const [pageError, setPageError] = useState('')
 
-  const summaryCards = [
-    { label: 'Confirmed Students', value: mockStudents.length, tone: 'accent' },
-    {
-      label: 'Links Sent',
-      value: mockStudents.filter((item) => item.linkDeliveryStatus === 'sent').length,
-      tone: 'success',
-    },
-    {
-      label: 'Pending',
-      value: mockStudents.filter((item) => item.linkDeliveryStatus === 'pending').length,
-      tone: 'warning',
-    },
-    {
-      label: 'Failed',
-      value: mockStudents.filter((item) => item.linkDeliveryStatus === 'failed').length,
-      tone: 'neutral',
-    },
-  ]
+  const deferredSearch = useDeferredValue(filters.search)
 
   const selectedSession =
-    sessions.find((session) => session.kuppiSession === filters.kuppiSession) || sessions[0]
+    classOfferings.find((session) => session.kuppiSession === filters.kuppiSession) || null
 
-  const eligibleForDispatch = mockStudents.filter((item) => {
-    if (!selectedSession) {
-      return false
+  const summaryCards = [
+    { label: 'Confirmed Students', value: summary?.totalConfirmedStudents ?? 0, tone: 'accent' },
+    { label: 'Links Sent', value: summary?.totalLinksSent ?? 0, tone: 'success' },
+    { label: 'Pending', value: summary?.totalPendingLinkSends ?? 0, tone: 'warning' },
+    { label: 'Failed', value: summary?.totalFailedSends ?? 0, tone: 'neutral' },
+  ]
+
+  const loadDispatchPreview = useCallback(async (session) => {
+    if (!session) {
+      setDispatchPreviewCount(0)
+      return
     }
 
-    return (
-      item.classOffering.id === selectedSession.id &&
-      item.registrationStatus === 'confirmed' &&
-      item.paymentStatus === 'paid' &&
-      item.linkDeliveryStatus !== 'sent'
-    )
-  })
+    try {
+      const response = await getEnrollments({
+        page: 1,
+        limit: 100,
+        kuppiSession: session.kuppiSession,
+      })
+
+      const eligibleCount = response.data.items.filter(
+        (item) => item.linkDeliveryStatus !== 'sent',
+      ).length
+
+      setDispatchPreviewCount(eligibleCount)
+    } catch {
+      setDispatchPreviewCount(0)
+    }
+  }, [])
+
+  const loadDashboard = useCallback(
+    async ({ silent = false } = {}) => {
+      if (silent) {
+        setIsRefreshingList(true)
+      } else {
+        setIsLoading(true)
+      }
+
+      setPageError('')
+
+      try {
+        const [summaryResponse, offeringsResponse, enrollmentsResponse] = await Promise.all([
+          getDashboardSummary(),
+          getClassOfferings(),
+          getEnrollments({
+            page,
+            limit: 10,
+            search: deferredSearch,
+            kuppiSession: filters.kuppiSession,
+            linkDeliveryStatus: filters.linkDeliveryStatus,
+          }),
+        ])
+
+        setSummary(summaryResponse.data)
+        setClassOfferings(offeringsResponse.data.items)
+        setListState(enrollmentsResponse.data)
+      } catch (error) {
+        setPageError(error.message || 'Failed to load dashboard data.')
+      } finally {
+        setIsLoading(false)
+        setIsRefreshingList(false)
+      }
+    },
+    [deferredSearch, filters.kuppiSession, filters.linkDeliveryStatus, page],
+  )
+
+  useEffect(() => {
+    loadDashboard()
+  }, [loadDashboard])
+
+  useEffect(() => {
+    loadDispatchPreview(selectedSession)
+  }, [loadDispatchPreview, selectedSession])
 
   function updateFilters(patch) {
     setFilters((current) => ({ ...current, ...patch }))
+    setPage(1)
   }
 
   function handleReset() {
@@ -84,20 +130,38 @@ export default function DashboardPage() {
       kuppiSession: '',
       linkDeliveryStatus: '',
     })
+    setPage(1)
   }
 
-  function handleSendConfirm() {
+  async function handleSendConfirm() {
     setIsSending(true)
-
-    window.setTimeout(() => {
-      setToast({
-        type: 'success',
-        title: 'Dispatch complete',
-        message: `${eligibleForDispatch.length} student emails were prepared for ${selectedSession?.title}.`,
+    try {
+      const response = await sendClassLinks({
+        classOfferingId: selectedSession.id,
       })
-      setIsSending(false)
+
+      const result = response.data
+      const toastType = result.failed > 0 ? 'error' : 'success'
+      const toastTitle =
+        result.failed > 0 ? 'Dispatch completed with failures' : 'Dispatch complete'
+
+      setToast({
+        type: toastType,
+        title: toastTitle,
+        message: `${result.sent} sent, ${result.failed} failed, ${result.skipped} skipped for ${result.classOffering.title}.`,
+      })
       setIsModalOpen(false)
-    }, 800)
+      await loadDashboard({ silent: true })
+      await loadDispatchPreview(selectedSession)
+    } catch (error) {
+      setToast({
+        type: 'error',
+        title: 'Dispatch failed',
+        message: error.message || 'Unable to send class links.',
+      })
+    } finally {
+      setIsSending(false)
+    }
   }
 
   return (
@@ -131,27 +195,51 @@ export default function DashboardPage() {
                 Admin workspace
               </h2>
             </div>
-            <Button onClick={() => setIsModalOpen(true)} disabled={!selectedSession || isSending}>
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              disabled={!selectedSession || isSending || dispatchPreviewCount === 0}
+            >
               Send class link
             </Button>
           </div>
 
-          <FilterBar
-            filters={filters}
-            sessions={sessions}
-            onSearchChange={(search) => updateFilters({ search })}
-            onSessionChange={(kuppiSession) => updateFilters({ kuppiSession })}
-            onStatusChange={(linkDeliveryStatus) => updateFilters({ linkDeliveryStatus })}
-            onReset={handleReset}
-          />
-
-          {filteredStudents.length > 0 ? (
-            <StudentTable items={filteredStudents} />
-          ) : (
+          {isLoading ? (
+            <LoadingState />
+          ) : pageError ? (
             <EmptyState
-              title="No students match the current filters"
-              description="Adjust the search term, session, or delivery state to reveal the confirmed enrollment list."
+              title="Dashboard data could not be loaded"
+              description={pageError}
+              actionLabel="Retry"
+              onAction={() => loadDashboard()}
             />
+          ) : (
+            <>
+              <FilterBar
+                filters={filters}
+                sessions={classOfferings}
+                onSearchChange={(search) => updateFilters({ search })}
+                onSessionChange={(kuppiSession) => updateFilters({ kuppiSession })}
+                onStatusChange={(linkDeliveryStatus) => updateFilters({ linkDeliveryStatus })}
+                onReset={handleReset}
+              />
+
+              {isRefreshingList ? (
+                <LoadingState />
+              ) : listState.items.length > 0 ? (
+                <>
+                  <StudentTable items={listState.items} />
+                  <PaginationControls
+                    pagination={listState.pagination}
+                    onPageChange={setPage}
+                  />
+                </>
+              ) : (
+                <EmptyState
+                  title="No students match the current filters"
+                  description="Adjust the search term, session, or delivery state to reveal the confirmed enrollment list."
+                />
+              )}
+            </>
           )}
         </div>
 
@@ -172,7 +260,7 @@ export default function DashboardPage() {
                 Eligible recipients
               </p>
               <p className="mt-2 text-4xl font-semibold text-ink-900">
-                {String(eligibleForDispatch.length).padStart(2, '0')}
+                {String(dispatchPreviewCount).padStart(2, '0')}
               </p>
               <p className="mt-2 text-sm leading-6 text-ink-700">
                 Pending and failed deliveries are counted here. Sent records are excluded until
@@ -191,7 +279,7 @@ export default function DashboardPage() {
       <ConfirmSendModal
         isOpen={isModalOpen}
         sessionName={selectedSession?.kuppiSession || 'this session'}
-        recipientCount={eligibleForDispatch.length}
+        recipientCount={dispatchPreviewCount}
         isSending={isSending}
         onCancel={() => setIsModalOpen(false)}
         onConfirm={handleSendConfirm}
