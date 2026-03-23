@@ -1,9 +1,11 @@
 import app from './app.js'
 import { env } from './config/env.js'
+import { assertRuntimeConfig } from './config/runtimeMode.js'
 import { connectDb } from './db/connectDb.js'
 
 async function startServer() {
   try {
+    assertRuntimeConfig()
     await connectDb()
 
     app.listen(env.PORT, () => {

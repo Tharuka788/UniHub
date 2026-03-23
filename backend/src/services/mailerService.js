@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer'
 import { env } from '../config/env.js'
+import { isStandaloneMode } from '../config/runtimeMode.js'
 import { createHttpError } from '../utils/http.js'
 
 let cachedTransporter = null
@@ -66,7 +67,7 @@ export function buildClassLinkEmail({ studentName, classTitle, classLink, startD
 }
 
 export async function sendMail({ to, subject, text, html }) {
-  if (env.EMAIL_PROVIDER === 'console') {
+  if (env.EMAIL_PROVIDER === 'console' && isStandaloneMode()) {
     const messageId = `console-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`
 
     console.log(
@@ -83,6 +84,13 @@ export async function sendMail({ to, subject, text, html }) {
       provider: 'console',
       messageId,
     }
+  }
+
+  if (env.EMAIL_PROVIDER === 'console') {
+    throw createHttpError(
+      500,
+      'Console email transport is only available in standalone mode.',
+    )
   }
 
   const transporter = getTransporter()

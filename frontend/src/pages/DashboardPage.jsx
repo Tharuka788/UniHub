@@ -15,7 +15,7 @@ import PageHeader from '../components/PageHeader'
 import StatCard from '../components/StatCard'
 import StudentTable from '../components/StudentTable'
 import Toast from '../components/Toast'
-import { isStandaloneMode } from '../app/config'
+import { isStandaloneMode } from '../app/runtimeMode'
 import { usePersistentState } from '../hooks/usePersistentState'
 import AppShell from '../layouts/AppShell'
 
@@ -119,6 +119,15 @@ export default function DashboardPage() {
     loadDispatchPreview(selectedSession)
   }, [loadDispatchPreview, selectedSession])
 
+  useEffect(() => {
+    if (isStandaloneMode() && !filters.kuppiSession && classOfferings.length > 0) {
+      setFilters((current) => ({
+        ...current,
+        kuppiSession: classOfferings[0].kuppiSession,
+      }))
+    }
+  }, [classOfferings, filters.kuppiSession, setFilters])
+
   function updateFilters(patch) {
     setFilters((current) => ({ ...current, ...patch }))
     setPage(1)
@@ -170,11 +179,7 @@ export default function DashboardPage() {
         <PageHeader
           eyebrow="Kuppi System"
           title="Student confirmation dashboard"
-          description={
-            isStandaloneMode()
-              ? 'Base dashboard shell for local presentation mode with the same visual language used in integrated mode.'
-              : 'Base dashboard shell for the confirmed enrollment and class link workflow.'
-          }
+          description="Track confirmed enrollments, review delivery status, and dispatch class links from one clean admin workspace."
         />
       </section>
 
