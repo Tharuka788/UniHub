@@ -1,7 +1,45 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .glass {
+    @apply bg-white/80 backdrop-blur-xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)];
+  }
+  .glass-dark {
+    @apply bg-slate-900/80 backdrop-blur-xl border border-slate-800/50 shadow-[0_8px_30px_rgb(0,0,0,0.2)];
+  }
+  .glass-input {
+    @apply bg-white/50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300;
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-slide-up {
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-scale-in {
+    animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 :root {
   --primary-color: #6a11cb;
   --secondary-color: #2575fc;
-  --bg-color: #f8fafc;
+  --bg-color: #f0f4f8; /* Softer, premium background */
   --text-main: #1e293b;
   --text-muted: #64748b;
   --card-bg: #ffffff;
@@ -32,6 +70,19 @@ body {
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  /* Premium animated gradient background for the whole app */
+  background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Fallback for light mode to override the dark gradient above if needed, but the current UI requested rich aesthetics */
+@media (prefers-color-scheme: light) {
+  body {
+    background-image: 
+      radial-gradient(at 100% 0%, hsla(228,100%,74%,0.15) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(268,100%,74%,0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(333,100%,74%,0.15) 0px, transparent 50%);
+  }
 }
 
 a {

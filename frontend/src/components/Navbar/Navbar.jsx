@@ -8,6 +8,8 @@ const Navbar = () => {
   const links = [
     { name: 'Dashboard', path: '/' },
     { name: 'Lost & Found', path: '/lost-and-found' },
+    { name: 'Payments', path: '/payments' },
+    { name: 'Admin (Payments)', path: '/admin/payments' },
     { name: 'Events', path: '/events' },
     { name: 'Updates', path: '/updates' },
     { name: 'Profile', path: '/profile' }
