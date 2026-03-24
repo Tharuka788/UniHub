@@ -1,3 +1,6 @@
-console.log(
-  'Standalone demo seed placeholder. Full dataset implementation arrives in a later step.',
-)
+import { seedStandaloneDemoData } from './seedData.js'
+
+seedStandaloneDemoData().catch((error) => {
+  console.error('Standalone demo seed failed', error)
+  process.exit(1)
+})

@@ -1,3 +1,6 @@
-console.log(
-  'Seed reset script placeholder. Full reset implementation arrives in a later step.',
-)
+import { seedBaseData } from './seedData.js'
+
+seedBaseData({ reset: true }).catch((error) => {
+  console.error('Seed reset failed', error)
+  process.exit(1)
+})
