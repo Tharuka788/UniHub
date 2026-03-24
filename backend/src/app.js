@@ -5,6 +5,7 @@ import morgan from 'morgan'
 import { env } from './config/env.js'
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js'
 import router from './routes/index.js'
+import { sendSuccess } from './utils/response.js'
 
 const app = express()
 
@@ -19,9 +20,18 @@ app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'))
 app.use(express.json())
 
 app.get('/', (_request, response) => {
-  response.json({
-    success: true,
+  sendSuccess(response, {
     message: 'Kuppi System backend is running.',
+  })
+})
+
+app.get('/api/config', (_request, response) => {
+  sendSuccess(response, {
+    data: {
+      appMode: env.APP_MODE,
+      emailProvider: env.EMAIL_PROVIDER,
+      allowMockSync: env.ALLOW_MOCK_SYNC,
+    },
   })
 })
 

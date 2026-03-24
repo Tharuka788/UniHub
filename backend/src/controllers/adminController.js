@@ -7,13 +7,13 @@ import {
   sendClassLinksForOffering,
   upsertClassOffering,
 } from '../services/classLinkService.js'
+import { sendSuccess } from '../utils/response.js'
 
 export async function getAdminDashboardSummary(_request, response, next) {
   try {
     const summary = await getDashboardSummary()
 
-    response.json({
-      success: true,
+    sendSuccess(response, {
       data: summary,
     })
   } catch (error) {
@@ -25,8 +25,7 @@ export async function getAdminEnrollmentList(request, response, next) {
   try {
     const data = await getAdminEnrollments(request.validatedQuery)
 
-    response.json({
-      success: true,
+    sendSuccess(response, {
       data,
     })
   } catch (error) {
@@ -38,8 +37,7 @@ export async function getAdminClassOfferingList(_request, response, next) {
   try {
     const items = await getAdminClassOfferings()
 
-    response.json({
-      success: true,
+    sendSuccess(response, {
       data: {
         items,
       },
@@ -53,8 +51,7 @@ export async function createOrUpdateClassOffering(request, response, next) {
   try {
     const item = await upsertClassOffering(request.validatedBody)
 
-    response.status(200).json({
-      success: true,
+    sendSuccess(response, {
       data: {
         item,
       },
@@ -68,8 +65,7 @@ export async function sendClassLinks(request, response, next) {
   try {
     const result = await sendClassLinksForOffering(request.validatedBody)
 
-    response.status(200).json({
-      success: true,
+    sendSuccess(response, {
       data: result,
     })
   } catch (error) {

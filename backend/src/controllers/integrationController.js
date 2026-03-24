@@ -1,4 +1,5 @@
 import { ingestConfirmedEnrollment } from '../services/enrollmentIngestionService.js'
+import { sendSuccess } from '../utils/response.js'
 
 export async function createConfirmedEnrollment(request, response, next) {
   try {
@@ -6,8 +7,8 @@ export async function createConfirmedEnrollment(request, response, next) {
       source: request.integrationSource,
     })
 
-    response.status(result.created ? 201 : 200).json({
-      success: true,
+    sendSuccess(response, {
+      statusCode: result.created ? 201 : 200,
       data: {
         created: result.created,
         student: {

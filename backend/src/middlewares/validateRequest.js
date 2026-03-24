@@ -11,7 +11,11 @@ export function validateBody(schema) {
         next(
           createHttpError(
             400,
-            error.issues.map((issue) => issue.message).join(', '),
+            'Request body validation failed.',
+            error.issues.map((issue) => ({
+              path: issue.path.join('.'),
+              message: issue.message,
+            })),
           ),
         )
         return
@@ -32,7 +36,11 @@ export function validateQuery(schema) {
         next(
           createHttpError(
             400,
-            error.issues.map((issue) => issue.message).join(', '),
+            'Request query validation failed.',
+            error.issues.map((issue) => ({
+              path: issue.path.join('.'),
+              message: issue.message,
+            })),
           ),
         )
         return

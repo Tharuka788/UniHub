@@ -1,6 +1,7 @@
+import { sendSuccess } from '../utils/response.js'
+
 export function getHealth(_request, response) {
-  response.status(200).json({
-    success: true,
+  sendSuccess(response, {
     data: {
       status: 'ok',
       timestamp: new Date().toISOString(),
