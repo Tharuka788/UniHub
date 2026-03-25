@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const connectDB = require('./config/db');
 const itemRoutes = require('./routes/lost-and-found/itemRoutes');
+const paymentRoutes = require('./routes/payment/paymentRoutes');
 
 // Initialize the Express app
 const app = express();
@@ -18,6 +19,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/items', itemRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Connect to Database
 connectDB().then(() => {

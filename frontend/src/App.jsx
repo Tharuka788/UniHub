@@ -4,6 +4,9 @@ import Navbar from './components/Navbar/Navbar';
 import Dashboard from './pages/Dashboard/Dashboard';
 import LostAndFound from './pages/LostAndFound/LostAndFound';
 import ItemForm from './components/ItemForm/ItemForm';
+import PaymentForm from './components/PaymentForm/PaymentForm';
+import PaymentHistory from './components/PaymentHistory/PaymentHistory';
+import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import './index.css';
 
 function App() {
@@ -20,6 +23,9 @@ function App() {
             <Route path="/events" element={<div style={{padding: '4rem', textAlign: 'center'}}>Events Page (Dummy)</div>} />
             <Route path="/updates" element={<div style={{padding: '4rem', textAlign: 'center'}}>Updates Page (Dummy)</div>} />
             <Route path="/profile" element={<div style={{padding: '4rem', textAlign: 'center'}}>Profile Page (Dummy)</div>} />
+            <Route path="/pay" element={<PaymentForm />} />
+            <Route path="/payments" element={<PaymentHistory />} />
+            <Route path="/admin/payments" element={<AdminDashboard />} />
           </Routes>
         </main>
       </div>
