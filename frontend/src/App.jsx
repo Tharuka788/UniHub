@@ -3,12 +3,14 @@ import { usePersistentState } from './hooks/usePersistentState'
 import AppShell from './layouts/AppShell'
 import ClassOfferingsPage from './pages/ClassOfferingsPage'
 import DashboardPage from './pages/DashboardPage'
+import ReportsPage from './pages/ReportsPage'
 import StudentsPage from './pages/StudentsPage'
 
 const navigationItems = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'students', label: 'Students' },
   { id: 'class-offerings', label: 'Class Offerings' },
+  { id: 'reports', label: 'Reports' },
 ]
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
       <StudentsPage />
     ) : currentView === 'class-offerings' ? (
       <ClassOfferingsPage />
+    ) : currentView === 'reports' ? (
+      <ReportsPage />
     ) : (
       <DashboardPage />
     )

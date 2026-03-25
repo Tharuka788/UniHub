@@ -14,6 +14,15 @@ function buildUrl(path, query) {
   return url
 }
 
+function createApiError(data, statusCode) {
+  const error = new Error(data?.message || 'Request failed.')
+  error.statusCode = statusCode
+  error.errorCode = data?.errorCode || 'REQUEST_FAILED'
+  error.details = data?.details || []
+  error.suggestion = data?.suggestion || ''
+  return error
+}
+
 export async function apiRequest(path, options = {}) {
   const response = await fetch(buildUrl(path, options.query), {
     headers: {
@@ -29,13 +38,36 @@ export async function apiRequest(path, options = {}) {
     : null
 
   if (!response.ok) {
-    const error = new Error(data?.message || 'Request failed.')
-    error.statusCode = response.status
-    error.errorCode = data?.errorCode || 'REQUEST_FAILED'
-    error.details = data?.details || []
-    error.suggestion = data?.suggestion || ''
-    throw error
+    throw createApiError(data, response.status)
   }
 
   return data
+}
+
+function parseFilename(contentDisposition) {
+  const match = /filename="([^"]+)"/.exec(contentDisposition || '')
+  return match?.[1] || 'report.pdf'
+}
+
+export async function apiDownload(path, options = {}) {
+  const response = await fetch(buildUrl(path, options.query), {
+    headers: {
+      ...(options.headers || {}),
+    },
+    ...options,
+  })
+
+  if (!response.ok) {
+    const contentType = response.headers.get('content-type') || ''
+    const data = contentType.includes('application/json')
+      ? await response.json()
+      : null
+
+    throw createApiError(data, response.status)
+  }
+
+  return {
+    blob: await response.blob(),
+    filename: parseFilename(response.headers.get('content-disposition')),
+  }
 }

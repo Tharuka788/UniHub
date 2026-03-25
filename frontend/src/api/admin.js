@@ -1,4 +1,4 @@
-import { apiRequest } from './client'
+import { apiDownload, apiRequest } from './client'
 
 export function getDashboardSummary() {
   return apiRequest('/admin/dashboard/summary')
@@ -62,6 +62,14 @@ export function deactivateStudent(studentId) {
   return apiRequest(`/admin/students/${studentId}`, {
     method: 'DELETE',
   })
+}
+
+export function getReportSummary(query) {
+  return apiRequest('/admin/reports/summary', { query })
+}
+
+export function downloadReportPdf(query) {
+  return apiDownload('/admin/reports/pdf', { query })
 }
 
 export function sendClassLinks(body) {
