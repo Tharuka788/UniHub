@@ -1,20 +1,23 @@
 # Kuppi System
 
-Student confirmation dashboard and class link dispatch module built as a MERN-style monorepo with:
+Student confirmation dashboard and class link dispatch module built as a MERN-style monorepo.
 
-- `frontend`: React + Vite admin dashboard
-- `backend`: Express + MongoDB API
-- `Documentation`: architecture, contracts, setup, seeding, and presentation guides
+## Apps
 
-## Planned Scope
+- `frontend`: React + Vite + Tailwind admin dashboard
+- `backend`: Express + MongoDB API for ingestion, dashboard reads, and class-link dispatch
+- `Documentation`: architecture, contracts, setup, seeding, integration, and presentation guides
 
-- ingest confirmed registration and payment events
-- show confirmed students in an admin dashboard
-- send class links by email
-- log delivery outcomes
-- support `standalone` and `integrated` runtime modes
+## Core Features
 
-## Workspace Layout
+- confirmed enrollment ingestion from an upstream registration/payment flow
+- admin summary dashboard and filtered enrollment listing
+- class offering management
+- one-by-one class-link dispatch with delivery logging
+- `standalone` and `integrated` runtime modes
+- deterministic seed data and automated test coverage
+
+## Repository Structure
 
 ```text
 .
@@ -25,6 +28,35 @@ Student confirmation dashboard and class link dispatch module built as a MERN-st
 └── README.md
 ```
 
-## Next Steps
+## Quick Start
 
-Follow the implementation plan in [Documentation/PLAN.md](Documentation/PLAN.md).
+```bash
+npm run install:all
+npm run seed:standalone
+npm run dev
+```
+
+Frontend: `http://localhost:5173`
+
+Backend: `http://localhost:5000`
+
+## Useful Commands
+
+```bash
+npm run dev
+npm run seed
+npm run seed:reset
+npm run seed:standalone
+npm run test
+npm run lint
+```
+
+## Documentation
+
+- [Plan](Documentation/PLAN.md)
+- [Architecture](Documentation/ARCHITECTURE.md)
+- [API Contract](Documentation/API_CONTRACT.md)
+- [Setup](Documentation/SETUP.md)
+- [Seeding](Documentation/SEEDING.md)
+- [Integration Guide](Documentation/INTEGRATION_GUIDE.md)
+- [Presentation Flow](Documentation/PRESENTATION_FLOW.md)
