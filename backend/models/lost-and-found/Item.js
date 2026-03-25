@@ -19,6 +19,10 @@ const itemSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    imageEmbedding: {
+      type: [Number],
+      required: false,
+    },
     itemType: {
       type: String,
       enum: ['Lost', 'Found'],

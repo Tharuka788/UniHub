@@ -13,6 +13,8 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [suggestedMatches, setSuggestedMatches] = useState([]);
+  const [showMatches, setShowMatches] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -37,12 +39,18 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
     }
 
     try {
-      await axios.post('http://localhost:5000/api/items', data, {
+      const response = await axios.post('http://localhost:5050/api/items', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      navigate('/lost-and-found'); // redirect back to dashboard
+      
+      if (formType === 'Lost' && response.data.matches && response.data.matches.length > 0) {
+        setSuggestedMatches(response.data.matches);
+        setShowMatches(true);
+      } else {
+        navigate('/lost-and-found'); // redirect back to dashboard
+      }
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || 'Something went wrong. Please try again.');
@@ -50,6 +58,44 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
       setLoading(false);
     }
   };
+
+  if (showMatches) {
+    return (
+      <div className="item-form-wrapper">
+        <div className="item-form-container matches-container" style={{ maxWidth: '800px' }}>
+          <h2>Potential Matches Found! 🎯</h2>
+          <p className="form-subtitle">We found some items that look similar to the one you just reported.</p>
+          
+          <div className="lf-grid" style={{ marginTop: '20px' }}>
+            {suggestedMatches.map((match, idx) => (
+              <div className="lf-card" key={match._id || idx}>
+                <div className="lf-card-image-placeholder">
+                  {match.image ? (
+                    <img src={`http://localhost:5050${match.image}`} alt={match.title} className="lf-card-img" />
+                  ) : (
+                    '📦'
+                  )}
+                </div>
+                <div className="lf-card-body">
+                  <span className="lf-badge">{match.category}</span>
+                  <h3>{match.title}</h3>
+                  <p>{match.description}</p>
+                  <div className="lf-card-footer">
+                    <small>Match: {Math.round(match.similarityScore * 100)}%</small>
+                    <button className="lf-btn-small" onClick={() => navigate('/lost-and-found')}>View Details</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="form-actions" style={{ marginTop: '30px', justifyContent: 'center' }}>
+            <button type="button" className="btn-submit" onClick={() => navigate('/lost-and-found')}>Go to Dashboard</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="item-form-wrapper">

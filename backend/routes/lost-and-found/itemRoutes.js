@@ -17,6 +17,12 @@ const {
   deleteItem
 } = require('../../controllers/lost-and-found/itemController');
 
+// Check and create uploads directory if it doesn't exist
+const uploadDir = 'uploads/';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 // Multer default configuration for local storage
 const storage = multer.diskStorage({
   destination(req, file, cb) {
