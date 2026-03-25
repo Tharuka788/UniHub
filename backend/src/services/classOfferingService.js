@@ -73,6 +73,31 @@ function serializeClassOffering(offering, metrics = {}) {
   }
 }
 
+async function ensureUniqueKuppiSession(kuppiSession, currentOfferingId = null) {
+  if (!kuppiSession) {
+    return
+  }
+
+  const filters = currentOfferingId
+    ? { kuppiSession, _id: { $ne: currentOfferingId } }
+    : { kuppiSession }
+
+  const existing = await ClassOffering.findOne(filters).select('_id')
+
+  if (existing) {
+    throw createHttpError(409, 'Another class offering already uses this kuppi session.', {
+      errorCode: 'DUPLICATE_KUPPI_SESSION',
+      details: [
+        {
+          path: 'kuppiSession',
+          message: 'kuppiSession must be unique.',
+        },
+      ],
+      suggestion: 'Use a different kuppi session name before saving.',
+    })
+  }
+}
+
 async function getOfferingMetrics(offeringId) {
   const [confirmedEnrollmentCount, failedDispatchCount, dispatchAttemptCount] = await Promise.all([
     Enrollment.countDocuments({
@@ -97,6 +122,8 @@ async function getOfferingMetrics(offeringId) {
 }
 
 export async function createClassOffering(payload) {
+  await ensureUniqueKuppiSession(payload.kuppiSession)
+
   const offering = await ClassOffering.create({
     title: payload.title,
     kuppiSession: payload.kuppiSession,
@@ -187,11 +214,13 @@ export async function updateClassOffering(id, payload) {
   const existing = await ensureClassOfferingExists(id)
 
   if (existing.isArchived) {
-    throw createHttpError(
-      409,
-      'Archived class offerings cannot be edited without a restore flow.',
-    )
+    throw createHttpError(409, 'Archived class offerings cannot be edited without a restore flow.', {
+      errorCode: 'CLASS_OFFERING_ARCHIVED',
+      suggestion: 'Restore the class offering before attempting further edits.',
+    })
   }
+
+  await ensureUniqueKuppiSession(payload.kuppiSession, existing._id)
 
   const offering = await ClassOffering.findByIdAndUpdate(
     id,

@@ -23,6 +23,19 @@ const envSchema = z.object({
     .string()
     .url()
     .default('https://meet.google.com/xxx-xxxx-xxx'),
+  ENFORCE_CLASS_LINK_DOMAIN_POLICY: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true'),
+  CLASS_LINK_ALLOWED_DOMAINS: z
+    .string()
+    .default('')
+    .transform((value) =>
+      value
+        .split(',')
+        .map((item) => item.trim().toLowerCase())
+        .filter(Boolean),
+    ),
   ALLOW_MOCK_SYNC: z
     .enum(['true', 'false'])
     .default('true')

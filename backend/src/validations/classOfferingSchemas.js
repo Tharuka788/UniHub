@@ -1,5 +1,10 @@
 import { z } from 'zod'
-import { sanitizeSearchValue } from '../utils/validation.js'
+import {
+  buildAllowedClassLinkMessage,
+  isAllowedClassLink,
+  isValidDateTimeValue,
+  sanitizeSearchValue,
+} from '../utils/validation.js'
 
 const classOfferingBaseSchema = z.object({
   title: z.string().trim().min(5, 'title must be at least 5 characters long.'),
@@ -8,9 +13,19 @@ const classOfferingBaseSchema = z.object({
     .string()
     .trim()
     .url('classLink must be a valid URL.')
+    .refine((value) => isAllowedClassLink(value), {
+      message: buildAllowedClassLinkMessage(),
+    })
     .optional()
     .or(z.literal('')),
-  startDateTime: z.iso.datetime().optional().or(z.literal('')),
+  startDateTime: z
+    .string()
+    .trim()
+    .optional()
+    .or(z.literal(''))
+    .refine((value) => isValidDateTimeValue(value), {
+      message: 'startDateTime must be a valid date-time value.',
+    }),
   status: z.enum(['draft', 'ready', 'active', 'completed']).optional().default('ready'),
 })
 

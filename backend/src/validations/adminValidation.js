@@ -1,6 +1,16 @@
 import { z } from 'zod'
 import { sanitizeSearchValue } from '../utils/validation.js'
 
+const optionalDateSchema = z
+  .string()
+  .trim()
+  .optional()
+  .or(z.literal(''))
+  .refine((value) => !value || /^\d{4}-\d{2}-\d{2}$/.test(value), {
+    message: 'Must be a valid date in YYYY-MM-DD format.',
+  })
+  .default('')
+
 export const adminEnrollmentQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
@@ -15,8 +25,8 @@ export const adminEnrollmentQuerySchema = z.object({
     .optional()
     .or(z.literal(''))
     .default(''),
-  dateFrom: z.string().trim().optional().or(z.literal('')).default(''),
-  dateTo: z.string().trim().optional().or(z.literal('')).default(''),
+  dateFrom: optionalDateSchema,
+  dateTo: optionalDateSchema,
   paymentReference: z.string().trim().optional().default(''),
   registrationReference: z.string().trim().optional().default(''),
   sortBy: z

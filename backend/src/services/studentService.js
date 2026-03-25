@@ -20,19 +20,75 @@ function serializeStudent(student) {
 
 async function ensureStudentExists(id) {
   if (!mongoose.isValidObjectId(id)) {
-    throw createHttpError(400, 'Invalid student id.')
+    throw createHttpError(400, 'Invalid student id.', {
+      errorCode: 'INVALID_IDENTIFIER',
+      suggestion: 'Use a valid student identifier and try again.',
+    })
   }
 
   const student = await Student.findById(id)
 
   if (!student) {
-    throw createHttpError(404, 'Student not found.')
+    throw createHttpError(404, 'Student not found.', {
+      errorCode: 'STUDENT_NOT_FOUND',
+      suggestion: 'Refresh the list and choose an existing student.',
+    })
   }
 
   return student
 }
 
+async function ensureStudentUniqueness(payload, currentStudentId = null) {
+  const exclusionFilter = currentStudentId
+    ? { _id: { $ne: currentStudentId } }
+    : {}
+
+  if (payload.email) {
+    const existingEmail = await Student.findOne({
+      ...exclusionFilter,
+      email: payload.email,
+      isActive: true,
+    }).select('_id')
+
+    if (existingEmail) {
+      throw createHttpError(409, 'An active student already uses this email address.', {
+        errorCode: 'DUPLICATE_STUDENT_EMAIL',
+        details: [
+          {
+            path: 'email',
+            message: 'email must be unique for active students.',
+          },
+        ],
+        suggestion: 'Use a different email or deactivate the conflicting student first.',
+      })
+    }
+  }
+
+  if (payload.studentCode) {
+    const existingCode = await Student.findOne({
+      ...exclusionFilter,
+      studentCode: payload.studentCode,
+      isActive: true,
+    }).select('_id')
+
+    if (existingCode) {
+      throw createHttpError(409, 'An active student already uses this student code.', {
+        errorCode: 'DUPLICATE_STUDENT_CODE',
+        details: [
+          {
+            path: 'studentCode',
+            message: 'studentCode must be unique for active students.',
+          },
+        ],
+        suggestion: 'Use a different student code or clear the conflicting record first.',
+      })
+    }
+  }
+}
+
 export async function createStudent(payload) {
+  await ensureStudentUniqueness(payload)
+
   const student = await Student.create({
     ...payload,
     isActive: true,
@@ -108,7 +164,8 @@ export async function getStudentById(id) {
 }
 
 export async function updateStudent(id, payload) {
-  await ensureStudentExists(id)
+  const existingStudent = await ensureStudentExists(id)
+  await ensureStudentUniqueness(payload, existingStudent._id)
 
   const student = await Student.findByIdAndUpdate(
     id,

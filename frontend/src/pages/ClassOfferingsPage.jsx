@@ -212,9 +212,22 @@ export default function ClassOfferingsPage() {
         title: editingItem ? 'Class offering updated' : 'Class offering created',
         message: `${formValues.title} has been saved successfully.`,
       })
+      setFormErrors({})
       setIsFormOpen(false)
       await loadOfferings()
     } catch (error) {
+      if (error.details?.length) {
+        setFormErrors(
+          error.details.reduce(
+            (accumulator, detail) => ({
+              ...accumulator,
+              [detail.path]: detail.message,
+            }),
+            {},
+          ),
+        )
+      }
+
       setToast({
         type: 'error',
         title: 'Save failed',

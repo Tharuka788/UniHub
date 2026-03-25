@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import {
+  isValidEmail,
   isNonNumericName,
   sriLankanPhonePattern,
 } from '../utils/validation.js'
@@ -21,6 +22,10 @@ const studentSchema = new mongoose.Schema(
       required: true,
       trim: true,
       lowercase: true,
+      validate: {
+        validator: isValidEmail,
+        message: 'Email must be a valid email address.',
+      },
     },
     phone: {
       type: String,

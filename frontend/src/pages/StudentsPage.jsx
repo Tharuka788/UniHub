@@ -207,9 +207,22 @@ export default function StudentsPage() {
         title: editingStudent ? 'Student updated' : 'Student created',
         message: `${formValues.fullName} has been saved successfully.`,
       })
+      setFormErrors({})
       setIsFormOpen(false)
       await loadStudents()
     } catch (error) {
+      if (error.details?.length) {
+        setFormErrors(
+          error.details.reduce(
+            (accumulator, detail) => ({
+              ...accumulator,
+              [detail.path]: detail.message,
+            }),
+            {},
+          ),
+        )
+      }
+
       setToast({
         type: 'error',
         title: 'Save failed',

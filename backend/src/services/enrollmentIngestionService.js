@@ -4,6 +4,19 @@ import { Student } from '../models/Student.js'
 import { createHttpError } from '../utils/http.js'
 
 export async function ingestConfirmedEnrollment(payload, options = {}) {
+  if (!payload.paymentReference?.trim()) {
+    throw createHttpError(400, 'Paid enrollments require a payment reference.', {
+      errorCode: 'PAYMENT_REFERENCE_REQUIRED',
+      details: [
+        {
+          path: 'paymentReference',
+          message: 'paymentReference is required when paymentStatus is paid.',
+        },
+      ],
+      suggestion: 'Provide the payment reference from the payment confirmation payload.',
+    })
+  }
+
   const student = await Student.findOneAndUpdate(
     { email: payload.email },
     {
@@ -70,10 +83,16 @@ export async function ingestConfirmedEnrollment(payload, options = {}) {
   })
 
   if (existingPair) {
-    throw createHttpError(
-      409,
-      'A paid confirmed enrollment already exists for this student and class offering.',
-    )
+    throw createHttpError(409, 'A paid confirmed enrollment already exists for this student and class offering.', {
+      errorCode: 'DUPLICATE_ENROLLMENT',
+      details: [
+        {
+          path: 'student',
+          message: 'This student already has an active enrollment for the class offering.',
+        },
+      ],
+      suggestion: 'Reuse the existing enrollment or move the student to a different class offering.',
+    })
   }
 
   const enrollment = await Enrollment.create(enrollmentPatch)

@@ -29,7 +29,12 @@ export async function apiRequest(path, options = {}) {
     : null
 
   if (!response.ok) {
-    throw new Error(data?.message || 'Request failed.')
+    const error = new Error(data?.message || 'Request failed.')
+    error.statusCode = response.status
+    error.errorCode = data?.errorCode || 'REQUEST_FAILED'
+    error.details = data?.details || []
+    error.suggestion = data?.suggestion || ''
+    throw error
   }
 
   return data

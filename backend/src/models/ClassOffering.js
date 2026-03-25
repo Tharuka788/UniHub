@@ -1,5 +1,10 @@
 import mongoose from 'mongoose'
 import { env } from '../config/env.js'
+import {
+  buildAllowedClassLinkMessage,
+  isAllowedClassLink,
+  isValidDateTimeValue,
+} from '../utils/validation.js'
 
 const classOfferingSchema = new mongoose.Schema(
   {
@@ -7,6 +12,7 @@ const classOfferingSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      minlength: 5,
     },
     kuppiSession: {
       type: String,
@@ -18,10 +24,18 @@ const classOfferingSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: env.DEFAULT_CLASS_LINK,
+      validate: {
+        validator: isAllowedClassLink,
+        message: buildAllowedClassLinkMessage,
+      },
     },
     startDateTime: {
       type: Date,
       default: null,
+      validate: {
+        validator: isValidDateTimeValue,
+        message: 'startDateTime must be a valid date.',
+      },
     },
     status: {
       type: String,

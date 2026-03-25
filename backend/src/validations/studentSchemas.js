@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import {
+  isValidEmail,
   isNonNumericName,
   sanitizeSearchValue,
   sriLankanPhonePattern,
@@ -12,8 +13,10 @@ const studentNameSchema = z
   .refine(isNonNumericName, 'fullName cannot be purely numeric.')
 
 const studentEmailSchema = z
-  .email('email must be a valid email address.')
-  .transform((value) => value.trim().toLowerCase())
+  .string()
+  .trim()
+  .transform((value) => value.toLowerCase())
+  .refine(isValidEmail, 'email must be a valid email address.')
 
 const studentPhoneSchema = z
   .string()

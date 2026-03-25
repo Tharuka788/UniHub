@@ -39,6 +39,16 @@ const enrollmentSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: '',
+      validate: {
+        validator(value) {
+          if (this.paymentStatus !== 'paid') {
+            return true
+          }
+
+          return Boolean(value?.trim())
+        },
+        message: 'paymentReference is required when paymentStatus is paid.',
+      },
     },
     linkDeliveryStatus: {
       type: String,

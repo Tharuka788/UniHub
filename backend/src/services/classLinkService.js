@@ -9,7 +9,25 @@ export async function sendClassLinksForOffering({ classOfferingId, forceResend =
   const classOffering = await ensureClassOfferingExists(classOfferingId)
 
   if (classOffering.isArchived) {
-    throw createHttpError(409, 'Archived class offerings cannot dispatch class links.')
+    throw createHttpError(409, 'Archived class offerings cannot dispatch class links.', {
+      errorCode: 'CLASS_OFFERING_ARCHIVED',
+      suggestion: 'Restore the class offering before sending class links.',
+    })
+  }
+
+  const classLink = classOffering.classLink || env.DEFAULT_CLASS_LINK
+
+  if (!classLink) {
+    throw createHttpError(409, 'Class link dispatch requires a valid class link.', {
+      errorCode: 'CLASS_LINK_REQUIRED',
+      details: [
+        {
+          path: 'classLink',
+          message: 'A class link must be configured before dispatch.',
+        },
+      ],
+      suggestion: 'Update the class offering with a valid class link and try again.',
+    })
   }
 
   const enrollments = await Enrollment.find({
@@ -50,7 +68,7 @@ export async function sendClassLinksForOffering({ classOfferingId, forceResend =
     const emailContent = buildClassLinkEmail({
       studentName: enrollment.student.fullName,
       classTitle: classOffering.title,
-      classLink: classOffering.classLink || env.DEFAULT_CLASS_LINK,
+      classLink,
       startDateTime: classOffering.startDateTime,
     })
 
