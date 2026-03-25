@@ -123,6 +123,42 @@ Status codes:
 
 ## Admin APIs
 
+All `/admin/*` routes now require an authenticated admin session cookie except `/admin/auth/login`, `/admin/auth/session`, and `/admin/auth/logout`.
+
+### `POST /admin/auth/login`
+
+Request body:
+
+```json
+{
+  "username": "admin",
+  "password": "change-me-admin"
+}
+```
+
+Behavior:
+
+- validates credentials against backend environment variables
+- sets an HTTP-only admin session cookie on success
+
+### `GET /admin/auth/session`
+
+Returns the current admin session if the cookie is valid.
+
+```json
+{
+  "success": true,
+  "data": {
+    "username": "admin",
+    "expiresAt": "2026-03-26T08:30:00.000Z"
+  }
+}
+```
+
+### `POST /admin/auth/logout`
+
+Clears the admin session cookie.
+
 ### `GET /admin/dashboard/summary`
 
 Returns:

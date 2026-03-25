@@ -1,6 +1,11 @@
 import { z } from 'zod'
 import { sanitizeSearchValue } from '../utils/validation.js'
 
+export const adminLoginSchema = z.object({
+  username: z.string().trim().min(1, 'Username is required.'),
+  password: z.string().min(1, 'Password is required.'),
+})
+
 const optionalDateSchema = z
   .string()
   .trim()

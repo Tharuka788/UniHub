@@ -16,6 +16,7 @@ Student confirmation dashboard and class link dispatch module built as a MERN-st
 - class offering management
 - report-center preview and PDF downloads
 - readiness scoring for class-offering operations
+- env-configured admin login with cookie-based session protection
 - one-by-one class-link dispatch with delivery logging
 - `standalone` and `integrated` runtime modes
 - deterministic seed data and automated test coverage
@@ -42,6 +43,13 @@ npm run dev
 Frontend: `http://localhost:5173`
 
 Backend: `http://localhost:5000`
+
+Default admin login after copying `backend/.env.example`:
+
+- username: `admin`
+- password: `change-me-admin`
+
+Change these through `ADMIN_USERNAME`, `ADMIN_PASSWORD`, and `ADMIN_SESSION_SECRET` in `backend/.env`.
 
 ## Useful Commands
 

@@ -25,6 +25,7 @@ function createApiError(data, statusCode) {
 
 export async function apiRequest(path, options = {}) {
   const response = await fetch(buildUrl(path, options.query), {
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       ...(options.headers || {}),
@@ -51,6 +52,7 @@ function parseFilename(contentDisposition) {
 
 export async function apiDownload(path, options = {}) {
   const response = await fetch(buildUrl(path, options.query), {
+    credentials: 'include',
     headers: {
       ...(options.headers || {}),
     },

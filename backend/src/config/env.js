@@ -19,6 +19,10 @@ const envSchema = z.object({
   SMTP_USER: z.string().optional().default(''),
   SMTP_PASS: z.string().optional().default(''),
   MAIL_FROM: z.string().default('no-reply@example.com'),
+  ADMIN_USERNAME: z.string().trim().min(1).default('admin'),
+  ADMIN_PASSWORD: z.string().min(1).default('change-me-admin'),
+  ADMIN_SESSION_SECRET: z.string().min(1).default('replace-this-session-secret'),
+  ADMIN_SESSION_TTL_HOURS: z.coerce.number().int().positive().default(12),
   DEFAULT_CLASS_LINK: z
     .string()
     .url()
