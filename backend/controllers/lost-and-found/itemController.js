@@ -43,12 +43,11 @@ const createItem = async (req, res) => {
     let imageEmbedding = null;
 
     if (req.file) {
-      // Store static path to the image
-      imagePath = `/uploads/${req.file.filename}`;
+      // Store Cloudinary URL
+      imagePath = req.file.path;
       
-      // Generate image embedding
-      const fullPath = path.join(__dirname, '../..', imagePath);
-      imageEmbedding = await generateImageEmbedding(fullPath);
+      // Generate image embedding using Cloudinary URL
+      imageEmbedding = await generateImageEmbedding(imagePath);
     }
 
     const item = await Item.create({
@@ -97,14 +96,9 @@ const updateItem = async (req, res) => {
     let updatedData = { ...req.body };
 
     if (req.file) {
-      // If there's a new image, update the path and optionally delete the old image
-      updatedData.image = `/uploads/${req.file.filename}`;
-      if (item.image) {
-        const oldImagePath = path.join(__dirname, '../..', item.image);
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
-        }
-      }
+      // If there's a new image, update to the Cloudinary URL
+      updatedData.image = req.file.path;
+      // Note: Optional to delete old Cloudinary image here using cloudinary.uploader.destroy
     }
 
     const updatedItem = await Item.findByIdAndUpdate(req.params.id, updatedData, { new: true });
@@ -125,13 +119,8 @@ const deleteItem = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    // Delete associated image file
-    if (item.image) {
-      const imagePath = path.join(__dirname, '../..', item.image);
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
-      }
-    }
+    // Optional: Delete associated image from Cloudinary
+    // if (item.image) { ... }
 
     await item.deleteOne();
     res.status(200).json({ id: req.params.id, message: 'Item deleted' });

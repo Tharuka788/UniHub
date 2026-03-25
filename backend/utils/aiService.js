@@ -23,8 +23,9 @@ const generateImageEmbedding = async (imagePath) => {
   try {
     console.log('Generating AI vector embedding locally...');
     
-    // Prevent crashes if file is missing
-    if (!fs.existsSync(imagePath)) {
+    // Prevent crashes if file is missing (only for local paths)
+    const isUrl = imagePath.startsWith('http');
+    if (!isUrl && !fs.existsSync(imagePath)) {
        console.error('Image file not found:', imagePath);
        return null;
     }
