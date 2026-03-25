@@ -8,8 +8,32 @@ export function getEnrollments(query) {
   return apiRequest('/admin/enrollments', { query })
 }
 
-export function getClassOfferings() {
-  return apiRequest('/admin/class-offerings')
+export function getClassOfferings(query) {
+  return apiRequest('/admin/class-offerings', { query })
+}
+
+export function getClassOfferingDetail(classOfferingId) {
+  return apiRequest(`/admin/class-offerings/${classOfferingId}`)
+}
+
+export function createClassOffering(body) {
+  return apiRequest('/admin/class-offerings', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  })
+}
+
+export function updateClassOffering(classOfferingId, body) {
+  return apiRequest(`/admin/class-offerings/${classOfferingId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+  })
+}
+
+export function archiveClassOffering(classOfferingId) {
+  return apiRequest(`/admin/class-offerings/${classOfferingId}`, {
+    method: 'DELETE',
+  })
 }
 
 export function getStudents(query) {

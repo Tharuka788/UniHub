@@ -6,17 +6,20 @@ import * as mailerService from '../src/services/mailerService.js'
 import { sendClassLinksForOffering } from '../src/services/classLinkService.js'
 
 describe('class link service', () => {
+  const classOfferingId = '507f1f77bcf86cd799439011'
+
   beforeEach(() => {
     vi.restoreAllMocks()
   })
 
   it('sends links only to unsent eligible enrollments by default', async () => {
     vi.spyOn(ClassOffering, 'findById').mockResolvedValue({
-      _id: 'class-1',
+      _id: classOfferingId,
       title: '2026 A/L Physics Support',
       kuppiSession: '2026 A/L Physics Support - Batch 01',
       classLink: 'https://meet.google.com/test',
       startDateTime: null,
+      isArchived: false,
     })
     vi.spyOn(Enrollment, 'find').mockReturnValue({
       populate: vi.fn().mockResolvedValue([
@@ -27,6 +30,7 @@ describe('class link service', () => {
             _id: 'student-1',
             fullName: 'Nimal Perera',
             email: 'nimal@example.com',
+            isActive: true,
           },
           save: vi.fn(),
         },
@@ -37,6 +41,7 @@ describe('class link service', () => {
             _id: 'student-2',
             fullName: 'Tharushi De Silva',
             email: 'tharushi@example.com',
+            isActive: true,
           },
           save: vi.fn(),
         },
@@ -49,7 +54,7 @@ describe('class link service', () => {
     vi.spyOn(DispatchLog, 'create').mockResolvedValue({})
 
     const result = await sendClassLinksForOffering({
-      classOfferingId: 'class-1',
+      classOfferingId,
     })
 
     expect(result.attempted).toBe(1)
@@ -59,11 +64,12 @@ describe('class link service', () => {
 
   it('records failures when mail delivery throws', async () => {
     vi.spyOn(ClassOffering, 'findById').mockResolvedValue({
-      _id: 'class-1',
+      _id: classOfferingId,
       title: '2026 A/L Physics Support',
       kuppiSession: '2026 A/L Physics Support - Batch 01',
       classLink: 'https://meet.google.com/test',
       startDateTime: null,
+      isArchived: false,
     })
     vi.spyOn(Enrollment, 'find').mockReturnValue({
       populate: vi.fn().mockResolvedValue([
@@ -74,6 +80,7 @@ describe('class link service', () => {
             _id: 'student-1',
             fullName: 'Nimal Perera',
             email: 'nimal@example.com',
+            isActive: true,
           },
           save: vi.fn(),
         },
@@ -83,7 +90,7 @@ describe('class link service', () => {
     vi.spyOn(DispatchLog, 'create').mockResolvedValue({})
 
     const result = await sendClassLinksForOffering({
-      classOfferingId: 'class-1',
+      classOfferingId,
     })
 
     expect(result.failed).toBe(1)

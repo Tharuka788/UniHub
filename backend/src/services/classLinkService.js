@@ -1,45 +1,15 @@
-import { ClassOffering } from '../models/ClassOffering.js'
 import { DispatchLog } from '../models/DispatchLog.js'
 import { Enrollment } from '../models/Enrollment.js'
 import { env } from '../config/env.js'
 import { createHttpError } from '../utils/http.js'
 import { buildClassLinkEmail, sendMail } from './mailerService.js'
-
-export async function upsertClassOffering(payload) {
-  const query = payload.id ? { _id: payload.id } : { kuppiSession: payload.kuppiSession }
-
-  const classOffering = await ClassOffering.findOneAndUpdate(
-    query,
-    {
-      title: payload.title,
-      kuppiSession: payload.kuppiSession,
-      classLink: payload.classLink || env.DEFAULT_CLASS_LINK,
-      startDateTime: payload.startDateTime ? new Date(payload.startDateTime) : null,
-      status: payload.status || 'ready',
-    },
-    {
-      new: true,
-      upsert: true,
-      setDefaultsOnInsert: true,
-      runValidators: true,
-    },
-  )
-
-  return {
-    id: classOffering._id,
-    title: classOffering.title,
-    kuppiSession: classOffering.kuppiSession,
-    classLink: classOffering.classLink,
-    startDateTime: classOffering.startDateTime,
-    status: classOffering.status,
-  }
-}
+import { ensureClassOfferingExists } from './classOfferingService.shared.js'
 
 export async function sendClassLinksForOffering({ classOfferingId, forceResend = false }) {
-  const classOffering = await ClassOffering.findById(classOfferingId)
+  const classOffering = await ensureClassOfferingExists(classOfferingId)
 
-  if (!classOffering) {
-    throw createHttpError(404, 'Class offering not found.')
+  if (classOffering.isArchived) {
+    throw createHttpError(409, 'Archived class offerings cannot dispatch class links.')
   }
 
   const enrollments = await Enrollment.find({
@@ -67,6 +37,16 @@ export async function sendClassLinksForOffering({ classOfferingId, forceResend =
   }
 
   for (const enrollment of eligibleEnrollments) {
+    if (!enrollment.student?.isActive) {
+      summary.failed += 1
+      summary.errors.push({
+        enrollmentId: enrollment._id,
+        email: enrollment.student?.email || '',
+        message: 'Inactive students cannot receive class links.',
+      })
+      continue
+    }
+
     const emailContent = buildClassLinkEmail({
       studentName: enrollment.student.fullName,
       classTitle: classOffering.title,

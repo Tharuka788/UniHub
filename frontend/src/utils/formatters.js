@@ -1,6 +1,6 @@
-export function formatDateTime(value) {
+export function formatDateTime(value, fallback = 'Not sent yet') {
   if (!value) {
-    return 'Not sent yet'
+    return fallback
   }
 
   return new Intl.DateTimeFormat('en-LK', {
