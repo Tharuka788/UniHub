@@ -1,9 +1,6 @@
 import { ClassOffering } from '../models/ClassOffering.js'
 import { Enrollment } from '../models/Enrollment.js'
-
-function escapeRegex(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
+import { escapeRegex } from '../utils/validation.js'
 
 export async function getDashboardSummary() {
   const [totalConfirmedStudents, totalLinksSent, totalPendingLinkSends, totalFailedSends] =
@@ -55,7 +52,34 @@ export async function getAdminEnrollments(query) {
     }
   }
 
+  if (query.registrationReference) {
+    filters.registrationReference = {
+      $regex: escapeRegex(query.registrationReference),
+      $options: 'i',
+    }
+  }
+
+  if (query.paymentReference) {
+    filters.paymentReference = {
+      $regex: escapeRegex(query.paymentReference),
+      $options: 'i',
+    }
+  }
+
+  if (query.dateFrom || query.dateTo) {
+    filters.createdAt = {}
+
+    if (query.dateFrom) {
+      filters.createdAt.$gte = new Date(`${query.dateFrom}T00:00:00.000Z`)
+    }
+
+    if (query.dateTo) {
+      filters.createdAt.$lte = new Date(`${query.dateTo}T23:59:59.999Z`)
+    }
+  }
+
   if (query.search) {
+    const pattern = escapeRegex(query.search)
     const matchingStudents = await Enrollment.aggregate([
       {
         $lookup: {
@@ -67,17 +91,62 @@ export async function getAdminEnrollments(query) {
       },
       { $unwind: '$studentRecord' },
       {
+        $lookup: {
+          from: 'classofferings',
+          localField: 'classOffering',
+          foreignField: '_id',
+          as: 'classOfferingRecord',
+        },
+      },
+      { $unwind: '$classOfferingRecord' },
+      {
         $match: {
           $or: [
             {
               'studentRecord.fullName': {
-                $regex: escapeRegex(query.search),
+                $regex: pattern,
                 $options: 'i',
               },
             },
             {
               'studentRecord.email': {
-                $regex: escapeRegex(query.search),
+                $regex: pattern,
+                $options: 'i',
+              },
+            },
+            {
+              'studentRecord.phone': {
+                $regex: pattern,
+                $options: 'i',
+              },
+            },
+            {
+              'studentRecord.studentCode': {
+                $regex: pattern,
+                $options: 'i',
+              },
+            },
+            {
+              'classOfferingRecord.title': {
+                $regex: pattern,
+                $options: 'i',
+              },
+            },
+            {
+              'classOfferingRecord.kuppiSession': {
+                $regex: pattern,
+                $options: 'i',
+              },
+            },
+            {
+              registrationReference: {
+                $regex: pattern,
+                $options: 'i',
+              },
+            },
+            {
+              paymentReference: {
+                $regex: pattern,
                 $options: 'i',
               },
             },
@@ -94,11 +163,14 @@ export async function getAdminEnrollments(query) {
 
   const totalItems = await Enrollment.countDocuments(filters)
   const skip = (query.page - 1) * query.limit
+  const sort = {
+    [query.sortBy]: query.sortOrder === 'asc' ? 1 : -1,
+  }
 
   const enrollments = await Enrollment.find(filters)
     .populate('student')
     .populate('classOffering')
-    .sort({ createdAt: -1 })
+    .sort(sort)
     .skip(skip)
     .limit(query.limit)
 
@@ -117,6 +189,8 @@ export async function getAdminEnrollments(query) {
         fullName: enrollment.student.fullName,
         email: enrollment.student.email,
         phone: enrollment.student.phone,
+        studentCode: enrollment.student.studentCode,
+        isActive: enrollment.student.isActive,
       },
       classOffering: {
         id: enrollment.classOffering._id,

@@ -5,6 +5,7 @@ import {
   getEnrollments,
   sendClassLinks,
 } from '../api/admin'
+import ActiveFilterChips from '../components/ActiveFilterChips'
 import Button from '../components/Button'
 import ConfirmSendModal from '../components/ConfirmSendModal'
 import EmptyState from '../components/EmptyState'
@@ -23,6 +24,12 @@ export default function DashboardPage() {
     search: '',
     kuppiSession: '',
     linkDeliveryStatus: '',
+    dateFrom: '',
+    dateTo: '',
+    paymentReference: '',
+    registrationReference: '',
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
   })
   const [page, setPage] = useState(1)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -94,6 +101,12 @@ export default function DashboardPage() {
             search: deferredSearch,
             kuppiSession: filters.kuppiSession,
             linkDeliveryStatus: filters.linkDeliveryStatus,
+            dateFrom: filters.dateFrom,
+            dateTo: filters.dateTo,
+            paymentReference: filters.paymentReference,
+            registrationReference: filters.registrationReference,
+            sortBy: filters.sortBy,
+            sortOrder: filters.sortOrder,
           }),
         ])
 
@@ -107,7 +120,18 @@ export default function DashboardPage() {
         setIsRefreshingList(false)
       }
     },
-    [deferredSearch, filters.kuppiSession, filters.linkDeliveryStatus, page],
+    [
+      deferredSearch,
+      filters.dateFrom,
+      filters.dateTo,
+      filters.kuppiSession,
+      filters.linkDeliveryStatus,
+      filters.paymentReference,
+      filters.registrationReference,
+      filters.sortBy,
+      filters.sortOrder,
+      page,
+    ],
   )
 
   useEffect(() => {
@@ -137,8 +161,41 @@ export default function DashboardPage() {
       search: '',
       kuppiSession: '',
       linkDeliveryStatus: '',
+      dateFrom: '',
+      dateTo: '',
+      paymentReference: '',
+      registrationReference: '',
+      sortBy: 'createdAt',
+      sortOrder: 'desc',
     })
     setPage(1)
+  }
+
+  const filterChips = [
+    { key: 'search', label: 'Search', value: filters.search },
+    { key: 'kuppiSession', label: 'Session', value: filters.kuppiSession },
+    { key: 'linkDeliveryStatus', label: 'Delivery', value: filters.linkDeliveryStatus },
+    { key: 'registrationReference', label: 'Registration', value: filters.registrationReference },
+    { key: 'paymentReference', label: 'Payment', value: filters.paymentReference },
+    { key: 'dateFrom', label: 'From', value: filters.dateFrom },
+    { key: 'dateTo', label: 'To', value: filters.dateTo },
+    {
+      key: 'sort',
+      label: 'Sort',
+      value:
+        filters.sortBy !== 'createdAt' || filters.sortOrder !== 'desc'
+          ? `${filters.sortBy} ${filters.sortOrder}`
+          : '',
+    },
+  ]
+
+  function handleRemoveChip(key) {
+    if (key === 'sort') {
+      updateFilters({ sortBy: 'createdAt', sortOrder: 'desc' })
+      return
+    }
+
+    updateFilters({ [key]: '' })
   }
 
   async function handleSendConfirm() {
@@ -224,8 +281,19 @@ export default function DashboardPage() {
                 onSearchChange={(search) => updateFilters({ search })}
                 onSessionChange={(kuppiSession) => updateFilters({ kuppiSession })}
                 onStatusChange={(linkDeliveryStatus) => updateFilters({ linkDeliveryStatus })}
+                onRegistrationReferenceChange={(registrationReference) =>
+                  updateFilters({ registrationReference })
+                }
+                onPaymentReferenceChange={(paymentReference) =>
+                  updateFilters({ paymentReference })
+                }
+                onDateFromChange={(dateFrom) => updateFilters({ dateFrom })}
+                onDateToChange={(dateTo) => updateFilters({ dateTo })}
+                onSortByChange={(sortBy) => updateFilters({ sortBy })}
+                onSortOrderChange={(sortOrder) => updateFilters({ sortOrder })}
                 onReset={handleReset}
               />
+              <ActiveFilterChips chips={filterChips} onRemove={handleRemoveChip} />
 
               {isRefreshingList ? (
                 <LoadingState />

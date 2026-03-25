@@ -1,13 +1,40 @@
 import { z } from 'zod'
+import { sanitizeSearchValue } from '../utils/validation.js'
 
 export const adminEnrollmentQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
-  search: z.string().trim().optional().default(''),
+  search: z
+    .string()
+    .optional()
+    .default('')
+    .transform((value) => sanitizeSearchValue(value)),
   kuppiSession: z.string().trim().optional().default(''),
   linkDeliveryStatus: z
     .enum(['pending', 'sent', 'failed'])
     .optional()
     .or(z.literal(''))
     .default(''),
+  dateFrom: z.string().trim().optional().or(z.literal('')).default(''),
+  dateTo: z.string().trim().optional().or(z.literal('')).default(''),
+  paymentReference: z.string().trim().optional().default(''),
+  registrationReference: z.string().trim().optional().default(''),
+  sortBy: z
+    .enum(['createdAt', 'updatedAt', 'linkSentAt'])
+    .optional()
+    .default('createdAt'),
+  sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 })
+  .refine(
+    (value) => {
+      if (!value.dateFrom || !value.dateTo) {
+        return true
+      }
+
+      return new Date(value.dateFrom) <= new Date(value.dateTo)
+    },
+    {
+      message: 'dateFrom cannot be after dateTo.',
+      path: ['dateFrom'],
+    },
+  )

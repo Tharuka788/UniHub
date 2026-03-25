@@ -6,6 +6,7 @@ import {
   getClassOfferings,
   updateClassOffering,
 } from '../api/admin'
+import ActiveFilterChips from '../components/ActiveFilterChips'
 import Button from '../components/Button'
 import DataTable from '../components/DataTable'
 import DeleteConfirmModal from '../components/DeleteConfirmModal'
@@ -261,6 +262,30 @@ export default function ClassOfferingsPage() {
     { key: 'actions', label: 'Actions' },
   ]
 
+  const filterChips = [
+    { key: 'search', label: 'Search', value: filters.search },
+    { key: 'status', label: 'Status', value: filters.status },
+    {
+      key: 'isArchived',
+      label: 'Archive',
+      value:
+        filters.isArchived === 'true'
+          ? 'Archived only'
+          : filters.isArchived === 'false'
+            ? 'Active only'
+            : '',
+    },
+  ]
+
+  function handleRemoveChip(key) {
+    if (key === 'isArchived') {
+      updateFilters({ isArchived: '' })
+      return
+    }
+
+    updateFilters({ [key]: '' })
+  }
+
   return (
     <>
       <section className="rounded-[2rem] border border-white/60 bg-white/75 p-6 shadow-panel backdrop-blur sm:p-8">
@@ -317,6 +342,7 @@ export default function ClassOfferingsPage() {
             </div>
           </div>
         </FilterPanel>
+        <ActiveFilterChips chips={filterChips} onRemove={handleRemoveChip} />
 
         {isLoading ? (
           <LoadingState />

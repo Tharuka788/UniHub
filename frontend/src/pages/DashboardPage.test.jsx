@@ -135,7 +135,7 @@ describe('DashboardPage', () => {
   it('updates enrollment API queries when filters change', async () => {
     render(<DashboardPage />)
 
-    const searchInput = await screen.findByPlaceholderText('Search by name or email')
+    const searchInput = await screen.findByLabelText('Search student')
     fireEvent.change(searchInput, {
       target: { value: 'nimal' },
     })
@@ -144,6 +144,18 @@ describe('DashboardPage', () => {
       expect(
         getEnrollments.mock.calls.some(
           ([query]) => query && query.search === 'nimal',
+        ),
+      ).toBe(true)
+    })
+
+    fireEvent.change(screen.getByLabelText('Payment reference'), {
+      target: { value: 'PAY-9001' },
+    })
+
+    await waitFor(() => {
+      expect(
+        getEnrollments.mock.calls.some(
+          ([query]) => query && query.paymentReference === 'PAY-9001',
         ),
       ).toBe(true)
     })
