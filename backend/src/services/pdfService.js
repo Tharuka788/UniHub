@@ -74,7 +74,7 @@ function renderClassOfferingSummaryReport(doc, report) {
     doc,
     report.exportRows,
     (row) =>
-      `${row.title} | ${row.kuppiSession} | Status: ${row.status} | Confirmed: ${row.confirmedCount} | Sent: ${row.sentCount} | Failed: ${row.failedCount}`,
+      `${row.title} | ${row.kuppiSession} | Status: ${row.status} | Readiness: ${row.readiness.label} (${row.readiness.score}/100) | Confirmed: ${row.confirmedCount} | Sent: ${row.sentCount} | Failed: ${row.failedCount}`,
   )
 }
 

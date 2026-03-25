@@ -9,6 +9,7 @@ import EmptyState from '../components/EmptyState'
 import FilterPanel from '../components/FilterPanel'
 import LoadingState from '../components/LoadingState'
 import PageHeader from '../components/PageHeader'
+import ReadinessBadge from '../components/ReadinessBadge'
 import Toast from '../components/Toast'
 import { usePersistentState } from '../hooks/usePersistentState'
 import { formatDateTime } from '../utils/formatters'
@@ -319,6 +320,20 @@ export default function ReportsPage() {
               ))}
             </div>
 
+            {summary.readinessSummary ? (
+              <div className="grid gap-4 md:grid-cols-3">
+                <PreviewCard label="Ready" value={summary.readinessSummary.ready} />
+                <PreviewCard
+                  label="Almost Ready"
+                  value={summary.readinessSummary.almostReady}
+                />
+                <PreviewCard
+                  label="Needs Setup"
+                  value={summary.readinessSummary.needsSetup}
+                />
+              </div>
+            ) : null}
+
             <PreviewList
               title="Preview rows"
               items={summary.previewRows}
@@ -334,6 +349,11 @@ export default function ReportsPage() {
                   <p className="mt-1">
                     {item.email || item.kuppiSession || item.status || item.subject}
                   </p>
+                  {item.readiness ? (
+                    <div className="mt-3">
+                      <ReadinessBadge readiness={item.readiness} />
+                    </div>
+                  ) : null}
                 </div>
               )}
             />

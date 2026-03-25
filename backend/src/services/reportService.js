@@ -2,6 +2,7 @@ import { ClassOffering } from '../models/ClassOffering.js'
 import { DispatchLog } from '../models/DispatchLog.js'
 import { Enrollment } from '../models/Enrollment.js'
 import { createHttpError } from '../utils/http.js'
+import { calculateReadiness } from './classOfferingService.js'
 
 const reportTitles = {
   'confirmed-students': 'Confirmed Students Report',
@@ -277,6 +278,13 @@ async function buildClassOfferingSummaryReport(query) {
         }),
       ])
 
+      const readiness = calculateReadiness({
+        offering,
+        confirmedCount,
+        failedDispatchCount: failedCount,
+        dispatchAttemptCount: sentCount + failedCount,
+      })
+
       return {
         title: offering.title,
         kuppiSession: offering.kuppiSession,
@@ -284,6 +292,7 @@ async function buildClassOfferingSummaryReport(query) {
         confirmedCount,
         sentCount,
         failedCount,
+        readiness,
       }
     }),
   )
@@ -306,6 +315,11 @@ async function buildClassOfferingSummaryReport(query) {
         value: rows.reduce((sum, row) => sum + row.confirmedCount, 0),
       },
     ],
+    readinessSummary: {
+      ready: rows.filter((row) => row.readiness.label === 'Ready').length,
+      almostReady: rows.filter((row) => row.readiness.label === 'Almost Ready').length,
+      needsSetup: rows.filter((row) => row.readiness.label === 'Needs Setup').length,
+    },
     previewRows: rows.slice(0, 10),
     exportRows: rows,
   }
@@ -337,6 +351,7 @@ export async function getReportSummary(query) {
     filters: report.filters,
     totalRows: report.totalRows,
     metrics: report.metrics,
+    readinessSummary: report.readinessSummary || null,
     previewRows: report.previewRows || [],
     failedRecipients: report.failedRecipients || [],
     recentDispatches: report.recentDispatches || [],

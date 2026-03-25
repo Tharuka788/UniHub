@@ -6,7 +6,12 @@ import { createHttpError } from '../utils/http.js'
 import { escapeRegex } from '../utils/validation.js'
 import { ensureClassOfferingExists } from './classOfferingService.shared.js'
 
-function buildReadiness({ offering, confirmedCount, failedDispatchCount, dispatchAttemptCount }) {
+export function calculateReadiness({
+  offering,
+  confirmedCount,
+  failedDispatchCount,
+  dispatchAttemptCount,
+}) {
   let score = 0
 
   if (offering.classLink) {
@@ -47,7 +52,7 @@ function buildReadiness({ offering, confirmedCount, failedDispatchCount, dispatc
 }
 
 function serializeClassOffering(offering, metrics = {}) {
-  const readiness = buildReadiness({
+  const readiness = calculateReadiness({
     offering,
     confirmedCount: metrics.confirmedEnrollmentCount || 0,
     failedDispatchCount: metrics.failedDispatchCount || 0,

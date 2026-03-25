@@ -17,6 +17,7 @@ import FilterPanel from '../components/FilterPanel'
 import LoadingState from '../components/LoadingState'
 import PageHeader from '../components/PageHeader'
 import PaginationControls from '../components/PaginationControls'
+import ReadinessBadge from '../components/ReadinessBadge'
 import SearchBar from '../components/SearchBar'
 import StatusBadge from '../components/StatusBadge'
 import Toast from '../components/Toast'
@@ -69,6 +70,9 @@ function OfferingCard({ item, onView, onEdit, onArchive }) {
         <p>Students: {item.linkedStudentCount}</p>
         <p>Dispatch attempts: {item.dispatchAttemptCount}</p>
         <p>Start: {formatDateTime(item.startDateTime, 'Not scheduled')}</p>
+      </div>
+      <div className="mt-4">
+        <ReadinessBadge readiness={item.readiness} />
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
         <Button variant="subtle" onClick={() => onView(item.id)}>
@@ -290,6 +294,21 @@ export default function ClassOfferingsPage() {
     },
   ]
 
+  const readinessSummary = listState.items.reduce(
+    (summary, item) => {
+      if (item.readiness?.label === 'Ready') {
+        summary.ready += 1
+      } else if (item.readiness?.label === 'Almost Ready') {
+        summary.almostReady += 1
+      } else {
+        summary.needsSetup += 1
+      }
+
+      return summary
+    },
+    { ready: 0, almostReady: 0, needsSetup: 0 },
+  )
+
   function handleRemoveChip(key) {
     if (key === 'isArchived') {
       updateFilters({ isArchived: '' })
@@ -357,6 +376,14 @@ export default function ClassOfferingsPage() {
         </FilterPanel>
         <ActiveFilterChips chips={filterChips} onRemove={handleRemoveChip} />
 
+        {!isLoading && !pageError && listState.items.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-3">
+            <DetailField label="Ready" value={String(readinessSummary.ready)} />
+            <DetailField label="Almost Ready" value={String(readinessSummary.almostReady)} />
+            <DetailField label="Needs Setup" value={String(readinessSummary.needsSetup)} />
+          </div>
+        ) : null}
+
         {isLoading ? (
           <LoadingState />
         ) : pageError ? (
@@ -378,7 +405,10 @@ export default function ClassOfferingsPage() {
                     <p className="mt-1 text-ink-500">{item.kuppiSession}</p>
                   </td>
                   <td className="px-5 py-4">
-                    <StatusBadge value={item.isArchived ? 'archived' : item.status} />
+                    <div className="space-y-3">
+                      <StatusBadge value={item.isArchived ? 'archived' : item.status} />
+                      <ReadinessBadge readiness={item.readiness} />
+                    </div>
                   </td>
                   <td className="px-5 py-4">{item.linkedStudentCount}</td>
                   <td className="px-5 py-4">
@@ -506,13 +536,13 @@ export default function ClassOfferingsPage() {
               <DetailField label="Status" value={detailItem.isArchived ? 'Archived' : detailItem.status} />
               <DetailField label="Linked students" value={String(detailItem.linkedStudentCount)} />
               <DetailField label="Dispatch attempts" value={String(detailItem.dispatchAttemptCount)} />
-              <DetailField label="Readiness score" value={`${detailItem.readiness.score}/100`} />
               <DetailField label="Class link" value={detailItem.classLink || 'No class link'} />
               <DetailField
                 label="Start time"
                 value={formatDateTime(detailItem.startDateTime, 'Not scheduled')}
               />
             </div>
+            <ReadinessBadge readiness={detailItem.readiness} />
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
                 Linked enrollments
