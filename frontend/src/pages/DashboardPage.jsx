@@ -58,6 +58,48 @@ export default function DashboardPage() {
     { label: 'Failed', value: summary?.totalFailedSends ?? 0, tone: 'neutral' },
   ]
 
+  const adminPriorities = [
+    !selectedSession
+      ? {
+          title: 'Choose a dispatch session',
+          description:
+            'Select a class offering to preview recipients and enable the class-link send action.',
+          tone: 'bg-ocean-50 text-ocean-500',
+        }
+      : {
+          title: `${String(dispatchPreviewCount).padStart(2, '0')} students ready for dispatch`,
+          description:
+            dispatchPreviewCount > 0
+              ? 'This session still has pending or failed deliveries that can be sent from the dashboard.'
+              : 'This session has no pending recipients right now, so the delivery queue is clear.',
+          tone: dispatchPreviewCount > 0 ? 'bg-sand-100 text-ink-900' : 'bg-mint-100 text-mint-600',
+        },
+    (summary?.totalFailedSends ?? 0) > 0
+      ? {
+          title: 'Review failed deliveries',
+          description: `${summary?.totalFailedSends ?? 0} delivery attempts need attention. Check the affected session and resend after verifying the class link.`,
+          tone: 'bg-coral-100 text-coral-600',
+        }
+      : {
+          title: 'Delivery health looks stable',
+          description:
+            'No failed send attempts are currently blocking the admin workflow.',
+          tone: 'bg-mint-100 text-mint-600',
+        },
+    (summary?.totalPendingLinkSends ?? 0) > 0
+      ? {
+          title: 'Pending queue still needs action',
+          description: `${summary?.totalPendingLinkSends ?? 0} confirmed enrollments are still waiting for a class link.`,
+          tone: 'bg-sand-100 text-ink-900',
+        }
+      : {
+          title: 'Confirmed students are up to date',
+          description:
+            'There are no pending class-link sends across the current dashboard totals.',
+          tone: 'bg-ocean-50 text-ocean-500',
+        },
+  ]
+
   const loadDispatchPreview = useCallback(async (session) => {
     if (!session) {
       setDispatchPreviewCount(0)
@@ -245,8 +287,8 @@ export default function DashboardPage() {
         ))}
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
-        <div className="space-y-5 rounded-[2rem] border border-white/60 bg-white/80 p-6 shadow-panel">
+      <section className="grid gap-6 xl:grid-cols-12">
+        <div className="min-w-0 space-y-5 rounded-[2rem] border border-white/60 bg-white/80 p-6 shadow-panel xl:col-span-7 2xl:col-span-8">
           <div className="flex flex-col gap-3 border-b border-slate-200/70 pb-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
@@ -315,7 +357,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="space-y-5">
+        <div className="space-y-5 xl:col-span-5 2xl:col-span-4">
           <div className="rounded-[2rem] border border-white/60 bg-white/80 p-6 shadow-panel">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
               Dispatch target
@@ -341,10 +383,26 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <EmptyState
-            title="Reusable UI is in place"
-            description="Status badges, filters, table views, modal confirmation, and toast feedback are all isolated so the next step can focus on API wiring."
-          />
+          <div className="rounded-[1.75rem] border border-white/60 bg-white/80 p-6 shadow-panel">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-ink-500">
+              Admin priorities
+            </p>
+            <div className="mt-4 space-y-4">
+              {adminPriorities.map((priority) => (
+                <article
+                  key={priority.title}
+                  className="rounded-[1.5rem] border border-slate-200/70 bg-white/70 p-4"
+                >
+                  <div
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] ${priority.tone}`}
+                  >
+                    {priority.title}
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-ink-700">{priority.description}</p>
+                </article>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 

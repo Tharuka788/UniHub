@@ -26,8 +26,8 @@ export default function LoginPage({ onSubmit, isSubmitting, errorMessage }) {
 
   return (
     <main className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-        <section className="rounded-[2.5rem] border border-white/65 bg-white/55 p-8 shadow-panel backdrop-blur sm:p-10">
+      <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-stretch">
+        <section className="flex h-full flex-col rounded-[2.5rem] border border-white/65 bg-white/55 p-8 shadow-panel backdrop-blur sm:p-10">
           <p className="text-xs font-bold uppercase tracking-[0.32em] text-ocean-500">
             Admin Access
           </p>
@@ -35,33 +35,11 @@ export default function LoginPage({ onSubmit, isSubmitting, errorMessage }) {
             Sign in to manage confirmed students, sessions, and class-link dispatch.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-ink-700">
-            This workspace now protects the admin subsystem with backend environment
-            variables. Use the credentials configured through `ADMIN_USERNAME` and
-            `ADMIN_PASSWORD`.
+            Enter your admin credentials to continue to the Kuppi management workspace.
           </p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            <article className="rounded-[1.75rem] bg-ocean-50 px-5 py-4">
-              <p className="text-sm font-semibold text-ink-900">Env-driven</p>
-              <p className="mt-2 text-sm leading-6 text-ink-700">
-                Credentials are verified on the backend, not hardcoded into the UI.
-              </p>
-            </article>
-            <article className="rounded-[1.75rem] bg-sand-100 px-5 py-4">
-              <p className="text-sm font-semibold text-ink-900">Cookie session</p>
-              <p className="mt-2 text-sm leading-6 text-ink-700">
-                Successful sign-in creates a lightweight admin session for protected API access.
-              </p>
-            </article>
-            <article className="rounded-[1.75rem] bg-white/85 px-5 py-4">
-              <p className="text-sm font-semibold text-ink-900">Same workflow</p>
-              <p className="mt-2 text-sm leading-6 text-ink-700">
-                Dashboard, CRUD, reports, and dispatch continue to work behind the same gate.
-              </p>
-            </article>
-          </div>
         </section>
 
-        <section className="rounded-[2.25rem] border border-white/70 bg-white/80 p-7 shadow-panel backdrop-blur sm:p-8">
+        <section className="flex h-full flex-col rounded-[2.25rem] border border-white/70 bg-white/80 p-7 shadow-panel backdrop-blur sm:p-8">
           <div className="flex flex-col gap-2">
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-ocean-500">
               Admin Login
@@ -72,7 +50,7 @@ export default function LoginPage({ onSubmit, isSubmitting, errorMessage }) {
             </p>
           </div>
 
-          <form className="mt-8 flex flex-col gap-5" onSubmit={handleSubmit}>
+          <form className="mt-8 flex flex-1 flex-col gap-5" onSubmit={handleSubmit}>
             <label className="flex flex-col gap-2 text-sm font-medium text-ink-900">
               Username
               <input
@@ -107,7 +85,11 @@ export default function LoginPage({ onSubmit, isSubmitting, errorMessage }) {
               </div>
             ) : null}
 
-            <Button type="submit" disabled={isSubmitting} className="w-full justify-center">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="mt-auto w-full justify-center"
+            >
               {isSubmitting ? 'Signing in...' : 'Sign in'}
             </Button>
           </form>
