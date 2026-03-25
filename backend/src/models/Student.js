@@ -1,4 +1,8 @@
 import mongoose from 'mongoose'
+import {
+  isNonNumericName,
+  sriLankanPhonePattern,
+} from '../utils/validation.js'
 
 const studentSchema = new mongoose.Schema(
   {
@@ -6,27 +10,74 @@ const studentSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      minlength: 3,
+      validate: {
+        validator: isNonNumericName,
+        message: 'Full name cannot be purely numeric.',
+      },
     },
     email: {
       type: String,
       required: true,
-      unique: true,
-      lowercase: true,
       trim: true,
+      lowercase: true,
     },
     phone: {
       type: String,
       trim: true,
       default: '',
+      validate: {
+        validator(value) {
+          if (!value) {
+            return true
+          }
+
+          return sriLankanPhonePattern.test(value)
+        },
+        message: 'Phone must be a valid Sri Lankan local or international number.',
+      },
     },
     studentCode: {
       type: String,
       trim: true,
       default: '',
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+      index: true,
+    },
+    deactivatedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
+  },
+)
+
+studentSchema.index(
+  { email: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      isActive: true,
+    },
+  },
+)
+
+studentSchema.index(
+  { studentCode: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      isActive: true,
+      studentCode: {
+        $exists: true,
+        $ne: '',
+      },
+    },
   },
 )
 

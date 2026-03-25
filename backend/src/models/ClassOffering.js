@@ -28,6 +28,15 @@ const classOfferingSchema = new mongoose.Schema(
       enum: ['draft', 'ready', 'active', 'completed'],
       default: 'ready',
     },
+    isArchived: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    archivedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

@@ -4,6 +4,8 @@ const badgeStyles = {
   pending: 'bg-sand-100 text-ink-900',
   sent: 'bg-mint-100 text-mint-600',
   failed: 'bg-coral-100 text-coral-600',
+  active: 'bg-mint-100 text-mint-600',
+  inactive: 'bg-slate-200 text-slate-700',
 }
 
 export default function StatusBadge({ value }) {

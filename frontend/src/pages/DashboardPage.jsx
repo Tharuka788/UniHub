@@ -17,7 +17,6 @@ import StudentTable from '../components/StudentTable'
 import Toast from '../components/Toast'
 import { isStandaloneMode } from '../app/runtimeMode'
 import { usePersistentState } from '../hooks/usePersistentState'
-import AppShell from '../layouts/AppShell'
 
 export default function DashboardPage() {
   const [filters, setFilters] = usePersistentState('kuppi-dashboard-filters', {
@@ -174,7 +173,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <AppShell>
+    <>
       <section className="rounded-[2rem] border border-white/60 bg-white/75 p-6 shadow-panel backdrop-blur sm:p-8">
         <PageHeader
           eyebrow="Kuppi System"
@@ -291,6 +290,6 @@ export default function DashboardPage() {
       />
 
       <Toast toast={toast} onClose={() => setToast(null)} />
-    </AppShell>
+    </>
   )
 }
