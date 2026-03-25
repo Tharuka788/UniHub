@@ -12,7 +12,10 @@ Student confirmation dashboard and class link dispatch module built as a MERN-st
 
 - confirmed enrollment ingestion from an upstream registration/payment flow
 - admin summary dashboard and filtered enrollment listing
+- explicit student CRUD management
 - class offering management
+- report-center preview and PDF downloads
+- readiness scoring for class-offering operations
 - one-by-one class-link dispatch with delivery logging
 - `standalone` and `integrated` runtime modes
 - deterministic seed data and automated test coverage
@@ -54,8 +57,10 @@ npm run lint
 ## Documentation
 
 - [Plan](Documentation/PLAN.md)
+- [Amendment Plan](Documentation/AMENDMENT_PLAN.md)
 - [Architecture](Documentation/ARCHITECTURE.md)
 - [API Contract](Documentation/API_CONTRACT.md)
+- [Data Model](Documentation/DATA_MODEL.md)
 - [Setup](Documentation/SETUP.md)
 - [Seeding](Documentation/SEEDING.md)
 - [Integration Guide](Documentation/INTEGRATION_GUIDE.md)

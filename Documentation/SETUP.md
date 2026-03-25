@@ -34,6 +34,8 @@ Key values:
 - `MONGODB_URI=mongodb://localhost:27017/class_link_manager`
 - `EMAIL_PROVIDER=console`
 - `ALLOW_MOCK_SYNC=true`
+- `ENFORCE_CLASS_LINK_DOMAIN_POLICY=false`
+- `CLASS_LINK_ALLOWED_DOMAINS=meet.google.com`
 
 ### Frontend
 
@@ -68,3 +70,12 @@ npm run lint --prefix frontend
 npm run test --prefix frontend
 npm run build --prefix frontend
 ```
+
+## Amendment Verification
+
+Use the same commands above after amendment work. The current branch also verifies:
+
+- admin student CRUD
+- admin class-offering CRUD + archive
+- report preview and PDF download flows
+- readiness badge rendering in class-offering UI

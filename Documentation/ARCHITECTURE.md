@@ -8,9 +8,9 @@ The project is a small monorepo with a React admin frontend and an Express/Mongo
 
 - `frontend/src/app`: runtime configuration helpers
 - `frontend/src/api`: HTTP client and admin API functions
-- `frontend/src/components`: reusable UI primitives and dashboard widgets
+- `frontend/src/components`: reusable UI primitives, tables, filters, modals, and readiness widgets
 - `frontend/src/layouts`: page shell
-- `frontend/src/pages`: screen-level composition
+- `frontend/src/pages`: dashboard, students, class offerings, and reports screens
 - `frontend/src/hooks`: persisted UI state helpers
 - `frontend/src/features/students`: local feature-only data helpers
 
@@ -22,7 +22,7 @@ The project is a small monorepo with a React admin frontend and an Express/Mongo
 - `backend/src/middlewares`: request validation, integration auth, and error handling
 - `backend/src/models`: Mongoose domain models
 - `backend/src/routes`: admin, integration, and health routing
-- `backend/src/services`: business logic for ingestion, dashboard reads, mail, and dispatch
+- `backend/src/services`: business logic for ingestion, CRUD, reports, mail, readiness, and dispatch
 - `backend/src/utils`: shared HTTP errors, logging, and response formatting
 - `backend/src/validations`: zod request schemas
 
@@ -43,6 +43,14 @@ The project is a small monorepo with a React admin frontend and an Express/Mongo
 2. Backend query validation normalizes pagination and filter values
 3. Dashboard services query MongoDB models and shape frontend-friendly responses
 4. Frontend renders summary cards, filters, table rows, and pagination
+
+### Admin CRUD and reporting
+
+1. Students and class offerings use dedicated CRUD routes under `/api/admin`
+2. Zod validation normalizes body/query input before services run
+3. Services enforce business rules such as unique active emails, archived edit restrictions, and report filter validation
+4. Reports use a preview endpoint and a PDF endpoint backed by `pdfkit`
+5. Frontend surfaces inline validation errors, filter chips, and downloadable report actions
 
 ### Class-link dispatch
 
@@ -71,6 +79,8 @@ The project is a small monorepo with a React admin frontend and an Express/Mongo
 
 - confirmed student state lives in the backend, not in the UI
 - student, class offering, enrollment, and dispatch log are separate collections
+- student deactivation and class-offering archive flows preserve operational history
 - controllers stay thin and delegate to services
 - request validation happens before services
+- validation happens in UI, Zod schemas, and Mongoose validators
 - both modes use the same UI and endpoint shapes

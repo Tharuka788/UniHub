@@ -36,17 +36,30 @@ npm run dev
 
 - summary cards with mixed statuses
 - filter by session
-- search by student name/email
+- search across student, class, and reference fields
 - review sent, pending, and failed deliveries
 
-### 6. Trigger class-link dispatch
+### 6. Show the CRUD modules
+
+- open `Students` and demonstrate search plus deactivation state
+- open `Class Offerings` and show archive-aware management
+- highlight readiness badges for ready, almost-ready, and needs-setup states
+
+### 7. Show the report center
+
+- open `Reports`
+- switch between confirmed-students and dispatch-summary reports
+- change the date range to show preview updates
+- download a PDF report
+
+### 8. Trigger class-link dispatch
 
 - choose a session
 - click `Send class link`
 - confirm the modal
 - show the success/failure toast
 
-### 7. Explain standalone behavior
+### 9. Explain standalone behavior
 
 - no special demo labels are shown in the UI
 - console mail transport is used for safe local demonstration

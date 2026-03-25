@@ -132,6 +132,7 @@ describe('confirmed enrollment ingestion flow', () => {
       expect.objectContaining({
         statusCode: 400,
         message: 'Request body validation failed.',
+        errorCode: 'VALIDATION_ERROR',
         details: expect.arrayContaining([
           expect.objectContaining({
             path: 'fullName',

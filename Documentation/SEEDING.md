@@ -16,9 +16,11 @@ npm run seed:standalone
 
 - connects to MongoDB
 - upserts a base dataset
-- creates 2 class offerings
-- creates 5 confirmed paid enrollments
-- creates dispatch logs for pre-seeded `sent` and `failed` entries
+- creates 5 class offerings
+- creates 7 confirmed paid enrollments
+- includes an archived class offering and an inactive student example
+- covers readiness labels for `Ready`, `Almost Ready`, and `Needs Setup`
+- creates dispatch logs with mixed history for report previews
 
 ### `npm run seed:reset`
 
@@ -29,9 +31,10 @@ npm run seed:standalone
 
 - clears all related collections
 - loads the presentation dataset
-- creates 3 class offerings
-- creates 10 confirmed paid enrollments
+- creates 6 class offerings
+- creates 13 confirmed paid enrollments
 - includes mixed `pending`, `sent`, and `failed` delivery states
+- includes multiple date variations for report filtering and PDF demos
 
 ## Demo Dataset Notes
 
@@ -39,8 +42,10 @@ The standalone dataset includes:
 
 - realistic Sri Lankan names
 - multiple kuppi sessions
+- explicit active, inactive, archived, and draft examples
 - already-sent class links
 - failed dispatch examples for dashboard realism
+- readiness states across all three labels
 
 ## Troubleshooting
 

@@ -12,12 +12,15 @@ Fields:
 - `email`
 - `phone`
 - `studentCode`
+- `isActive`
+- `deactivatedAt`
 - `createdAt`
 - `updatedAt`
 
 Indexes:
 
-- unique `email`
+- partial unique `email` for active students
+- partial unique `studentCode` for active students when present
 
 ### `classofferings`
 
@@ -30,12 +33,15 @@ Fields:
 - `classLink`
 - `startDateTime`
 - `status`
+- `isArchived`
+- `archivedAt`
 - `createdAt`
 - `updatedAt`
 
 Indexes:
 
 - unique `kuppiSession`
+- `isArchived`
 
 ### `enrollments`
 
@@ -95,6 +101,11 @@ Indexes:
 ### Class offering
 
 - `status`: `draft`, `ready`, `active`, `completed`
+
+## Derived Read Models
+
+- class-offering list/detail responses include a computed readiness object: `score` + `label`
+- report summary responses can include `readinessSummary` for class-offering reports
 
 ## Sample Enrollment Document
 
