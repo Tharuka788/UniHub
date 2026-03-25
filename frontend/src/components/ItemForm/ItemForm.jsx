@@ -71,7 +71,11 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
               <div className="lf-card" key={match._id || idx}>
                 <div className="lf-card-image-placeholder">
                   {match.image ? (
-                    <img src={`http://localhost:5050${match.image}`} alt={match.title} className="lf-card-img" />
+                    <img 
+                      src={match.image.startsWith('http') ? match.image : `http://localhost:5050${match.image}`} 
+                      alt={match.title} 
+                      className="lf-card-img" 
+                    />
                   ) : (
                     '📦'
                   )}
@@ -149,7 +153,7 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
               type="file" 
               accept="image/*" 
               onChange={handleImageChange} 
-              className="file-input"
+              className="lf-file-input"
             />
           </div>
 

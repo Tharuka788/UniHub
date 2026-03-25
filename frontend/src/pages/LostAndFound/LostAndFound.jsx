@@ -63,7 +63,11 @@ const LostAndFound = () => {
                 <div className="lf-card" key={item._id}>
                   <div className="lf-card-image-placeholder">
                     {item.image ? (
-                      <img src={`http://localhost:5050${item.image}`} alt={item.title} className="lf-card-img" />
+                      <img 
+                        src={item.image.startsWith('http') ? item.image : `http://localhost:5050${item.image}`} 
+                        alt={item.title} 
+                        className="lf-card-img" 
+                      />
                     ) : (
                       '📦'
                     )}
