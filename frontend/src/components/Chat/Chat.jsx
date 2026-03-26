@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { Send, User as UserIcon, ShieldQuestion } from 'lucide-react';
 import './Chat.css';
 

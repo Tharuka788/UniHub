@@ -7,7 +7,7 @@ const connectDB = require('./config/db');
 // Route imports
 const itemRoutes = require('./routes/lost-and-found/itemRoutes');
 const paymentRoutes = require('./routes/payment/paymentRoutes');
-const adminRoutes = require('./routes/admin/adminRoutes');
+const adminRoutes = require('./admin/routes/adminRoutes');
 
 const http = require('http');
 const { Server } = require('socket.io');
