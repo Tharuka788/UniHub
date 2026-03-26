@@ -7,6 +7,10 @@ import ItemForm from './components/ItemForm/ItemForm';
 import PaymentForm from './components/PaymentForm/PaymentForm';
 import PaymentHistory from './components/PaymentHistory/PaymentHistory';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
+import SubmitTicket from './pages/Support/SubmitTicket';
+import MyTickets from './pages/Support/MyTickets';
+import AdminSupportLogin from './pages/Support/AdminLogin';
+import AdminTicketDashboard from './pages/Support/AdminTicketDashboard';
 import './index.css';
 
 function App() {
@@ -26,6 +30,10 @@ function App() {
             <Route path="/pay" element={<PaymentForm />} />
             <Route path="/payments" element={<PaymentHistory />} />
             <Route path="/admin/payments" element={<AdminDashboard />} />
+            <Route path="/support/submit" element={<SubmitTicket />} />
+            <Route path="/support/my-tickets" element={<MyTickets />} />
+            <Route path="/admin/support-login" element={<AdminSupportLogin />} />
+            <Route path="/admin/support-tickets" element={<AdminTicketDashboard />} />
           </Routes>
         </main>
       </div>

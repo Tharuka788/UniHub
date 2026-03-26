@@ -20,6 +20,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/items', itemRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/support/tickets', require('./routes/support/ticketRoutes'));
+app.use('/api/support/admin', require('./routes/support/adminRoutes'));
 
 // Connect to Database
 connectDB().then(() => {

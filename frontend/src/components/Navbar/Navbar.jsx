@@ -10,6 +10,9 @@ const Navbar = () => {
     { name: 'Lost & Found', path: '/lost-and-found' },
     { name: 'Payments', path: '/payments' },
     { name: 'Admin (Payments)', path: '/admin/payments' },
+    { name: 'Support', path: '/support/submit' },
+    { name: 'My Tickets', path: '/support/my-tickets' },
+    { name: 'Admin (Support)', path: '/admin/support-login' },
     { name: 'Events', path: '/events' },
     { name: 'Updates', path: '/updates' },
     { name: 'Profile', path: '/profile' }
