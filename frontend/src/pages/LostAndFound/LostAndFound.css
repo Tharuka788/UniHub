@@ -1,7 +1,6 @@
 .lf-container {
-  max-width: 1250px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  padding: 1rem 0;
   font-family: 'Inter', -apple-system, sans-serif;
   color: #1e293b;
   background-color: #ffffff;
