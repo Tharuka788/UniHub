@@ -31,6 +31,12 @@ const Dashboard = () => {
           <h3>Upcoming Events</h3>
           <p>Stay up to date with the latest workshops, seminars, and student gatherings in uni.</p>
         </div>
+
+        <div className="card" onClick={() => navigate('/kuppi-request')} style={{ cursor: "pointer" }}>
+    <div className="card-icon">📚</div>
+    <h3>Request Kuppi Session</h3>
+    <p>Batch representatives can request special academic support sessions for their batch.</p>
+  </div>
       </section>
     </div>
   );
