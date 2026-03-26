@@ -35,3 +35,10 @@
   font-weight: bold;
   cursor: pointer;
 }
+
+.kuppi-message {
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--text-main);
+  font-weight: 600;
+}

@@ -1,11 +1,17 @@
 const express = require("express");
 const router = express.Router();
+
+const multer = require("multer");
+const { storage } = require("../../config/cloudinary");
+
+const upload = multer({ storage });
+
 const {
-  getAllKuppiRequests,
   createKuppiRequest,
+  getAllKuppiRequests,
 } = require("../../controllers/kuppi/kuppiRequestController");
 
 router.get("/", getAllKuppiRequests);
-router.post("/", createKuppiRequest);
+router.post("/", upload.single("letter"), createKuppiRequest);
 
 module.exports = router;
