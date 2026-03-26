@@ -3,29 +3,79 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const connectDB = require('./config/db');
+
+// Route imports
 const itemRoutes = require('./routes/lost-and-found/itemRoutes');
 const paymentRoutes = require('./routes/payment/paymentRoutes');
+const adminRoutes = require('./routes/admin/adminRoutes');
+
+const http = require('http');
+const { Server } = require('socket.io');
 
 // Initialize the Express app
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve the uploads folder statically
+// Socket.io logic
+const Message = require('./models/chat/Message');
+
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  socket.on('join_room', (roomId) => {
+    socket.join(roomId);
+    console.log(`User joined room: ${roomId}`);
+  });
+
+  socket.on('send_message', async (data) => {
+    // data: { roomId, sender, receiver, itemId, content }
+    try {
+      const newMessage = await Message.create({
+        sender: data.sender,
+        receiver: data.receiver,
+        itemId: data.itemId,
+        content: data.content
+      });
+      
+      io.to(data.roomId).emit('receive_message', {
+        ...data,
+        id: newMessage._id,
+        createdAt: newMessage.createdAt
+      });
+    } catch (err) {
+      console.error('Error saving message:', err);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
+// Serve the uploads folder statically (legacy support)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/items', itemRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Connect to Database
 connectDB().then(() => {
   // Start the server after DB connection
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  const PORT = process.env.PORT || 5050;
+  server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }).catch(err => {
-  console.error('Failed to string to DB', err);
+  console.error('Failed to connect to DB', err);
 });

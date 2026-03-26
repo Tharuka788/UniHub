@@ -37,4 +37,32 @@ const admin = (req, res, next) => {
   }
 };
 
-module.exports = { protect, admin };
+const loadUser = async (req, res, next) => {
+  let token;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    try {
+      token = req.headers.authorization.split(' ')[1];
+
+      if (token === 'mock-jwt-token') {
+        req.user = { id: 'mockUserId123', isAdmin: false };
+        return next();
+      }
+      if (token === 'mock-jwt-admin-token') {
+        req.user = { id: 'mockAdminId123', isAdmin: true };
+        return next();
+      }
+
+      const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
+      const decoded = jwt.verify(token, JWT_SECRET);
+      req.user = decoded;
+      next();
+    } catch (error) {
+      // Don't block, just don't set req.user
+      next();
+    }
+  } else {
+    next();
+  }
+};
+
+module.exports = { protect, admin, loadUser };
