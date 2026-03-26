@@ -23,10 +23,23 @@ const itemSchema = new mongoose.Schema(
       type: [Number],
       required: false,
     },
+    location: {
+      type: String,
+      required: [true, 'Please add a location']
+    },
     itemType: {
       type: String,
-      enum: ['Lost', 'Found'],
-      required: [true, 'Please specify if the item is Lost or Found']
+      enum: ['Lost', 'Found', 'Reclaimed'],
+      required: [true, 'Please specify if the item is Lost, Found or Reclaimed']
+    },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: false // Optional for now to avoid breaking existing items
+    },
+    isContactShared: {
+      type: Boolean,
+      default: false
     }
   },
   {
