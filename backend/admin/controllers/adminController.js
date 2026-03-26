@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const Admin = require('../../models/admin/Admin');
+const Admin = require('../models/Admin');
 
 // @desc    Auth admin & get token
 // @route   POST /api/admin/login
