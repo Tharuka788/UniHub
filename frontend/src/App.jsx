@@ -7,6 +7,8 @@ import ItemForm from './components/ItemForm/ItemForm';
 import PaymentForm from './components/PaymentForm/PaymentForm';
 import PaymentHistory from './components/PaymentHistory/PaymentHistory';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
+import KuppiRequest from './pages/KuppiRequest/KuppiRequest';
+import AdminKuppiRequests from './pages/AdminKuppiRequests/AdminKuppiRequests';
 import './index.css';
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
             <Route path="/pay" element={<PaymentForm />} />
             <Route path="/payments" element={<PaymentHistory />} />
             <Route path="/admin/payments" element={<AdminDashboard />} />
+            <Route path="/kuppi-request" element={<KuppiRequest />} />
+            <Route path="/admin-kuppi" element={<AdminKuppiRequests />} />
           </Routes>
         </main>
       </div>
