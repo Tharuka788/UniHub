@@ -13,6 +13,7 @@ const paymentRoutes = require('./routes/payment/paymentRoutes');
 const kuppiRequestRoutes = require('./routes/kuppi/kuppiRequestRoutes');
 const adminRoutes = require('./admin/routes/adminRoutes');
 const userRoutes = require('./routes/user/userRoutes');
+const ticketRoutes = require('./routes/support/ticketRoutes');
 
 // Models
 const Message = require('./models/chat/Message');
@@ -76,6 +77,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/kuppi', kuppiRequestRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
+app.use('/admin-support', ticketRoutes);
 
 // Connect to Database
 connectDB()
