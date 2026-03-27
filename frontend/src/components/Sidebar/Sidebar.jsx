@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { 
   LayoutDashboard, 
   Search, 
@@ -8,12 +9,15 @@ import {
   User, 
   Settings,
   Circle,
-  CreditCard
+  CreditCard,
+  ShieldCheck
 } from 'lucide-react';
 import './Sidebar.css';
 
 const Sidebar = () => {
   const location = useLocation();
+  const { user } = useAuth();
+  const isAdmin = user?.isAdmin;
 
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -23,7 +27,11 @@ const Sidebar = () => {
     { name: 'Support Tickets', path: '/support', icon: Ticket },
     { name: 'Profile', path: '/profile', icon: User },
     { name: 'Settings', path: '/settings', icon: Settings },
-    { name: 'Admin Dashboard', path: '/admin-dashboard', icon: LayoutDashboard },
+  ];
+
+  const adminItems = [
+    { name: 'Manage Kuppi', path: '/admin-kuppi', icon: BookOpen },
+    { name: 'Manage Payments', path: '/admin/payments', icon: ShieldCheck },
   ];
 
   return (
@@ -44,6 +52,27 @@ const Sidebar = () => {
               key={item.name}
               to={item.path}
               className={`nav-link ${isActive ? 'active' : ''}`}
+            >
+              <Icon size={20} className="nav-icon" />
+              <span>{item.name}</span>
+            </Link>
+          );
+        })}
+
+        {isAdmin && (
+          <div className="sidebar-divider">
+            <span>Admin</span>
+          </div>
+        )}
+
+        {isAdmin && adminItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = location.pathname === item.path;
+          return (
+            <Link
+              key={item.name}
+              to={item.path}
+              className={`nav-link admin-nav-link ${isActive ? 'active' : ''}`}
             >
               <Icon size={20} className="nav-icon" />
               <span>{item.name}</span>

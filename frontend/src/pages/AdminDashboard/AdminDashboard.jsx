@@ -1,187 +1,316 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import {
-  BookOpen,
-  Clock3,
-  CheckCircle2,
-  LayoutDashboard,
+import { 
+  BookOpen, 
+  CheckCircle, 
+  Clock, 
+  XCircle, 
+  DollarSign, 
+  FileText, 
+  Users, 
   ArrowRight,
-  CreditCard,
+  Eye,
+  AlertCircle,
+  TrendingUp,
   Search,
-  Ticket,
-  CalendarDays
+  Filter
 } from 'lucide-react';
-import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [kuppiRequests, setKuppiRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  const fetchKuppiRequests = async () => {
+  const [payments, setPayments] = useState([]);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [remarksInput, setRemarksInput] = useState({});
+  const [actionLoading, setActionLoading] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const fetchPayments = async (pageNum = 1) => {
+    setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5050/api/kuppi');
-      setKuppiRequests(response.data || []);
-    } catch (error) {
-      console.error('Error fetching kuppi requests:', error);
+      const res = await axios.get(`http://localhost:5050/api/payments?page=${pageNum}&limit=6`, {
+        headers: { Authorization: 'Bearer mock-jwt-admin-token' }
+      });
+      setPayments(res.data.payments);
+      setTotalPages(res.data.pages);
+      setPage(res.data.page);
+      setTotalRecords(res.data.total || res.data.payments.length);
+    } catch (err) {
+      setError('Unable to fetch records.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchKuppiRequests();
-  }, []);
+    fetchPayments(page);
+  }, [page]);
 
-  const totalRequests = kuppiRequests.length;
-  const pendingRequests = kuppiRequests.filter((r) => r.status === 'pending').length;
-  const approvedRequests = kuppiRequests.filter((r) => r.status === 'approved').length;
-  const latestRequest =
-    kuppiRequests.length > 0
-      ? new Date(kuppiRequests[0].createdAt).toLocaleDateString()
-      : 'No requests yet';
+  const stats = useMemo(() => {
+    const pending = payments.filter(p => p.status === 'pending').length;
+    const approved = payments.filter(p => p.status === 'approved').length;
+    return {
+      total: totalRecords,
+      pending: pending,
+      approved: approved,
+      revenue: payments.reduce((acc, curr) => curr.status === 'approved' ? acc + curr.amount : acc, 0)
+    };
+  }, [payments, totalRecords]);
 
-  const moduleCards = [
-    {
-      title: 'Kuppi Requests',
-      desc: 'Review, approve and schedule Kuppi requests.',
-      icon: BookOpen,
-      action: () => navigate('/admin-kuppi'),
-      actionText: 'Manage Now',
-      colorClass: 'purple'
-    },
-    {
-      title: 'Payment Module',
-      desc: 'Reserved space for payment administration.',
-      icon: CreditCard,
-      action: () => navigate('/admin-payments'),
-      actionText: 'Open Module',
-      colorClass: 'blue'
-    },
-    {
-      title: 'Lost & Found Module',
-      desc: 'Reserved space for lost and found administration.',
-      icon: Search,
-      action: () => navigate('/admin-lost-found'),
-      actionText: 'Open Module',
-      colorClass: 'green'
-    },
-    {
-      title: 'Support Module',
-      desc: 'Reserved space for support ticket handling.',
-      icon: Ticket,
-      action: () => navigate('/admin-support'),
-      actionText: 'Open Module',
-      colorClass: 'orange'
-    },
-    {
-      title: 'Event Module',
-      desc: 'Reserved space for event and update management.',
-      icon: CalendarDays,
-      action: () => navigate('/admin-events'),
-      actionText: 'Open Module',
-      colorClass: 'pink'
+  const handleStatusUpdate = async (id, status) => {
+    const remarks = remarksInput[id] || '';
+    setActionLoading(id);
+    try {
+      await axios.put(
+        `http://localhost:5050/api/payments/${id}`,
+        { status, remarks },
+        { headers: { Authorization: 'Bearer mock-jwt-admin-token' } }
+      );
+      fetchPayments(page);
+      setRemarksInput({ ...remarksInput, [id]: '' });
+    } catch (err) {
+      alert('Error updating status.');
+    } finally {
+      setActionLoading(null);
     }
-  ];
+  };
 
   return (
-    <div className="admin-layout">
-      <AdminSidebar />
+    <div className="admin-dashboard-container animate-fade-in">
+      <div className="max-w-7xl mx-auto">
+        
+        {/* Header */}
+        <header className="admin-header animate-slide-up stagger-1">
+          <div className="header-title">
+            <h1>Financial Review Board</h1>
+            <p>Monitor and validate student payment submissions</p>
+          </div>
+          <div className="header-actions">
+            <button
+              onClick={() => navigate('/admin-kuppi')}
+              className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-800 transition-all hover:-translate-y-0.5"
+            >
+              <BookOpen size={18} />
+              Manage Kuppi
+            </button>
+          </div>
+        </header>
 
-      <main className="admin-main-content">
-        <div className="admin-dashboard-page">
-          <div className="admin-dashboard-header">
-            <div>
-              <h1>Admin Dashboard</h1>
-              <p>Overall summary of all university service modules.</p>
+        {/* Stats Grid */}
+        <section className="stats-grid-admin animate-slide-up stagger-2">
+          <div className="admin-stat-card">
+            <div className="stat-icon-box total">
+              <Users size={24} />
+            </div>
+            <div className="stat-info">
+              <h4>Total Records</h4>
+              <span className="stat-value">{stats.total}</span>
+            </div>
+          </div>
+          
+          <div className="admin-stat-card">
+            <div className="stat-icon-box pending">
+              <Clock size={24} />
+            </div>
+            <div className="stat-info">
+              <h4>Pending Review</h4>
+              <span className="stat-value">{stats.pending}</span>
             </div>
           </div>
 
-          <div className="admin-summary-grid">
-            <div className="admin-summary-card gradient-blue">
-              <div className="summary-icon">
-                <LayoutDashboard size={20} />
-              </div>
-              <h3>Total Kuppi Requests</h3>
-              <p className="summary-value">{loading ? '...' : totalRequests}</p>
+          <div className="admin-stat-card">
+            <div className="stat-icon-box approved">
+              <CheckCircle size={24} />
             </div>
-
-            <div className="admin-summary-card gradient-yellow">
-              <div className="summary-icon pending">
-                <Clock3 size={20} />
-              </div>
-              <h3>Pending Requests</h3>
-              <p className="summary-value">{loading ? '...' : pendingRequests}</p>
-            </div>
-
-            <div className="admin-summary-card gradient-green">
-              <div className="summary-icon approved">
-                <CheckCircle2 size={20} />
-              </div>
-              <h3>Approved Requests</h3>
-              <p className="summary-value">{loading ? '...' : approvedRequests}</p>
-            </div>
-
-            <div className="admin-summary-card gradient-purple">
-              <div className="summary-icon">
-                <BookOpen size={20} />
-              </div>
-              <h3>Latest Request</h3>
-              <p className="summary-value small">{loading ? '...' : latestRequest}</p>
+            <div className="stat-info">
+              <h4>Approved Total</h4>
+              <span className="stat-value">{stats.approved}</span>
             </div>
           </div>
 
-          <div className="admin-main-card">
-            <div className="section-top">
-              <div>
-                <h2>Kuppi Requests Management</h2>
-                <p>Quick access to review and manage submitted Kuppi requests.</p>
-              </div>
+          <div className="admin-stat-card">
+            <div className="stat-icon-box total" style={{background: '#f8fafc', color: '#1a3646'}}>
+              <TrendingUp size={24} />
+            </div>
+            <div className="stat-info">
+              <h4>Page Revenue</h4>
+              <span className="stat-value">${stats.revenue.toFixed(2)}</span>
+            </div>
+          </div>
+        </section>
 
-              <button
-                className="admin-action-btn"
-                onClick={() => navigate('/admin-kuppi')}
+        {/* Table Panel */}
+        <div className="payments-table-panel animate-slide-up stagger-3">
+          {error && (
+            <div className="p-4 bg-rose-50 text-rose-700 flex items-center gap-3 border-b border-rose-100 font-bold text-sm">
+              <AlertCircle size={20} />
+              {error}
+            </div>
+          )}
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead className="table-header-modern">
+                <tr>
+                  <th>Student & Date</th>
+                  <th>Payment Details</th>
+                  <th className="text-center">Verification Slip</th>
+                  <th className="text-center">Status</th>
+                  <th className="text-right">Review Action</th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y divide-slate-100">
+                {loading ? (
+                  <tr>
+                    <td colSpan="5" className="py-20 text-center">
+                      <div className="inline-flex flex-col items-center gap-3">
+                        <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Loading records...</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : payments.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="py-20 text-center">
+                      <div className="flex flex-col items-center gap-2 text-slate-400">
+                        <FileText size={48} strokeWidth={1} />
+                        <p className="font-bold text-sm">No payment records found.</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  payments.map((payment) => (
+                    <tr key={payment._id} className="payment-row group">
+                      <td className="td-content">
+                        <div className="student-info">
+                          <div className="student-avatar">
+                            {payment.userId.substring(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <span className="student-name">{payment.userId}</span>
+                            <span className="student-date">{new Date(payment.createdAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="td-content">
+                        <div className="amount-value">${payment.amount.toFixed(2)}</div>
+                        <span className="payment-for-tag">{payment.paymentFor}</span>
+                      </td>
+
+                      <td className="td-content text-center">
+                        <img
+                          src={`http://localhost:5050/${payment.slipImage}`}
+                          alt="Slip"
+                          className="slip-thumbnail mx-auto"
+                          onClick={() => setSelectedImage(`http://localhost:5050/${payment.slipImage}`)}
+                          onError={(e) => { e.target.src = 'https://via.placeholder.com/150?text=Error'; }}
+                        />
+                      </td>
+
+                      <td className="td-content text-center">
+                        <span className={`status-chip ${payment.status}`}>
+                          {payment.status === 'approved' && <CheckCircle size={12} />}
+                          {payment.status === 'rejected' && <XCircle size={12} />}
+                          {payment.status === 'pending' && <Clock size={12} className="animate-spin-slow" />}
+                          {payment.status}
+                        </span>
+                      </td>
+
+                      <td className="td-content text-right">
+                        {payment.status === 'pending' ? (
+                          <div className="action-pane opacity-0 group-hover:opacity-100 transition-opacity">
+                            <input
+                              type="text"
+                              className="remarks-input"
+                              placeholder="Add reviewer notes..."
+                              value={remarksInput[payment._id] || ''}
+                              onChange={(e) => setRemarksInput({ ...remarksInput, [payment._id]: e.target.value })}
+                            />
+                            <div className="action-buttons">
+                              <button
+                                onClick={() => handleStatusUpdate(payment._id, 'approved')}
+                                disabled={actionLoading === payment._id}
+                                className="btn-action btn-approve"
+                              >
+                                {actionLoading === payment._id ? '...' : 'Approve'}
+                              </button>
+                              <button
+                                onClick={() => handleStatusUpdate(payment._id, 'rejected')}
+                                disabled={actionLoading === payment._id}
+                                className="btn-action btn-reject"
+                              >
+                                {actionLoading === payment._id ? '...' : 'Reject'}
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="remarks-display">
+                            <span className="note-label">Reviewer Note:</span>
+                            <span className="note-text">{payment.remarks || 'No remarks provided.'}</span>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="bg-slate-50 p-4 flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Page <span className="text-slate-900">{page}</span> of {totalPages}
+              </span>
+              <div className="flex gap-1">
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPage(i + 1)}
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
+                      page === i + 1 
+                        ? 'bg-indigo-600 text-white shadow-md' 
+                        : 'bg-white text-slate-500 hover:bg-slate-100 border border-slate-200'
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div className="image-modal-overlay" onClick={() => setSelectedImage(null)}>
+          <div className="modal-content-box" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-btn" onClick={() => setSelectedImage(null)}>
+              <XCircle size={32} />
+            </button>
+            <img src={selectedImage} alt="Payment Verification Slip" />
+            <div className="p-4 bg-slate-50 mt-2 rounded flex justify-between items-center">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Verification Slip View</span>
+              <button 
+                className="text-xs font-bold text-indigo-600 hover:underline"
+                onClick={() => window.open(selectedImage, '_blank')}
               >
-                Manage Kuppi Requests
-                <ArrowRight size={16} />
+                Open in new tab
               </button>
             </div>
-
-            <div className="mini-stats">
-              <div className="mini-stat-box">
-                <span className="mini-label">Total</span>
-                <span className="mini-number">{loading ? '...' : totalRequests}</span>
-              </div>
-              <div className="mini-stat-box">
-                <span className="mini-label">Pending</span>
-                <span className="mini-number">{loading ? '...' : pendingRequests}</span>
-              </div>
-              <div className="mini-stat-box">
-                <span className="mini-label">Approved</span>
-                <span className="mini-number">{loading ? '...' : approvedRequests}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="admin-placeholder-grid">
-            {moduleCards.map((card) => {
-              const Icon = card.icon;
-              return (
-                <div key={card.title} className={`admin-module-card ${card.colorClass}`}>
-                  <div className="module-icon-wrap">
-                    <Icon size={20} />
-                  </div>
-                  <h3>{card.title}</h3>
-                  <p>{card.desc}</p>
-                  <button onClick={card.action}>{card.actionText}</button>
-                </div>
-              );
-            })}
           </div>
         </div>
-      </main>
+      )}
     </div>
   );
 };

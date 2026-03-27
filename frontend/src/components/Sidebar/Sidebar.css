@@ -78,4 +78,42 @@
   color: var(--primary-color);
 }
 
+.sidebar-divider {
+  margin: 1.5rem 0 0.75rem;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-divider span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #a0aec0;
+  background-color: #fff;
+  padding-right: 0.75rem;
+}
+
+.sidebar-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #edf2f7;
+}
+
+.admin-nav-link:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.admin-nav-link.active {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.admin-nav-link.active .nav-icon {
+  color: #dc2626;
+}
+
 /* Dark mode overrides removed for consistent light theme */
