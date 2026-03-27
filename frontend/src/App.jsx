@@ -53,12 +53,27 @@ function StudentApp() {
             <Route path="/item/:id" element={<ItemDetails />} />
             <Route path="/report-lost" element={<ItemForm formType="Lost" />} />
             <Route path="/report-found" element={<ItemForm formType="Found" />} />
-            <Route path="/events" element={<div style={{padding: '4rem', textAlign: 'center'}}>Events Page (Dummy)</div>} />
-            <Route path="/updates" element={<div style={{padding: '4rem', textAlign: 'center'}}>Updates Page (Dummy)</div>} />
-            <Route path="/profile" element={<div style={{padding: '4rem', textAlign: 'center'}}>Profile Page (Dummy)</div>} />
+            <Route
+              path="/events"
+              element={
+                <div style={{ padding: '4rem', textAlign: 'center' }}>
+                  Events Page (Dummy)
+                </div>
+              }
+            />
+            <Route
+              path="/updates"
+              element={
+                <div style={{ padding: '4rem', textAlign: 'center' }}>
+                  Updates Page (Dummy)
+                </div>
+              }
+            />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/pay" element={<PaymentForm />} />
             <Route path="/payments" element={<PaymentHistory />} />
-            <Route path="/AdminDashboard" element={<AdminDashboard />} />
+            <Route path="/kuppi-request" element={<KuppiRequest />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
       </div>
@@ -230,7 +245,7 @@ function App() {
     <Router>
       {isAdminPath ? <AdminApp /> : <StudentApp />}
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
