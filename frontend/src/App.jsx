@@ -36,6 +36,7 @@ function App() {
               <Route path="/admin/payments" element={<AdminDashboard />} />
               <Route path="/kuppi-request" element={<KuppiRequest />} />
               <Route path="/admin-kuppi" element={<AdminKuppiRequests />} />
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
             </Routes>
           </div>
         </div>
