@@ -21,7 +21,7 @@ const Sidebar = () => {
     { name: 'Support Tickets', path: '/support', icon: Ticket },
     { name: 'Profile', path: '/profile', icon: User },
     { name: 'Settings', path: '/settings', icon: Settings },
-    { name: 'Admin Kuppi Requests', path: '/admin-kuppi', icon: BookOpen },
+    { name: 'Admin Dashboard', path: '/admin-dashboard', icon: LayoutDashboard },
   ];
 
   return (
