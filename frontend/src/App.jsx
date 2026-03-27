@@ -73,7 +73,7 @@ function App() {
     <Router>
       <AppLayout />
     </Router>
-  );
+  )
 }
 
-export default App;
+export default App

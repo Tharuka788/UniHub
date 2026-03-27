@@ -68,3 +68,55 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+@theme {
+  --font-sans: "Segoe UI", sans-serif;
+  --color-ocean-50: #f3f8fb;
+  --color-ocean-100: #d8e8f2;
+  --color-ocean-500: #2b7490;
+  --color-ink-900: #142033;
+  --color-ink-700: #46596f;
+  --color-ink-500: #718397;
+  --color-sand-100: #fff8ef;
+  --color-sand-300: #f3d6a8;
+  --color-mint-100: #def5eb;
+  --color-mint-600: #207451;
+  --color-coral-100: #fde4e1;
+  --color-coral-600: #b74735;
+  --shadow-panel: 0 20px 55px rgba(20, 32, 51, 0.12);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    color: var(--color-ink-900);
+    background: #eff4f7;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background:
+      radial-gradient(circle at top left, rgba(43, 116, 144, 0.18), transparent 26%),
+      linear-gradient(180deg, #f8fbfc 0%, #e7eef2 100%);
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+}
