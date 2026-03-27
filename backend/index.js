@@ -8,6 +8,7 @@ const connectDB = require('./config/db');
 const itemRoutes = require('./routes/lost-and-found/itemRoutes');
 const paymentRoutes = require('./routes/payment/paymentRoutes');
 const adminRoutes = require('./admin/routes/adminRoutes');
+const userRoutes = require('./routes/user/userRoutes');
 
 const http = require('http');
 const { Server } = require('socket.io');
@@ -70,6 +71,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/items', itemRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/users', userRoutes);
 
 // Connect to Database
 connectDB().then(() => {
