@@ -88,7 +88,6 @@ function AdminLayout() {
       <Route path="/admin-dashboard" element={<MainAdminDashboard />} />
       <Route path="/admin-kuppi" element={<AdminKuppiRequests />} />
       <Route path="/admin/payments" element={<PaymentAdminDashboard />} />
-
       <Route
         path="/admin-profile"
         element={<PlaceholderPage title="Admin Profile" />}
@@ -105,7 +104,6 @@ function AdminLayout() {
         path="/admin-events"
         element={<PlaceholderPage title="Event Module" />}
       />
-
       <Route path="*" element={<Navigate to="/admin-dashboard" />} />
     </Routes>
   );
