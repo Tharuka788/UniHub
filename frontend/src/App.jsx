@@ -21,7 +21,12 @@ import AdminKuppiRequests from './pages/AdminKuppiRequests/AdminKuppiRequests';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import Profile from './pages/Profile/Profile';
+import AdminLogin from './pages/support/AdminLogin';
+import AdminTicketDashboard from './pages/support/AdminTicketDashboard';
+import MyTickets from './pages/support/MyTickets';
+import SubmitTicket from './pages/support/SubmitTicket';
 import { useAuth } from './context/AuthContext';
+
 
 import './index.css';
 import './App.css';
@@ -78,6 +83,7 @@ function StudentLayout() {
   );
 }
 
+
 function AdminLayout() {
   return (
     <Routes>
@@ -87,8 +93,10 @@ function AdminLayout() {
       <Route path="/admin-profile" element={<PlaceholderPage title="Admin Profile" />} />
       <Route path="/admin-payments" element={<PlaceholderPage title="Payment Module" />} />
       <Route path="/admin-lost-found" element={<PlaceholderPage title="Lost & Found Module" />} />
-      <Route path="/admin-support" element={<PlaceholderPage title="Support Module" />} />
       <Route path="/admin-events" element={<PlaceholderPage title="Event Module" />} />
+      <Route path="/admin-support" element={<AdminTicketDashboard />} />
+      <Route path="/admin-support/tickets" element={<MyTickets />} />
+      <Route path="/admin-support/create" element={<SubmitTicket />} />
       <Route path="*" element={<Navigate to="/admin-dashboard" />} />
     </Routes>
   );
@@ -101,19 +109,11 @@ const AppRouter = () => {
   const isAuthPage =
     location.pathname === '/login' || location.pathname === '/register';
 
-  const isAdminRoute =
-    location.pathname.startsWith('/admin-dashboard') ||
-    location.pathname.startsWith('/admin-kuppi') ||
-    location.pathname.startsWith('/admin-profile') ||
-    location.pathname.startsWith('/admin-payments') ||
-    location.pathname.startsWith('/admin-lost-found') ||
-    location.pathname.startsWith('/admin-support') ||
-    location.pathname.startsWith('/admin-events') ||
-    location.pathname.startsWith('/admin/payments');
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
-  if (!isAuthenticated && !isAuthPage) {
-    return <Navigate to="/login" />;
-  }
+  if (!isAuthenticated && !isAuthPage && !location.pathname.startsWith('/admin')) {
+  return <Navigate to="/login" />;
+}
 
   if (isAuthPage) {
     return (

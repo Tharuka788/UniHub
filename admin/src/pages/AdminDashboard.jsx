@@ -72,7 +72,7 @@ const AdminDashboard = ({ logout }) => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <StatCard title="Total Revenue" value="$12,450" color="bg-indigo-50 text-indigo-700" />
+          <StatCard title="Total Revenue" value="LKR12,450" color="bg-indigo-50 text-indigo-700" />
           <StatCard title="Pending Payments" value="23" color="bg-amber-50 text-amber-700" />
           <StatCard title="Found Items" value="156" color="bg-emerald-50 text-emerald-700" />
         </div>
@@ -99,7 +99,7 @@ const AdminDashboard = ({ logout }) => {
                     payments.slice(0, 5).map((pay) => (
                         <tr key={pay._id} className="hover:bg-slate-50 transition-colors">
                             <td className="py-4 px-4 font-semibold">{pay.userId}</td>
-                            <td className="py-4 px-4 font-bold text-slate-900">${pay.amount}</td>
+                            <td className="py-4 px-4 font-bold text-slate-900">LKR{pay.amount}</td>
                             <td className="py-4 px-4 text-dim text-sm">{new Date(pay.createdAt).toLocaleDateString()}</td>
                             <td className="py-4 px-4">
                                 <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${pay.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>

@@ -48,7 +48,7 @@ const Dashboard = () => {
         { label: 'Open Tickets Status', value: 'Normal', color: '#3b82f6' }
       ],
       buttonText: 'Create Ticket',
-      onClick: () => navigate('/support')
+      onClick: () => navigate('/admin-support/create')
     }
   ];
 
