@@ -21,6 +21,8 @@ import AdminKuppiRequests from './pages/AdminKuppiRequests/AdminKuppiRequests';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import Profile from './pages/Profile/Profile';
+import AdminLostFound from './pages/AdminLostFound/AdminLostFound';
+import AdminPayments from './pages/AdminPayments/AdminPayments';
 import { useAuth } from './context/AuthContext';
 
 import './index.css';
@@ -83,10 +85,9 @@ function AdminLayout() {
     <Routes>
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="/admin-kuppi" element={<AdminKuppiRequests />} />
-      <Route path="/admin/payments" element={<AdminDashboard />} />
-      <Route path="/admin-profile" element={<PlaceholderPage title="Admin Profile" />} />
-      <Route path="/admin-payments" element={<PlaceholderPage title="Payment Module" />} />
-      <Route path="/admin-lost-found" element={<PlaceholderPage title="Lost & Found Module" />} />
+      <Route path="/admin-payments" element={<AdminPayments />} />
+      <Route path="/admin/payments" element={<AdminPayments />} />
+      <Route path="/admin-lost-found" element={<AdminLostFound />} />
       <Route path="/admin-support" element={<PlaceholderPage title="Support Module" />} />
       <Route path="/admin-events" element={<PlaceholderPage title="Event Module" />} />
       <Route path="*" element={<Navigate to="/admin-dashboard" />} />

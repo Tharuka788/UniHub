@@ -30,8 +30,7 @@ const Sidebar = () => {
   ];
 
   const adminItems = [
-    { name: 'Manage Kuppi', path: '/admin-kuppi', icon: BookOpen },
-    { name: 'Manage Payments', path: '/admin/payments', icon: ShieldCheck },
+    { name: 'Admin Dashboard', path: '/admin-dashboard', icon: ShieldCheck },
   ];
 
   return (

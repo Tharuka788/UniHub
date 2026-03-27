@@ -151,8 +151,8 @@ const updateItem = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    // Check for ownership
-    if (item.owner && item.owner.toString() !== req.user.id) {
+    // Check for ownership or admin status
+    if (item.owner && item.owner.toString() !== req.user.id && !req.user.isAdmin) {
       return res.status(401).json({ message: 'Not authorized to update this item' });
     }
 
@@ -181,8 +181,8 @@ const deleteItem = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    // Check for ownership
-    if (item.owner && item.owner.toString() !== req.user.id) {
+    // Check for ownership or admin status
+    if (item.owner && item.owner.toString() !== req.user.id && !req.user.isAdmin) {
       return res.status(401).json({ message: 'Not authorized to delete this item' });
     }
 

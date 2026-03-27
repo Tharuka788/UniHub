@@ -20,7 +20,7 @@ const AdminSidebar = () => {
     { name: 'Admin Profile', path: '/admin-profile', icon: User },
     { name: 'Manage Kuppi Requests', path: '/admin-kuppi', icon: BookOpen },
     { name: 'Payment Module', path: '/admin-payments', icon: CreditCard },
-    { name: 'Lost & Found Module', path: '/admin-lost-found', icon: Search },
+    { name: 'Manage Lost & Found', path: '/admin-lost-found', icon: Search },
     { name: 'Support Module', path: '/admin-support', icon: Ticket },
     { name: 'Event Module', path: '/admin-events', icon: CalendarDays },
   ];
