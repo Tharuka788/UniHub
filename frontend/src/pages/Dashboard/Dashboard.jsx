@@ -66,10 +66,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-content animate-fade-in">
-      <div className="welcome-section">
-        <h1 className="welcome-title">Welcome back, Tharuka! 👋</h1>
-        <p className="welcome-subtitle">Here's your overview for today. You have 2 upcoming Kuppi sessions.</p>
-      </div>
+
 
       <div className="stats-grid">
         {stats.map((stat) => (
