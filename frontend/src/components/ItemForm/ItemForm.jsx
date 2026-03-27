@@ -8,6 +8,7 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
   const [formData, setFormData] = useState({
     title: '',
     category: '',
+    location: '',
     description: '',
   });
   const [image, setImage] = useState(null);
@@ -32,6 +33,7 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
     const data = new FormData();
     data.append('title', formData.title);
     data.append('category', formData.category);
+    data.append('location', formData.location);
     data.append('description', formData.description);
     data.append('itemType', formType);
     if (image) {
@@ -61,41 +63,42 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
 
   if (showMatches) {
     return (
-      <div className="item-form-wrapper">
-        <div className="item-form-container matches-container" style={{ maxWidth: '800px' }}>
-          <h2>Potential Matches Found! 🎯</h2>
-          <p className="form-subtitle">We found some items that look similar to the one you just reported.</p>
-          
-          <div className="lf-grid" style={{ marginTop: '20px' }}>
-            {suggestedMatches.map((match, idx) => (
-              <div className="lf-card" key={match._id || idx}>
-                <div className="lf-card-image-placeholder">
-                  {match.image ? (
-                    <img 
-                      src={match.image.startsWith('http') ? match.image : `http://localhost:5050${match.image}`} 
-                      alt={match.title} 
-                      className="lf-card-img" 
-                    />
-                  ) : (
-                    '📦'
-                  )}
-                </div>
-                <div className="lf-card-body">
-                  <span className="lf-badge">{match.category}</span>
-                  <h3>{match.title}</h3>
-                  <p>{match.description}</p>
-                  <div className="lf-card-footer">
-                    <small>Match: {Math.round(match.similarityScore * 100)}%</small>
-                    <button className="lf-btn-small" onClick={() => navigate('/lost-and-found')}>View Details</button>
-                  </div>
-                </div>
+      <div className="lf-container">
+        <div className="lf-header-new">
+          <div className="lf-header-text">
+            <h1>Potential Matches Found! 🎯</h1>
+            <p>We found some items that look similar to the one you just reported. Is it one of these?</p>
+          </div>
+        </div>
+        
+        <div className="lf-items-grid">
+          {suggestedMatches.map((match, idx) => (
+            <div className="lf-item-card" key={match._id || idx}>
+              <div className="lf-card-img-container">
+                {match.image ? (
+                  <img 
+                    src={match.image.startsWith('http') ? match.image : `http://localhost:5050${match.image}`} 
+                    alt={match.title} 
+                  />
+                ) : (
+                  <div className="lf-img-placeholder">📦</div>
+                )}
+                <span className="lf-card-badge badge-found">Found</span>
               </div>
-            ))}
-          </div>
+              <div className="lf-card-info">
+                <span className="lf-card-category">{match.category}</span>
+                <h3 className="lf-card-title">{match.title}</h3>
+                <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '1rem' }}>Match: {Math.round(match.similarityScore * 100)}%</p>
+                <button className="lf-view-details" onClick={() => navigate('/lost-and-found')}>
+                  View Details
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
 
-          <div className="form-actions" style={{ marginTop: '30px', justifyContent: 'center' }}>
-            <button type="button" className="btn-submit" onClick={() => navigate('/lost-and-found')}>Go to Dashboard</button>
-          </div>
+        <div className="form-actions" style={{ marginTop: '30px', justifyContent: 'center', display: 'flex' }}>
+          <button type="button" className="lf-btn-report lost" onClick={() => navigate('/lost-and-found')}>Go to Dashboard</button>
         </div>
       </div>
     );
@@ -129,8 +132,25 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
               <option value="Electronics">Electronics</option>
               <option value="Bags">Bags</option>
               <option value="Documents">Documents/IDs</option>
-              <option value="Wallet">Wallet</option>
+              <option value="Books">Books</option>
+              <option value="Clothing">Clothing</option>
               <option value="Keys">Keys</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Location</label>
+            <select name="location" value={formData.location} onChange={handleChange} required>
+              <option value="" disabled>Select a location</option>
+              <option value="Library">Library</option>
+              <option value="Engineering Faculty">Engineering Faculty</option>
+              <option value="Canteen">Canteen</option>
+              <option value="Gym">Gym</option>
+              <option value="Hostel">Hostel</option>
+              <option value="Computing Faculty">Computing Faculty</option>
+              <option value="Science Faculty">Science Faculty</option>
+              <option value="Main Hall">Main Hall</option>
               <option value="Other">Other</option>
             </select>
           </div>
