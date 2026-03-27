@@ -1,5 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+} from 'react-router-dom';
+
 import Sidebar from './components/Sidebar/Sidebar';
 import TopBar from './components/TopBar/TopBar';
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -15,31 +22,22 @@ import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import Profile from './pages/Profile/Profile';
 import { useAuth } from './context/AuthContext';
+
 import './index.css';
 import './App.css';
 
-const AppLayout = () => {
-  const { isAuthenticated } = useAuth();
-  const location = useLocation();
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+const PlaceholderPage = ({ title }) => (
+  <div style={{ padding: '2rem' }}>
+    <h1 style={{ fontSize: '2rem', fontWeight: '700', color: '#1f2937' }}>
+      {title}
+    </h1>
+    <p style={{ marginTop: '0.75rem', color: '#6b7280' }}>
+      This module page is reserved for future development.
+    </p>
+  </div>
+);
 
-  // If not authenticated and not on an auth page, redirect to login
-  if (!isAuthenticated && !isAuthPage) {
-    return <Navigate to="/login" />;
-  }
-
-  // If on an auth page, show only the content (no sidebar/topbar)
-  if (isAuthPage) {
-    return (
-      <div className="auth-wrapper">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
-      </div>
-    );
-  }
-
+function StudentLayout() {
   return (
     <div className="app-container">
       <Sidebar />
@@ -52,29 +50,91 @@ const AppLayout = () => {
             <Route path="/item/:id" element={<ItemDetails />} />
             <Route path="/report-lost" element={<ItemForm formType="Lost" />} />
             <Route path="/report-found" element={<ItemForm formType="Found" />} />
-            <Route path="/events" element={<div style={{padding: '4rem', textAlign: 'center'}}>Events Page (Dummy)</div>} />
-            <Route path="/updates" element={<div style={{padding: '4rem', textAlign: 'center'}}>Updates Page (Dummy)</div>} />
+            <Route
+              path="/events"
+              element={
+                <div style={{ padding: '4rem', textAlign: 'center' }}>
+                  Events Page (Dummy)
+                </div>
+              }
+            />
+            <Route
+              path="/updates"
+              element={
+                <div style={{ padding: '4rem', textAlign: 'center' }}>
+                  Updates Page (Dummy)
+                </div>
+              }
+            />
             <Route path="/profile" element={<Profile />} />
             <Route path="/pay" element={<PaymentForm />} />
             <Route path="/payments" element={<PaymentHistory />} />
-            <Route path="/AdminDashboard" element={<AdminDashboard />} />
-            <Route path="/admin/payments" element={<AdminDashboard />} />
             <Route path="/kuppi-request" element={<KuppiRequest />} />
-            <Route path="/admin-kuppi" element={<AdminKuppiRequests />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
       </div>
     </div>
   );
+}
+
+function AdminLayout() {
+  return (
+    <Routes>
+      <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      <Route path="/admin-kuppi" element={<AdminKuppiRequests />} />
+      <Route path="/admin/payments" element={<AdminDashboard />} />
+      <Route path="/admin-profile" element={<PlaceholderPage title="Admin Profile" />} />
+      <Route path="/admin-payments" element={<PlaceholderPage title="Payment Module" />} />
+      <Route path="/admin-lost-found" element={<PlaceholderPage title="Lost & Found Module" />} />
+      <Route path="/admin-support" element={<PlaceholderPage title="Support Module" />} />
+      <Route path="/admin-events" element={<PlaceholderPage title="Event Module" />} />
+      <Route path="*" element={<Navigate to="/admin-dashboard" />} />
+    </Routes>
+  );
+}
+
+const AppRouter = () => {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  const isAuthPage =
+    location.pathname === '/login' || location.pathname === '/register';
+
+  const isAdminRoute =
+    location.pathname.startsWith('/admin-dashboard') ||
+    location.pathname.startsWith('/admin-kuppi') ||
+    location.pathname.startsWith('/admin-profile') ||
+    location.pathname.startsWith('/admin-payments') ||
+    location.pathname.startsWith('/admin-lost-found') ||
+    location.pathname.startsWith('/admin-support') ||
+    location.pathname.startsWith('/admin-events') ||
+    location.pathname.startsWith('/admin/payments');
+
+  if (!isAuthenticated && !isAuthPage) {
+    return <Navigate to="/login" />;
+  }
+
+  if (isAuthPage) {
+    return (
+      <div className="auth-wrapper">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </div>
+    );
+  }
+
+  return isAdminRoute ? <AdminLayout /> : <StudentLayout />;
 };
 
 function App() {
   return (
     <Router>
-      <AppLayout />
+      <AppRouter />
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
