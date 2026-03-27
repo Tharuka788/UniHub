@@ -58,7 +58,7 @@ function StudentApp() {
             <Route path="/profile" element={<div style={{padding: '4rem', textAlign: 'center'}}>Profile Page (Dummy)</div>} />
             <Route path="/pay" element={<PaymentForm />} />
             <Route path="/payments" element={<PaymentHistory />} />
-            <Route path="/kuppi-request" element={<KuppiRequest />} />
+            <Route path="/AdminDashboard" element={<AdminDashboard />} />
           </Routes>
         </div>
       </div>
