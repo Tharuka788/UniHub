@@ -1,46 +1,47 @@
-import { startTransition, useEffect, useState } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { getAdminSession, loginAdmin, logoutAdmin } from './api/auth'
+import React from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+} from 'react-router-dom';
 
-// Admin Components
-import Button from './components/Button'
-import LoadingState from './components/LoadingState'
-import AdminNavigation from './components/AdminNavigation'
-import AppShell from './layouts/AppShell'
-import ClassOfferingsPage from './pages/ClassOfferingsPage'
-import DashboardPage from './pages/DashboardPage'
-import LoginPage from './pages/LoginPage'
-import ReportsPage from './pages/ReportsPage'
-import StudentsPage from './pages/StudentsPage'
+import Sidebar from './components/Sidebar/Sidebar';
+import TopBar from './components/TopBar/TopBar';
 
-// Student Components
-import Sidebar from './components/Sidebar/Sidebar'
-import TopBar from './components/TopBar/TopBar'
-import Dashboard from './pages/Dashboard/Dashboard'
-import LostAndFound from './pages/LostAndFound/LostAndFound'
-import ItemDetails from './pages/LostAndFound/ItemDetails'
-import ItemForm from './components/ItemForm/ItemForm'
-import PaymentForm from './components/PaymentForm/PaymentForm'
-import PaymentHistory from './components/PaymentHistory/PaymentHistory'
-import AdminDashboard from './pages/AdminDashboard/AdminDashboard'
-import KuppiRequest from './pages/KuppiRequest/KuppiRequest'
-import AdminKuppiRequests from './pages/AdminKuppiRequests/AdminKuppiRequests'
+import Dashboard from './pages/Dashboard/Dashboard';
+import LostAndFound from './pages/LostAndFound/LostAndFound';
+import ItemDetails from './pages/LostAndFound/ItemDetails';
+import ItemForm from './components/ItemForm/ItemForm';
+import PaymentForm from './components/PaymentForm/PaymentForm';
+import PaymentHistory from './components/PaymentHistory/PaymentHistory';
 
-// Styles
-import './index.css'
-import './App.css'
+import MainAdminDashboard from './pages/MainAdminDashboard/MainAdminDashboard';
+import PaymentAdminDashboard from './pages/AdminDashboard/AdminDashboard';
+import KuppiRequest from './pages/KuppiRequest/KuppiRequest';
+import AdminKuppiRequests from './pages/AdminKuppiRequests/AdminKuppiRequests';
 
-// Hooks
-import { usePersistentState } from './hooks/usePersistentState'
+import Login from './pages/Auth/Login';
+import Register from './pages/Auth/Register';
+import Profile from './pages/Profile/Profile';
+import { useAuth } from './context/AuthContext';
 
-const adminNavigationItems = [
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'students', label: 'Students' },
-  { id: 'class-offerings', label: 'Class Offerings' },
-  { id: 'reports', label: 'Reports' },
-]
+import './index.css';
+import './App.css';
 
-function StudentApp() {
+const PlaceholderPage = ({ title }) => (
+  <div style={{ padding: '2rem' }}>
+    <h1 style={{ fontSize: '2rem', fontWeight: '700', color: '#1f2937' }}>
+      {title}
+    </h1>
+    <p style={{ marginTop: '0.75rem', color: '#6b7280' }}>
+      This module page is reserved for future development.
+    </p>
+  </div>
+);
+
+function StudentLayout() {
   return (
     <div className="app-container">
       <Sidebar />
@@ -78,172 +79,67 @@ function StudentApp() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-function AdminApp() {
-  const [currentView, setCurrentView] = usePersistentState('kuppi-admin-view', 'dashboard')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [authState, setAuthState] = useState({
-    status: 'loading',
-    username: '',
-    errorMessage: '',
-  })
-
-  useEffect(() => {
-    let isActive = true
-
-    async function loadSession() {
-      try {
-        const response = await getAdminSession()
-
-        if (!isActive) return
-
-        startTransition(() => {
-          setAuthState({
-            status: 'authenticated',
-            username: response.data.username,
-            errorMessage: '',
-          })
-        })
-      } catch (error) {
-        if (!isActive) return
-
-        startTransition(() => {
-          setAuthState({
-            status: 'unauthenticated',
-            username: '',
-            errorMessage: error.statusCode && error.statusCode !== 401 ? error.message : '',
-          })
-        })
-      }
-    }
-
-    loadSession()
-
-    return () => {
-      isActive = false
-    }
-  }, [])
-
-  async function handleLogin(credentials) {
-    setIsSubmitting(true)
-
-    try {
-      const response = await loginAdmin(credentials)
-
-      startTransition(() => {
-        setAuthState({
-          status: 'authenticated',
-          username: response.data.username,
-          errorMessage: '',
-        })
-      })
-    } catch (error) {
-      startTransition(() => {
-        setAuthState({
-          status: 'unauthenticated',
-          username: '',
-          errorMessage: error.message,
-        })
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  async function handleLogout() {
-    setIsSubmitting(true)
-
-    try {
-      await logoutAdmin()
-    } catch {
-      // Even if the backend session already expired, return to login
-    } finally {
-      startTransition(() => {
-        setAuthState({
-          status: 'unauthenticated',
-          username: '',
-          errorMessage: '',
-        })
-      })
-      setIsSubmitting(false)
-    }
-  }
-
-  if (authState.status === 'loading') {
-    return (
-      <AppShell>
-        <section className="rounded-[2rem] border border-white/60 bg-white/75 p-6 shadow-panel backdrop-blur">
-          <div className="mb-6">
-            <p className="text-xs font-bold uppercase tracking-[0.28em] text-ocean-500">
-              Admin Access
-            </p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-ink-900">
-              Checking your admin session
-            </h1>
-          </div>
-          <LoadingState />
-        </section>
-      </AppShell>
-    )
-  }
-
-  if (authState.status !== 'authenticated') {
-    return (
-      <LoginPage
-        onSubmit={handleLogin}
-        isSubmitting={isSubmitting}
-        errorMessage={authState.errorMessage}
-      />
-    )
-  }
-
-  const currentPage =
-    currentView === 'students' ? (
-      <StudentsPage />
-    ) : currentView === 'class-offerings' ? (
-      <ClassOfferingsPage />
-    ) : currentView === 'reports' ? (
-      <ReportsPage />
-    ) : (
-      <DashboardPage />
-    )
-
+function AdminLayout() {
   return (
-    <AppShell
-      navigation={
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <AdminNavigation
-            items={adminNavigationItems}
-            currentView={currentView}
-            onChange={setCurrentView}
-          />
-          <div className="flex flex-wrap items-center gap-3">
-            <p className="rounded-full bg-ocean-50 px-4 py-2 text-sm text-ink-700">
-              Signed in as <span className="font-semibold text-ink-900">{authState.username}</span>
-            </p>
-            <Button variant="subtle" onClick={handleLogout} disabled={isSubmitting}>
-              {isSubmitting ? 'Signing out...' : 'Log out'}
-            </Button>
-          </div>
-        </div>
-      }
-    >
-      {currentPage}
-    </AppShell>
-  )
+    <Routes>
+      <Route path="/admin-dashboard" element={<MainAdminDashboard />} />
+      <Route path="/admin-kuppi" element={<AdminKuppiRequests />} />
+      <Route path="/admin/payments" element={<PaymentAdminDashboard />} />
+      <Route
+        path="/admin-profile"
+        element={<PlaceholderPage title="Admin Profile" />}
+      />
+      <Route
+        path="/admin-lost-found"
+        element={<PlaceholderPage title="Lost & Found Module" />}
+      />
+      <Route
+        path="/admin-support"
+        element={<PlaceholderPage title="Support Module" />}
+      />
+      <Route
+        path="/admin-events"
+        element={<PlaceholderPage title="Event Module" />}
+      />
+      <Route path="*" element={<Navigate to="/admin-dashboard" />} />
+    </Routes>
+  );
 }
+
+const AppRouter = () => {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  const isAuthPage =
+    location.pathname === '/login' || location.pathname === '/register';
+
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  if (!isAuthenticated && !isAuthPage) {
+    return <Navigate to="/login" />;
+  }
+
+  if (isAuthPage) {
+    return (
+      <div className="auth-wrapper">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </div>
+    );
+  }
+
+  return isAdminRoute ? <AdminLayout /> : <StudentLayout />;
+};
 
 function App() {
-  const [isAdminPath] = useState(() => {
-    // Check if the path includes /admin or /kuppi-admin
-    return window.location.pathname.includes('admin')
-  })
-
   return (
     <Router>
-      {isAdminPath ? <AdminApp /> : <StudentApp />}
+      <AppRouter />
     </Router>
   );
 }

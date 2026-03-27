@@ -115,5 +115,13 @@
 .admin-nav-link.active .nav-icon {
   color: #dc2626;
 }
+.sidebar-section-title {
+  margin: 1.5rem 1rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
 
 /* Dark mode overrides removed for consistent light theme */
