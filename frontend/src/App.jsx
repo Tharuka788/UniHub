@@ -1,5 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+} from 'react-router-dom';
+
 import Sidebar from './components/Sidebar/Sidebar';
 import TopBar from './components/TopBar/TopBar';
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -11,12 +18,19 @@ import PaymentHistory from './components/PaymentHistory/PaymentHistory';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import KuppiRequest from './pages/KuppiRequest/KuppiRequest';
 import AdminKuppiRequests from './pages/AdminKuppiRequests/AdminKuppiRequests';
+import Login from './pages/Auth/Login';
+import Register from './pages/Auth/Register';
+import Profile from './pages/Profile/Profile';
+import { useAuth } from './context/AuthContext';
+
 import './index.css';
 import './App.css';
 
 const PlaceholderPage = ({ title }) => (
   <div style={{ padding: '2rem' }}>
-    <h1 style={{ fontSize: '2rem', fontWeight: '700', color: '#1f2937' }}>{title}</h1>
+    <h1 style={{ fontSize: '2rem', fontWeight: '700', color: '#1f2937' }}>
+      {title}
+    </h1>
     <p style={{ marginTop: '0.75rem', color: '#6b7280' }}>
       This module page is reserved for future development.
     </p>
@@ -38,19 +52,25 @@ function StudentLayout() {
             <Route path="/report-found" element={<ItemForm formType="Found" />} />
             <Route
               path="/events"
-              element={<div style={{ padding: '4rem', textAlign: 'center' }}>Events Page (Dummy)</div>}
+              element={
+                <div style={{ padding: '4rem', textAlign: 'center' }}>
+                  Events Page (Dummy)
+                </div>
+              }
             />
             <Route
               path="/updates"
-              element={<div style={{ padding: '4rem', textAlign: 'center' }}>Updates Page (Dummy)</div>}
+              element={
+                <div style={{ padding: '4rem', textAlign: 'center' }}>
+                  Updates Page (Dummy)
+                </div>
+              }
             />
-            <Route
-              path="/profile"
-              element={<div style={{ padding: '4rem', textAlign: 'center' }}>Profile Page (Dummy)</div>}
-            />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/pay" element={<PaymentForm />} />
             <Route path="/payments" element={<PaymentHistory />} />
             <Route path="/kuppi-request" element={<KuppiRequest />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
       </div>
@@ -69,16 +89,45 @@ function AdminLayout() {
       <Route path="/admin-lost-found" element={<PlaceholderPage title="Lost & Found Module" />} />
       <Route path="/admin-support" element={<PlaceholderPage title="Support Module" />} />
       <Route path="/admin-events" element={<PlaceholderPage title="Event Module" />} />
+      <Route path="*" element={<Navigate to="/admin-dashboard" />} />
     </Routes>
   );
 }
 
-function AppRouter() {
+const AppRouter = () => {
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  const isAuthPage =
+    location.pathname === '/login' || location.pathname === '/register';
+
+  const isAdminRoute =
+    location.pathname.startsWith('/admin-dashboard') ||
+    location.pathname.startsWith('/admin-kuppi') ||
+    location.pathname.startsWith('/admin-profile') ||
+    location.pathname.startsWith('/admin-payments') ||
+    location.pathname.startsWith('/admin-lost-found') ||
+    location.pathname.startsWith('/admin-support') ||
+    location.pathname.startsWith('/admin-events') ||
+    location.pathname.startsWith('/admin/payments');
+
+  if (!isAuthenticated && !isAuthPage) {
+    return <Navigate to="/login" />;
+  }
+
+  if (isAuthPage) {
+    return (
+      <div className="auth-wrapper">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </div>
+    );
+  }
 
   return isAdminRoute ? <AdminLayout /> : <StudentLayout />;
-}
+};
 
 function App() {
   return (

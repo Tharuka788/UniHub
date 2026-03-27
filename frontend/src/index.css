@@ -10,7 +10,9 @@
   .glass-input {
     @apply bg-white/50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300;
   }
-  .animate-fade-in {
+  .shadow-panel {
+    box-shadow: 0 20px 55px rgba(20, 32, 51, 0.12) !important;
+  }  .animate-fade-in {
     animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
   .animate-slide-up {
@@ -48,11 +50,6 @@
   --nav-bg: rgba(255, 255, 255, 0.9);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -67,4 +64,56 @@ body {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+@theme {
+  --font-sans: "Segoe UI", sans-serif;
+  --color-ocean-50: #f3f8fb;
+  --color-ocean-100: #d8e8f2;
+  --color-ocean-500: #2b7490;
+  --color-ink-900: #142033;
+  --color-ink-700: #46596f;
+  --color-ink-500: #718397;
+  --color-sand-100: #fff8ef;
+  --color-sand-300: #f3d6a8;
+  --color-mint-100: #def5eb;
+  --color-mint-600: #207451;
+  --color-coral-100: #fde4e1;
+  --color-coral-600: #b74735;
+  --shadow-panel: 0 20px 55px rgba(20, 32, 51, 0.12);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    color: var(--color-ink-900);
+    background: #eff4f7;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background:
+      radial-gradient(circle at top left, rgba(43, 116, 144, 0.18), transparent 26%),
+      linear-gradient(180deg, #f8fbfc 0%, #e7eef2 100%);
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
 }
