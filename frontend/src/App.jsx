@@ -9,15 +9,19 @@ import {
 
 import Sidebar from './components/Sidebar/Sidebar';
 import TopBar from './components/TopBar/TopBar';
+
 import Dashboard from './pages/Dashboard/Dashboard';
 import LostAndFound from './pages/LostAndFound/LostAndFound';
 import ItemDetails from './pages/LostAndFound/ItemDetails';
 import ItemForm from './components/ItemForm/ItemForm';
 import PaymentForm from './components/PaymentForm/PaymentForm';
 import PaymentHistory from './components/PaymentHistory/PaymentHistory';
-import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
+
+import MainAdminDashboard from './pages/MainAdminDashboard/MainAdminDashboard';
+import PaymentAdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import KuppiRequest from './pages/KuppiRequest/KuppiRequest';
 import AdminKuppiRequests from './pages/AdminKuppiRequests/AdminKuppiRequests';
+
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import Profile from './pages/Profile/Profile';
@@ -81,14 +85,27 @@ function StudentLayout() {
 function AdminLayout() {
   return (
     <Routes>
-      <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      <Route path="/admin-dashboard" element={<MainAdminDashboard />} />
       <Route path="/admin-kuppi" element={<AdminKuppiRequests />} />
-      <Route path="/admin/payments" element={<AdminDashboard />} />
-      <Route path="/admin-profile" element={<PlaceholderPage title="Admin Profile" />} />
-      <Route path="/admin-payments" element={<PlaceholderPage title="Payment Module" />} />
-      <Route path="/admin-lost-found" element={<PlaceholderPage title="Lost & Found Module" />} />
-      <Route path="/admin-support" element={<PlaceholderPage title="Support Module" />} />
-      <Route path="/admin-events" element={<PlaceholderPage title="Event Module" />} />
+      <Route path="/admin/payments" element={<PaymentAdminDashboard />} />
+
+      <Route
+        path="/admin-profile"
+        element={<PlaceholderPage title="Admin Profile" />}
+      />
+      <Route
+        path="/admin-lost-found"
+        element={<PlaceholderPage title="Lost & Found Module" />}
+      />
+      <Route
+        path="/admin-support"
+        element={<PlaceholderPage title="Support Module" />}
+      />
+      <Route
+        path="/admin-events"
+        element={<PlaceholderPage title="Event Module" />}
+      />
+
       <Route path="*" element={<Navigate to="/admin-dashboard" />} />
     </Routes>
   );
@@ -101,15 +118,7 @@ const AppRouter = () => {
   const isAuthPage =
     location.pathname === '/login' || location.pathname === '/register';
 
-  const isAdminRoute =
-    location.pathname.startsWith('/admin-dashboard') ||
-    location.pathname.startsWith('/admin-kuppi') ||
-    location.pathname.startsWith('/admin-profile') ||
-    location.pathname.startsWith('/admin-payments') ||
-    location.pathname.startsWith('/admin-lost-found') ||
-    location.pathname.startsWith('/admin-support') ||
-    location.pathname.startsWith('/admin-events') ||
-    location.pathname.startsWith('/admin/payments');
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   if (!isAuthenticated && !isAuthPage) {
     return <Navigate to="/login" />;

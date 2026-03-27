@@ -1,23 +1,20 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { 
-  LayoutDashboard, 
-  Search, 
-  BookOpen, 
-  Ticket, 
-  User, 
-  Settings,
-  Circle,
+import {
+  LayoutDashboard,
+  Search,
+  BookOpen,
   CreditCard,
-  ShieldCheck
+  Ticket,
+  User,
+  Settings,
+  Shield,
+  Circle
 } from 'lucide-react';
 import './Sidebar.css';
 
 const Sidebar = () => {
   const location = useLocation();
-  const { user } = useAuth();
-  const isAdmin = user?.isAdmin;
 
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -30,8 +27,7 @@ const Sidebar = () => {
   ];
 
   const adminItems = [
-    { name: 'Manage Kuppi', path: '/admin-kuppi', icon: BookOpen },
-    { name: 'Manage Payments', path: '/admin/payments', icon: ShieldCheck },
+    { name: 'Admin Dashboard', path: '/admin-dashboard', icon: Shield },
   ];
 
   return (
@@ -47,6 +43,7 @@ const Sidebar = () => {
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
+
           return (
             <Link
               key={item.name}
@@ -58,21 +55,20 @@ const Sidebar = () => {
             </Link>
           );
         })}
+      </nav>
 
-        {isAdmin && (
-          <div className="sidebar-divider">
-            <span>Admin</span>
-          </div>
-        )}
+      <div className="sidebar-section-title">ADMIN</div>
 
-        {isAdmin && adminItems.map((item) => {
+      <nav className="sidebar-nav">
+        {adminItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
+
           return (
             <Link
               key={item.name}
               to={item.path}
-              className={`nav-link admin-nav-link ${isActive ? 'active' : ''}`}
+              className={`nav-link ${isActive ? 'active' : ''}`}
             >
               <Icon size={20} className="nav-icon" />
               <span>{item.name}</span>
