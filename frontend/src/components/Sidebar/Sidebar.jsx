@@ -7,7 +7,8 @@ import {
   Ticket, 
   User, 
   Settings,
-  Circle
+  Circle,
+  CreditCard
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -18,6 +19,7 @@ const Sidebar = () => {
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Lost & Found', path: '/lost-and-found', icon: Search },
     { name: 'Kuppi Sessions', path: '/kuppi-request', icon: BookOpen },
+    { name: 'Payments', path: '/payments', icon: CreditCard },
     { name: 'Support Tickets', path: '/support', icon: Ticket },
     { name: 'Profile', path: '/profile', icon: User },
     { name: 'Settings', path: '/settings', icon: Settings },
