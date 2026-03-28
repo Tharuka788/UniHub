@@ -18,16 +18,21 @@ const kuppiRequestSchema = new mongoose.Schema(
       type: String,
     },
     letterUrl: {
-      type: String, // Cloudinary file URL
+      type: String,
       required: true,
     },
     status: {
       type: String,
-      enum: ["pending", "approved"],
+      enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
     scheduledDate: {
       type: Date,
+      default: null,
+    },
+    rejectionReason: {
+      type: String,
+      default: "",
     },
   },
   { timestamps: true }

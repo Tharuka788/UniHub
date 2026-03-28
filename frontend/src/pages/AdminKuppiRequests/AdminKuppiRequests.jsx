@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { BookOpen, Clock3, CheckCircle2, FileText } from "lucide-react";
+import { BookOpen, Clock3, CheckCircle2, FileText, XCircle } from "lucide-react";
 import AdminSidebar from "../../components/AdminSidebar/AdminSidebar";
 import "./AdminKuppiRequests.css";
 
 const AdminKuppiRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [scheduleInputs, setScheduleInputs] = useState({});
+  const [rejectInputs, setRejectInputs] = useState({});
+  const [actionLoading, setActionLoading] = useState("");
 
   const fetchRequests = async () => {
     try {
       const response = await axios.get("http://localhost:5050/api/kuppi");
-      setRequests(response.data);
+      setRequests(response.data || []);
     } catch (error) {
       console.error("Error fetching kuppi requests:", error);
     } finally {
@@ -22,6 +25,43 @@ const AdminKuppiRequests = () => {
   useEffect(() => {
     fetchRequests();
   }, []);
+
+  const handleApprove = async (id) => {
+    const scheduledDate = scheduleInputs[id];
+
+    if (!scheduledDate) {
+      alert("Please select date and time before approving.");
+      return;
+    }
+
+    try {
+      setActionLoading(id);
+      await axios.put(`http://localhost:5050/api/kuppi/approve/${id}`, {
+        scheduledDate,
+      });
+      await fetchRequests();
+    } catch (error) {
+      console.error("Approve error:", error);
+      alert(error.response?.data?.message || "Failed to approve request");
+    } finally {
+      setActionLoading("");
+    }
+  };
+
+  const handleReject = async (id) => {
+    try {
+      setActionLoading(id);
+      await axios.put(`http://localhost:5050/api/kuppi/reject/${id}`, {
+        rejectionReason: rejectInputs[id] || "",
+      });
+      await fetchRequests();
+    } catch (error) {
+      console.error("Reject error:", error);
+      alert(error.response?.data?.message || "Failed to reject request");
+    } finally {
+      setActionLoading("");
+    }
+  };
 
   const totalRequests = requests.length;
   const pendingRequests = requests.filter(
@@ -40,7 +80,7 @@ const AdminKuppiRequests = () => {
           <div className="admin-kuppi-header">
             <div>
               <h1>Manage Kuppi Requests</h1>
-              <p>View all batch representative requests submitted for Kuppi sessions.</p>
+              <p>View, approve, or reject submitted Kuppi session requests.</p>
             </div>
           </div>
 
@@ -86,6 +126,9 @@ const AdminKuppiRequests = () => {
                       <th>Description</th>
                       <th>Letter</th>
                       <th>Status</th>
+                      <th>Schedule</th>
+                      <th>Reject Reason</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -107,11 +150,71 @@ const AdminKuppiRequests = () => {
                           </a>
                         </td>
                         <td>
-                          <span
-                            className={`status-badge ${request.status?.toLowerCase()}`}
-                          >
+                          <span className={`status-badge ${request.status?.toLowerCase()}`}>
                             {request.status}
                           </span>
+                        </td>
+                        <td>
+                          {request.status === "pending" ? (
+                            <input
+                              type="datetime-local"
+                              value={scheduleInputs[request._id] || ""}
+                              onChange={(e) =>
+                                setScheduleInputs({
+                                  ...scheduleInputs,
+                                  [request._id]: e.target.value,
+                                })
+                              }
+                              className="admin-input"
+                            />
+                          ) : request.scheduledDate ? (
+                            new Date(request.scheduledDate).toLocaleString()
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+                        <td>
+                          {request.status === "pending" ? (
+                            <input
+                              type="text"
+                              placeholder="Optional reason"
+                              value={rejectInputs[request._id] || ""}
+                              onChange={(e) =>
+                                setRejectInputs({
+                                  ...rejectInputs,
+                                  [request._id]: e.target.value,
+                                })
+                              }
+                              className="admin-input"
+                            />
+                          ) : request.rejectionReason ? (
+                            request.rejectionReason
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+                        <td>
+                          {request.status === "pending" ? (
+                            <div className="action-buttons">
+                              <button
+                                className="approve-btn"
+                                onClick={() => handleApprove(request._id)}
+                                disabled={actionLoading === request._id}
+                              >
+                                Approve
+                              </button>
+                              <button
+                                className="reject-btn"
+                                onClick={() => handleReject(request._id)}
+                                disabled={actionLoading === request._id}
+                              >
+                                <XCircle size={14} />
+                                Reject
+                              </button>
+                            </div>
+                          ) : (
+                            "Done"
+                          )}
                         </td>
                       </tr>
                     ))}

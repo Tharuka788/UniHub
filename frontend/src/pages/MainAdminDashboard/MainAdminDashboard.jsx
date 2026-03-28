@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -10,22 +10,25 @@ import {
   CreditCard,
   Search,
   Ticket,
-  CalendarDays
+  CalendarDays,
+  RefreshCw
 } from 'lucide-react';
 import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
-import "./MainAdminDashboard.css";
+import './MainAdminDashboard.css';
 
-const AdminDashboard = () => {
+const MainAdminDashboard = () => {
   const navigate = useNavigate();
   const [kuppiRequests, setKuppiRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchKuppiRequests = async () => {
     try {
+      setLoading(true);
       const response = await axios.get('http://localhost:5050/api/kuppi');
       setKuppiRequests(response.data || []);
     } catch (error) {
       console.error('Error fetching kuppi requests:', error);
+      setKuppiRequests([]);
     } finally {
       setLoading(false);
     }
@@ -35,12 +38,23 @@ const AdminDashboard = () => {
     fetchKuppiRequests();
   }, []);
 
+  const sortedRequests = useMemo(() => {
+    return [...kuppiRequests].sort(
+      (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+    );
+  }, [kuppiRequests]);
+
   const totalRequests = kuppiRequests.length;
-  const pendingRequests = kuppiRequests.filter((r) => r.status === 'pending').length;
-  const approvedRequests = kuppiRequests.filter((r) => r.status === 'approved').length;
+  const pendingRequests = kuppiRequests.filter(
+    (r) => r.status?.toLowerCase() === 'pending'
+  ).length;
+  const approvedRequests = kuppiRequests.filter(
+    (r) => r.status?.toLowerCase() === 'approved'
+  ).length;
+
   const latestRequest =
-    kuppiRequests.length > 0
-      ? new Date(kuppiRequests[0].createdAt).toLocaleDateString()
+    sortedRequests.length > 0 && sortedRequests[0].createdAt
+      ? new Date(sortedRequests[0].createdAt).toLocaleDateString()
       : 'No requests yet';
 
   const moduleCards = [
@@ -56,7 +70,7 @@ const AdminDashboard = () => {
       title: 'Payment Module',
       desc: 'Reserved space for payment administration.',
       icon: CreditCard,
-      action: () => navigate('/admin-payments'),
+      action: () => navigate('/admin/payments'),
       actionText: 'Open Module',
       colorClass: 'blue'
     },
@@ -97,6 +111,16 @@ const AdminDashboard = () => {
               <h1>Admin Dashboard</h1>
               <p>Overall summary of all university service modules.</p>
             </div>
+
+            <button
+              className="admin-action-btn"
+              onClick={fetchKuppiRequests}
+              disabled={loading}
+              type="button"
+            >
+              <RefreshCw size={16} />
+              {loading ? 'Refreshing...' : 'Refresh Data'}
+            </button>
           </div>
 
           <div className="admin-summary-grid">
@@ -143,6 +167,7 @@ const AdminDashboard = () => {
               <button
                 className="admin-action-btn"
                 onClick={() => navigate('/admin-kuppi')}
+                type="button"
               >
                 Manage Kuppi Requests
                 <ArrowRight size={16} />
@@ -175,7 +200,9 @@ const AdminDashboard = () => {
                   </div>
                   <h3>{card.title}</h3>
                   <p>{card.desc}</p>
-                  <button onClick={card.action}>{card.actionText}</button>
+                  <button type="button" onClick={card.action}>
+                    {card.actionText}
+                  </button>
                 </div>
               );
             })}
@@ -186,4 +213,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default MainAdminDashboard;

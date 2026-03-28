@@ -180,3 +180,55 @@
     padding: 1rem;
   }
 }
+.admin-input {
+  width: 100%;
+  min-width: 150px;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  background: #fff;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.approve-btn,
+.reject-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.approve-btn {
+  background: #16a34a;
+  color: white;
+}
+
+.approve-btn:hover {
+  background: #15803d;
+}
+
+.reject-btn {
+  background: #dc2626;
+  color: white;
+}
+
+.reject-btn:hover {
+  background: #b91c1c;
+}
+
+.approve-btn:disabled,
+.reject-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
