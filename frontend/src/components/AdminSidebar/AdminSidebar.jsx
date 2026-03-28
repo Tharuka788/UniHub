@@ -8,7 +8,8 @@ import {
   Search,
   Ticket,
   CalendarDays,
-  Shield
+  Shield,
+  ArrowLeftCircle
 } from 'lucide-react';
 import './AdminSidebar.css';
 
@@ -54,6 +55,13 @@ const AdminSidebar = () => {
           );
         })}
       </nav>
+
+      <div className="admin-sidebar-footer">
+        <Link to="/" className="admin-nav-link secondary">
+          <ArrowLeftCircle size={18} className="admin-nav-icon" />
+          <span>Student Dashboard</span>
+        </Link>
+      </div>
     </aside>
   );
 };

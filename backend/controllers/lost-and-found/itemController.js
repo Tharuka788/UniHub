@@ -193,11 +193,62 @@ const deleteItem = async (req, res) => {
   }
 };
 
+// @desc    Get analytics stats
+// @route   GET /api/items/stats
+// @access  Private/Admin
+const getItemStats = async (req, res) => {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // 1. Daily Reports (Last 30 Days)
+    const dailyReports = await Item.aggregate([
+      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    // 2. Category Distribution (Pie Chart)
+    const categoryDistribution = await Item.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // 3. Overall Totals for Success Rate
+    const totalsByStatus = await Item.aggregate([
+      {
+        $group: {
+          _id: "$itemType",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    res.status(200).json({
+      dailyReports,
+      categoryDistribution,
+      totalsByStatus
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getItems,
   getItemById,
   createItem,
   updateItem,
   deleteItem,
-  toggleContactSharing
+  toggleContactSharing,
+  getItemStats
 };

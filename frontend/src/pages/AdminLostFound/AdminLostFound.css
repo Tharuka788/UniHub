@@ -335,3 +335,217 @@
   border-radius: 0.5rem;
   margin: 1rem;
 }
+
+/* Analytics Dashboard Styles */
+.header-actions-main {
+  display: flex;
+  gap: 1rem;
+}
+
+.toggle-view-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.toggle-view-btn:hover {
+  background: #f8fafc;
+  border-color: var(--admin-blue);
+  color: var(--admin-blue);
+}
+
+.toggle-view-btn.active {
+  background: var(--admin-primary);
+  color: white;
+  border-color: var(--admin-primary);
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.analytics-card {
+  background: white;
+  border-radius: 1.5rem;
+  border: 1px solid var(--admin-border);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.analytics-card.chart-card {
+  grid-column: span 1;
+}
+
+.analytics-card.success-rate-card {
+  grid-column: span 2;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.analytics-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.analytics-card .card-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--admin-text);
+}
+
+.analytics-card.success-rate-card .card-header h3 {
+  color: white;
+}
+
+.header-icon {
+  color: var(--admin-blue);
+}
+
+.chart-wrapper {
+  margin: 0 -10px;
+}
+
+/* Success Rate Card Specifics */
+.success-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.award-badge {
+  width: 64px;
+  height: 64px;
+  background: rgba(139, 92, 246, 0.2);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.rate-text .label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.flex-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+
+.rate-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+}
+
+.trend-indicator {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+}
+
+.trend-indicator.up {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.progress-section {
+  margin-bottom: 2rem;
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.full-progress-bar {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+  border-radius: 6px;
+  transition: width 1s ease-out;
+}
+
+.stat-summary-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mini-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.m-label {
+  font-size: 0.7rem;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.m-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  margin-top: 0.2rem;
+}
+
+.analytics-loading {
+  background: white;
+  padding: 5rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  border: 1px solid var(--admin-border);
+}
+
+@media (max-width: 1024px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+  .analytics-card.chart-card,
+  .analytics-card.success-rate-card {
+    grid-column: span 1;
+  }
+}

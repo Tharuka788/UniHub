@@ -71,3 +71,19 @@
 .admin-nav-icon {
   flex-shrink: 0;
 }
+.admin-sidebar-footer {
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-nav-link.secondary {
+  color: #94a3b8 !important;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.admin-nav-link.secondary:hover {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.05);
+}

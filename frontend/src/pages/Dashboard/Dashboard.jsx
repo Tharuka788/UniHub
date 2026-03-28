@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { 
   Plus, 
@@ -9,21 +10,42 @@ import {
   CheckCircle, 
   AlertCircle,
   MoreHorizontal,
-  ChevronRight
+  ChevronRight,
+  Package
 } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const { data } = await axios.get('http://localhost:5050/api/items');
+        setItems(data);
+      } catch (error) {
+        console.error('Error fetching items for dashboard:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchItems();
+  }, []);
 
   const stats = [
     {
       title: 'Lost & Found',
       icon: Search,
       items: [
-        { label: 'Recent Items', value: 12 },
-        { label: 'Total Reported', value: 45 },
-        { label: 'Items Matched', value: 28, color: '#10b981' }
+        { label: 'Recent Items', value: items.filter(i => {
+          const createdAt = new Date(i.createdAt);
+          const now = new Date();
+          return (now - createdAt) < 7 * 24 * 60 * 60 * 1000; // Last 7 days
+        }).length },
+        { label: 'Total Reported', value: items.length },
+        { label: 'Items Matched', value: items.filter(i => i.itemType === 'Reclaimed').length, color: '#10b981' }
       ],
       buttonText: 'Report Lost Item',
       onClick: () => navigate('/report-lost')
@@ -52,11 +74,13 @@ const Dashboard = () => {
     }
   ];
 
-  const recentItems = [
-    { name: 'MacBook Pro Charger', location: 'Library 2nd Floor', time: 'Today, 10:30 AM', status: 'Lost' },
-    { name: 'Blue Water Bottle', location: 'Cafeteria', time: 'Yesterday', status: 'Found' },
-    { name: 'Student ID Card', location: 'Main Auditorium', time: 'Oct 24', status: 'Found' }
-  ];
+  const recentItems = items.slice(0, 3).map(item => ({
+    name: item.title,
+    location: item.location || 'Campus',
+    time: new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    status: item.itemType,
+    image: item.image
+  }));
 
   const upcomingSessions = [
     { subject: 'Advanced Mathematics', tutor: 'Prof. Silva', time: 'Tomorrow, 2:00 PM', status: 'Confirmed' },
@@ -100,33 +124,47 @@ const Dashboard = () => {
         <div className="dashboard-section recent-lost">
           <div className="section-header">
             <h3>Recent Lost & Found</h3>
-            <button className="view-all-btn">
+            <button className="view-all-btn" onClick={() => navigate('/lost-and-found')}>
               <span>View All</span>
               <ChevronRight size={16} />
             </button>
           </div>
           <div className="list-items">
-            {recentItems.map((item, idx) => (
-              <div key={idx} className="list-item">
-                <div className="item-details">
-                  <div className="item-image-placeholder">
-                    <Search size={18} />
+            {loading ? (
+              <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>Loading...</div>
+            ) : recentItems.length > 0 ? (
+              recentItems.map((item, idx) => (
+                <div key={idx} className="list-item">
+                  <div className="item-details">
+                    <div className="item-image-placeholder">
+                      {item.image ? (
+                        <img 
+                          src={item.image.startsWith('http') ? item.image : `http://localhost:5050${item.image}`} 
+                          alt={item.name} 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                        />
+                      ) : (
+                        <Package size={18} />
+                      )}
+                    </div>
+                    <div className="item-info">
+                      <h4 className="item-name">{item.name}</h4>
+                      <span className="item-meta">{item.location} • {item.time}</span>
+                    </div>
                   </div>
-                  <div className="item-info">
-                    <h4 className="item-name">{item.name}</h4>
-                    <span className="item-meta">{item.location} • {item.time}</span>
-                  </div>
+                  <span className={`status-tag ${item.status.toLowerCase()}`}>{item.status}</span>
                 </div>
-                <span className={`status-tag ${item.status.toLowerCase()}`}>{item.status}</span>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>No recent items found</div>
+            )}
           </div>
         </div>
 
         <div className="dashboard-section kuppi-schedule">
           <div className="section-header">
             <h3>My Kuppi Schedule</h3>
-            <button className="view-all-btn">
+            <button className="view-all-btn" onClick={() => navigate('/kuppi-request')}>
               <span>View All</span>
               <ChevronRight size={16} />
             </button>

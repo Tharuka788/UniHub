@@ -8,9 +8,10 @@ const {
   createItem,
   updateItem,
   deleteItem,
-  toggleContactSharing
+  toggleContactSharing,
+  getItemStats
 } = require('../../controllers/lost-and-found/itemController');
-const { protect, loadUser } = require('../../middleware/authMiddleware');
+const { protect, admin, loadUser } = require('../../middleware/authMiddleware');
 
 const upload = multer({ storage });
 
@@ -18,6 +19,8 @@ const upload = multer({ storage });
 router.route('/')
   .get(getItems)
   .post(protect, upload.single('image'), createItem);
+
+router.get('/stats', protect, admin, getItemStats);
 
 router.route('/:id')
   .get(loadUser, getItemById)

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './ItemForm.css';
 
 const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: '',
     category: '',
@@ -44,6 +46,7 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
       const response = await axios.post('http://localhost:5050/api/items', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${user?.token}`
         },
       });
       
