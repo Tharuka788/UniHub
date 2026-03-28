@@ -1,20 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Plus, 
-  Search, 
-  BookOpen, 
-  Ticket, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle,
+import {
+  Plus,
+  Search,
+  BookOpen,
+  Ticket,
+  Clock,
+  CheckCircle,
   MoreHorizontal,
-  ChevronRight
+  ChevronRight,
+  CalendarDays,
+  User
 } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+
+  const [approvedSessions, setApprovedSessions] = useState([]);
+  const [loadingKuppi, setLoadingKuppi] = useState(true);
+
+  const fetchApprovedKuppiSessions = async () => {
+    try {
+      const response = await axios.get('http://localhost:5050/api/kuppi');
+      const approvedOnly = (response.data || []).filter(
+        (item) => item.status?.toLowerCase() === 'approved'
+      );
+      setApprovedSessions(approvedOnly);
+    } catch (error) {
+      console.error('Error fetching approved kuppi sessions:', error);
+      setApprovedSessions([]);
+    } finally {
+      setLoadingKuppi(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchApprovedKuppiSessions();
+  }, []);
 
   const stats = [
     {
@@ -32,9 +56,9 @@ const Dashboard = () => {
       title: 'Kuppi Sessions',
       icon: BookOpen,
       items: [
-        { label: 'Upcoming sessions', value: 2 },
-        { label: 'Tutors available', value: 18 },
-        { label: 'Pending Requests', value: 1, color: '#f59e0b' }
+        { label: 'Published Notices', value: approvedSessions.length },
+        { label: 'Approved Sessions', value: approvedSessions.length, color: '#10b981' },
+        { label: 'Registration', value: 'Open', color: '#f59e0b' }
       ],
       buttonText: 'Request Kuppi',
       onClick: () => navigate('/kuppi-request')
@@ -66,8 +90,6 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-content animate-fade-in">
-
-
       <div className="stats-grid">
         {stats.map((stat) => (
           <div key={stat.title} className="stat-card">
@@ -84,7 +106,12 @@ const Dashboard = () => {
               {stat.items.map((item) => (
                 <div key={item.label} className="card-item">
                   <span className="item-label">{item.label}</span>
-                  <span className="item-value" style={item.color ? { color: item.color } : {}}>{item.value}</span>
+                  <span
+                    className="item-value"
+                    style={item.color ? { color: item.color } : {}}
+                  >
+                    {item.value}
+                  </span>
                 </div>
               ))}
             </div>
@@ -94,6 +121,58 @@ const Dashboard = () => {
             </button>
           </div>
         ))}
+      </div>
+
+      <div className="dashboard-section kuppi-notices">
+        <div className="section-header">
+          <h3>Published Kuppi Notices</h3>
+          <button className="view-all-btn">
+            <span>Latest Sessions</span>
+            <ChevronRight size={16} />
+          </button>
+        </div>
+
+        {loadingKuppi ? (
+          <p className="item-meta">Loading approved sessions...</p>
+        ) : approvedSessions.length === 0 ? (
+          <p className="item-meta">No approved kuppi sessions yet.</p>
+        ) : (
+          <div className="list-items">
+            {approvedSessions.map((session) => (
+              <div key={session._id} className="list-item">
+                <div className="item-details">
+                  <div className="item-avatar-placeholder">
+                    {session.module?.charAt(0) || 'K'}
+                  </div>
+
+                  <div className="item-info">
+                    <h4 className="item-name">{session.module}</h4>
+                    <span className="item-meta">
+                      <User size={14} style={{ marginRight: '4px' }} />
+                      {session.batchRepName} • {session.faculty}
+                    </span>
+                    <span className="item-meta">
+                      <CalendarDays size={14} style={{ marginRight: '4px' }} />
+                      {session.scheduledDate
+                        ? new Date(session.scheduledDate).toLocaleString()
+                        : 'Date not scheduled'}
+                    </span>
+                    <span className="item-meta">
+                      {session.description || 'No additional description'}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  className="card-action-btn"
+                  onClick={() => alert('Registration page will be linked later')}
+                >
+                  Register
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="dashboard-sections">
