@@ -23,6 +23,9 @@ import Register from './pages/Auth/Register';
 import Profile from './pages/Profile/Profile';
 import AdminLostFound from './pages/AdminLostFound/AdminLostFound';
 import AdminPayments from './pages/AdminPayments/AdminPayments';
+import AdminTicketDashboard from './pages/support/AdminTicketDashboard';
+import MyTickets from './pages/support/MyTickets';
+import SubmitTicket from './pages/support/SubmitTicket';
 import { useAuth } from './context/AuthContext';
 
 import './index.css';
