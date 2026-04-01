@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { 
-  BookOpen, 
-  CheckCircle, 
-  Clock, 
-  XCircle, 
-  DollarSign, 
-  FileText, 
-  Users, 
+import {
+  BookOpen,
+  CheckCircle,
+  Clock,
+  XCircle,
+  DollarSign,
+  FileText,
+  Users,
   ArrowRight,
   Eye,
   AlertCircle,
@@ -88,234 +88,233 @@ const AdminPayments = () => {
       <main className="admin-main-content">
         <div className="admin-dashboard-container animate-fade-in">
           <div className="max-w-7xl mx-auto">
-        
-        {/* Header */}
-        <header className="admin-header animate-slide-up stagger-1">
-          <div className="header-title">
-            <h1>Financial Review Board</h1>
-            <p>Monitor and validate student payment submissions</p>
-          </div>
-          <div className="header-actions">
-            <button
-              onClick={() => navigate('/admin-kuppi')}
-              className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-800 transition-all hover:-translate-y-0.5"
-            >
-              <BookOpen size={18} />
-              Manage Kuppi
-            </button>
-          </div>
-        </header>
 
-        {/* Stats Grid */}
-        <section className="stats-grid-admin animate-slide-up stagger-2">
-          <div className="admin-stat-card">
-            <div className="stat-icon-box total">
-              <Users size={24} />
-            </div>
-            <div className="stat-info">
-              <h4>Total Records</h4>
-              <span className="stat-value">{stats.total}</span>
-            </div>
-          </div>
-          
-          <div className="admin-stat-card">
-            <div className="stat-icon-box pending">
-              <Clock size={24} />
-            </div>
-            <div className="stat-info">
-              <h4>Pending Review</h4>
-              <span className="stat-value">{stats.pending}</span>
-            </div>
-          </div>
+            {/* Header */}
+            <header className="admin-header animate-slide-up stagger-1">
+              <div className="header-title">
+                <h1>Financial Review Board</h1>
+                <p>Monitor and validate student payment submissions</p>
+              </div>
+              <div className="header-actions">
+                <button
+                  onClick={() => navigate('/admin-kuppi')}
+                  className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-800 transition-all hover:-translate-y-0.5"
+                >
+                  <BookOpen size={18} />
+                  Manage Kuppi
+                </button>
+              </div>
+            </header>
 
-          <div className="admin-stat-card">
-            <div className="stat-icon-box approved">
-              <CheckCircle size={24} />
-            </div>
-            <div className="stat-info">
-              <h4>Approved Total</h4>
-              <span className="stat-value">{stats.approved}</span>
-            </div>
-          </div>
+            {/* Stats Grid */}
+            <section className="stats-grid-admin animate-slide-up stagger-2">
+              <div className="admin-stat-card">
+                <div className="stat-icon-box total">
+                  <Users size={24} />
+                </div>
+                <div className="stat-info">
+                  <h4>Total Records</h4>
+                  <span className="stat-value">{stats.total}</span>
+                </div>
+              </div>
 
-          <div className="admin-stat-card">
-            <div className="stat-icon-box total" style={{background: '#f8fafc', color: '#1a3646'}}>
-              <TrendingUp size={24} />
-            </div>
-            <div className="stat-info">
-              <h4>Page Revenue</h4>
-              <span className="stat-value">Rs. {stats.revenue.toFixed(2)}</span>
-            </div>
-          </div>
-        </section>
+              <div className="admin-stat-card">
+                <div className="stat-icon-box pending">
+                  <Clock size={24} />
+                </div>
+                <div className="stat-info">
+                  <h4>Pending Review</h4>
+                  <span className="stat-value">{stats.pending}</span>
+                </div>
+              </div>
 
-        {/* Table Panel */}
-        <div className="payments-table-panel animate-slide-up stagger-3">
-          {error && (
-            <div className="p-4 bg-rose-50 text-rose-700 flex items-center gap-3 border-b border-rose-100 font-bold text-sm">
-              <AlertCircle size={20} />
-              {error}
-            </div>
-          )}
+              <div className="admin-stat-card">
+                <div className="stat-icon-box approved">
+                  <CheckCircle size={24} />
+                </div>
+                <div className="stat-info">
+                  <h4>Approved Total</h4>
+                  <span className="stat-value">{stats.approved}</span>
+                </div>
+              </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead className="table-header-modern">
-                <tr>
-                  <th>Student & Date</th>
-                  <th>Payment Details</th>
-                  <th className="text-center">Verification Slip</th>
-                  <th className="text-center">Status</th>
-                  <th className="text-right">Review Action</th>
-                </tr>
-              </thead>
+              <div className="admin-stat-card">
+                <div className="stat-icon-box total" style={{ background: '#f8fafc', color: '#1a3646' }}>
+                  <TrendingUp size={24} />
+                </div>
+                <div className="stat-info">
+                  <h4>Page Revenue</h4>
+                  <span className="stat-value">Rs. {stats.revenue.toFixed(2)}</span>
+                </div>
+              </div>
+            </section>
 
-              <tbody className="divide-y divide-slate-100">
-                {loading ? (
-                  <tr>
-                    <td colSpan="5" className="py-20 text-center">
-                      <div className="inline-flex flex-col items-center gap-3">
-                        <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Loading records...</span>
-                      </div>
-                    </td>
-                  </tr>
-                ) : payments.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="py-20 text-center">
-                      <div className="flex flex-col items-center gap-2 text-slate-400">
-                        <FileText size={48} strokeWidth={1} />
-                        <p className="font-bold text-sm">No payment records found.</p>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  payments.map((payment) => (
-                    <tr key={payment._id} className="payment-row group">
-                      <td className="td-content">
-                        <div className="student-info">
-                          <div className="student-avatar">
-                            {payment.userId.substring(0, 2).toUpperCase()}
-                          </div>
-                          <div>
-                            <span className="student-name">{payment.userId}</span>
-                            <span className="student-date">{new Date(payment.createdAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}</span>
-                          </div>
-                        </div>
-                      </td>
+            {/* Table Panel */}
+            <div className="payments-table-panel animate-slide-up stagger-3">
+              {error && (
+                <div className="p-4 bg-rose-50 text-rose-700 flex items-center gap-3 border-b border-rose-100 font-bold text-sm">
+                  <AlertCircle size={20} />
+                  {error}
+                </div>
+              )}
 
-                      <td className="td-content">
-                        <div className="amount-value">Rs. {payment.amount.toFixed(2)}</div>
-                        <span className="payment-for-tag">{payment.paymentFor}</span>
-                      </td>
-
-                      <td className="td-content text-center">
-                        <img
-                          src={`http://localhost:5050/${payment.slipImage}`}
-                          alt="Slip"
-                          className="slip-thumbnail mx-auto"
-                          onClick={() => setSelectedImage(`http://localhost:5050/${payment.slipImage}`)}
-                          onError={(e) => { e.target.src = 'https://via.placeholder.com/150?text=Error'; }}
-                        />
-                      </td>
-
-                      <td className="td-content text-center">
-                        <span className={`status-chip ${payment.status}`}>
-                          {payment.status === 'approved' && <CheckCircle size={12} />}
-                          {payment.status === 'rejected' && <XCircle size={12} />}
-                          {payment.status === 'pending' && <Clock size={12} className="animate-spin-slow" />}
-                          {payment.status}
-                        </span>
-                      </td>
-
-                      <td className="td-content text-right">
-                        {payment.status === 'pending' ? (
-                          <div className="action-pane opacity-0 group-hover:opacity-100 transition-opacity">
-                            <input
-                              type="text"
-                              className="remarks-input"
-                              placeholder="Add reviewer notes..."
-                              value={remarksInput[payment._id] || ''}
-                              onChange={(e) => setRemarksInput({ ...remarksInput, [payment._id]: e.target.value })}
-                            />
-                            <div className="action-buttons">
-                              <button
-                                onClick={() => handleStatusUpdate(payment._id, 'approved')}
-                                disabled={actionLoading === payment._id}
-                                className="btn-action btn-approve"
-                              >
-                                {actionLoading === payment._id ? '...' : 'Approve'}
-                              </button>
-                              <button
-                                onClick={() => handleStatusUpdate(payment._id, 'rejected')}
-                                disabled={actionLoading === payment._id}
-                                className="btn-action btn-reject"
-                              >
-                                {actionLoading === payment._id ? '...' : 'Reject'}
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="remarks-display">
-                            <span className="note-label">Reviewer Note:</span>
-                            <span className="note-text">{payment.remarks || 'No remarks provided.'}</span>
-                          </div>
-                        )}
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead className="table-header-modern">
+                    <tr>
+                      <th>Student & Date</th>
+                      <th>Payment Details</th>
+                      <th className="text-center">Verification Slip</th>
+                      <th className="text-center">Status</th>
+                      <th className="text-right">Review Action</th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  </thead>
+
+                  <tbody className="divide-y divide-slate-100">
+                    {loading ? (
+                      <tr>
+                        <td colSpan="5" className="py-20 text-center">
+                          <div className="inline-flex flex-col items-center gap-3">
+                            <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                            <span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Loading records...</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : payments.length === 0 ? (
+                      <tr>
+                        <td colSpan="5" className="py-20 text-center">
+                          <div className="flex flex-col items-center gap-2 text-slate-400">
+                            <FileText size={48} strokeWidth={1} />
+                            <p className="font-bold text-sm">No payment records found.</p>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      payments.map((payment) => (
+                        <tr key={payment._id} className="payment-row group">
+                          <td className="td-content">
+                            <div className="student-info">
+                              <div className="student-avatar">
+                                {payment.userId.substring(0, 2).toUpperCase()}
+                              </div>
+                              <div>
+                                <span className="student-name">{payment.userId}</span>
+                                <span className="student-date">{new Date(payment.createdAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}</span>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="td-content">
+                            <div className="amount-value">Rs. {payment.amount.toFixed(2)}</div>
+                            <span className="payment-for-tag">{payment.paymentFor}</span>
+                          </td>
+
+                          <td className="td-content text-center">
+                            <img
+                              src={`http://localhost:5050/${payment.slipImage}`}
+                              alt="Slip"
+                              className="slip-thumbnail mx-auto"
+                              onClick={() => setSelectedImage(`http://localhost:5050/${payment.slipImage}`)}
+                              onError={(e) => { e.target.src = 'https://via.placeholder.com/150?text=Error'; }}
+                            />
+                          </td>
+
+                          <td className="td-content text-center">
+                            <span className={`status-chip ${payment.status}`}>
+                              {payment.status === 'approved' && <CheckCircle size={12} />}
+                              {payment.status === 'rejected' && <XCircle size={12} />}
+                              {payment.status === 'pending' && <Clock size={12} className="animate-spin-slow" />}
+                              {payment.status}
+                            </span>
+                          </td>
+
+                          <td className="td-content text-right">
+                            {payment.status === 'pending' ? (
+                              <div className="action-pane opacity-0 group-hover:opacity-100 transition-opacity">
+                                <input
+                                  type="text"
+                                  className="remarks-input"
+                                  placeholder="Add reviewer notes..."
+                                  value={remarksInput[payment._id] || ''}
+                                  onChange={(e) => setRemarksInput({ ...remarksInput, [payment._id]: e.target.value })}
+                                />
+                                <div className="action-buttons">
+                                  <button
+                                    onClick={() => handleStatusUpdate(payment._id, 'approved')}
+                                    disabled={actionLoading === payment._id}
+                                    className="btn-action btn-approve"
+                                  >
+                                    {actionLoading === payment._id ? '...' : 'Approve'}
+                                  </button>
+                                  <button
+                                    onClick={() => handleStatusUpdate(payment._id, 'rejected')}
+                                    disabled={actionLoading === payment._id}
+                                    className="btn-action btn-reject"
+                                  >
+                                    {actionLoading === payment._id ? '...' : 'Reject'}
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="remarks-display">
+                                <span className="note-label">Reviewer Note:</span>
+                                <span className="note-text">{payment.remarks || 'No remarks provided.'}</span>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="bg-slate-50 p-4 flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                    Page <span className="text-slate-900">{page}</span> of {totalPages}
+                  </span>
+                  <div className="flex gap-1">
+                    {[...Array(totalPages)].map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setPage(i + 1)}
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${page === i + 1
+                            ? 'bg-indigo-600 text-white shadow-md'
+                            : 'bg-white text-slate-500 hover:bg-slate-100 border border-slate-200'
+                          }`}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="bg-slate-50 p-4 flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                Page <span className="text-slate-900">{page}</span> of {totalPages}
-              </span>
-              <div className="flex gap-1">
-                {[...Array(totalPages)].map((_, i) => (
+          {/* Image Modal */}
+          {selectedImage && (
+            <div className="image-modal-overlay" onClick={() => setSelectedImage(null)}>
+              <div className="modal-content-box" onClick={(e) => e.stopPropagation()}>
+                <button className="modal-close-btn" onClick={() => setSelectedImage(null)}>
+                  <XCircle size={32} />
+                </button>
+                <img src={selectedImage} alt="Payment Verification Slip" />
+                <div className="p-4 bg-slate-50 mt-2 rounded flex justify-between items-center">
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Verification Slip View</span>
                   <button
-                    key={i}
-                    onClick={() => setPage(i + 1)}
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
-                      page === i + 1 
-                        ? 'bg-indigo-600 text-white shadow-md' 
-                        : 'bg-white text-slate-500 hover:bg-slate-100 border border-slate-200'
-                    }`}
+                    className="text-xs font-bold text-indigo-600 hover:underline"
+                    onClick={() => window.open(selectedImage, '_blank')}
                   >
-                    {i + 1}
+                    Open in new tab
                   </button>
-                ))}
+                </div>
               </div>
             </div>
           )}
         </div>
-      </div>
-
-      {/* Image Modal */}
-      {selectedImage && (
-        <div className="image-modal-overlay" onClick={() => setSelectedImage(null)}>
-          <div className="modal-content-box" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={() => setSelectedImage(null)}>
-              <XCircle size={32} />
-            </button>
-            <img src={selectedImage} alt="Payment Verification Slip" />
-            <div className="p-4 bg-slate-50 mt-2 rounded flex justify-between items-center">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Verification Slip View</span>
-              <button 
-                className="text-xs font-bold text-indigo-600 hover:underline"
-                onClick={() => window.open(selectedImage, '_blank')}
-              >
-                Open in new tab
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
       </main>
     </div>
   );
