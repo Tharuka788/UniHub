@@ -94,7 +94,7 @@ function AdminLayout() {
       <Route path="/admin-payments" element={<PlaceholderPage title="Payment Module" />} />
       <Route path="/admin-lost-found" element={<PlaceholderPage title="Lost & Found Module" />} />
       <Route path="/admin-events" element={<PlaceholderPage title="Event Module" />} />
-      <Route path="/admin-support" element={<AdminTicketDashboard />} />
+      <Route path="/admin-support/manage" element={<AdminTicketDashboard />} />
       <Route path="/admin-support/tickets" element={<MyTickets />} />
       <Route path="/admin-support/create" element={<SubmitTicket />} />
       <Route path="*" element={<Navigate to="/admin-dashboard" />} />
@@ -112,8 +112,8 @@ const AppRouter = () => {
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   if (!isAuthenticated && !isAuthPage && !location.pathname.startsWith('/admin')) {
-  return <Navigate to="/login" />;
-}
+    return <Navigate to="/login" />;
+  }
 
   if (isAuthPage) {
     return (

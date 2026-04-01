@@ -9,11 +9,10 @@ const SubmitTicket = () => {
     name: '',
     email: '',
     subject: '',
-    description: '',
-    priority: 'Low'
+    message: ''
   });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [feedbackMsg, setFeedbackMsg] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,12 +21,14 @@ const SubmitTicket = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setFeedbackMsg('');
     try {
-      await axios.post('http://localhost:5000/api/support/tickets', formData);
-      setMessage('Ticket submitted successfully!');
-      setTimeout(() => navigate('/support/my-tickets'), 2000);
+      await axios.post('http://localhost:5050/admin-support/create', formData);
+      setFeedbackMsg('Ticket submitted successfully!');
+      setTimeout(() => navigate('/admin-support/tickets'), 2000);
     } catch (error) {
-      setMessage('Error submitting ticket. Please try again.');
+      console.error(error);
+      setFeedbackMsg('Error submitting ticket. Please try again.');
     }
     setLoading(false);
   };
@@ -35,7 +36,7 @@ const SubmitTicket = () => {
   return (
     <div className="support-container">
       <h2 className="support-title">Submit a Support Ticket</h2>
-      {message && <div style={{ padding: '10px', background: '#d4edda', color: '#155724', borderRadius: '8px', marginBottom: '20px', textAlign: 'center' }}>{message}</div>}
+      {feedbackMsg && <div style={{ padding: '10px', background: feedbackMsg.includes('Error') ? '#f8d7da' : '#d4edda', color: feedbackMsg.includes('Error') ? '#721c24' : '#155724', borderRadius: '8px', marginBottom: '20px', textAlign: 'center' }}>{feedbackMsg}</div>}
       
       <form onSubmit={handleSubmit} className="support-form">
         <div className="form-group">
@@ -54,17 +55,8 @@ const SubmitTicket = () => {
         </div>
         
         <div className="form-group">
-          <label>Description</label>
-          <textarea name="description" value={formData.description} onChange={handleChange} required rows="5" placeholder="Detailed explanation..."></textarea>
-        </div>
-        
-        <div className="form-group">
-          <label>Priority</label>
-          <select name="priority" value={formData.priority} onChange={handleChange}>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-          </select>
+          <label>Message</label>
+          <textarea name="message" value={formData.message} onChange={handleChange} required rows="5" placeholder="Detailed explanation..."></textarea>
         </div>
         
         <button type="submit" className="submit-btn" disabled={loading}>

@@ -7,28 +7,29 @@ const ticketSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: [true, 'Please add an email']
+    required: [true, 'Please add an email'],
+    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
   },
   subject: {
     type: String,
     required: [true, 'Please add a subject']
   },
-  description: {
+  message: {
     type: String,
-    required: [true, 'Please add a description']
-  },
-  priority: {
-    type: String,
-    enum: ['Low', 'Medium', 'High'],
-    default: 'Low'
+    required: [true, 'Please add a message']
   },
   status: {
     type: String,
-    enum: ['Open', 'In Progress', 'Resolved'],
-    default: 'Open'
+    enum: ['Pending', 'In Progress', 'Resolved'],
+    default: 'Pending'
+  },
+  response: {
+    type: String
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
-}, {
-  timestamps: true
 });
 
 module.exports = mongoose.model('Ticket', ticketSchema);

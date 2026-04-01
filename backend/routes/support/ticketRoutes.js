@@ -2,20 +2,20 @@ const express = require('express');
 const router = express.Router();
 const {
   createTicket,
-  getUserTickets,
   getTickets,
-  updateTicketStatus,
-  deleteTicket
+  updateTicket,
+  getTicketById,
+  deleteTicket,
+  getTicketReports,
+  getTicketReportsPDF
 } = require('../../controllers/support/ticketController');
-const { protect, admin } = require('../../middleware/authMiddleware');
 
-// Public routes
-router.post('/', createTicket);
-router.get('/user/:email', getUserTickets);
-
-// Protected Admin routes
-router.get('/', protect, admin, getTickets);
-router.put('/:id/status', protect, admin, updateTicketStatus);
-router.delete('/:id', protect, admin, deleteTicket);
+router.post('/create', createTicket);
+router.get('/reports', getTicketReports);
+router.get('/reports/pdf', getTicketReportsPDF);
+router.get('/tickets', getTickets);
+router.get('/tickets/:id', getTicketById);
+router.put('/update/:id', updateTicket);
+router.delete('/delete/:id', deleteTicket);
 
 module.exports = router;

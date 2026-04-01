@@ -14,8 +14,10 @@ import {
   AlertCircle,
   TrendingUp,
   Search,
-  Filter
+  Filter,
+  Ticket
 } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -30,6 +32,9 @@ const AdminDashboard = () => {
   const [remarksInput, setRemarksInput] = useState({});
   const [actionLoading, setActionLoading] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+
+  const [overviewData, setOverviewData] = useState(null);
+  const [generatingOverview, setGeneratingOverview] = useState(false);
 
   const fetchPayments = async (pageNum = 1) => {
     setLoading(true);
@@ -51,6 +56,40 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchPayments(page);
   }, [page]);
+
+  const handleGenerateOverview = async () => {
+    setGeneratingOverview(true);
+    try {
+      const res = await axios.get('http://localhost:5050/admin-dashboard/payment-overview');
+      setOverviewData(res.data);
+    } catch (err) {
+      console.error('Failed to load dashboard overview');
+      alert('Error fetching payment overview');
+    } finally {
+      setGeneratingOverview(false);
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    setActionLoading('pdf');
+    try {
+      const response = await axios.get('http://localhost:5050/admin-dashboard/payment-overview/pdf', {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'payment-overview.pdf');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading PDF', error);
+      alert('Failed to download PDF report');
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   const stats = useMemo(() => {
     const pending = payments.filter(p => p.status === 'pending').length;
@@ -91,7 +130,15 @@ const AdminDashboard = () => {
             <h1>Financial Review Board</h1>
             <p>Monitor and validate student payment submissions</p>
           </div>
-          <div className="header-actions">
+          <div className="header-actions flex gap-3">
+            <button
+              onClick={handleGenerateOverview}
+              disabled={generatingOverview}
+              className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-indigo-700 transition-all hover:-translate-y-0.5"
+            >
+              <FileText size={18} />
+              {generatingOverview ? 'Generating...' : 'Generate Payment Overview'}
+            </button>
             <button
               onClick={() => navigate('/admin-kuppi')}
               className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-800 transition-all hover:-translate-y-0.5"
@@ -101,6 +148,83 @@ const AdminDashboard = () => {
             </button>
           </div>
         </header>
+
+        {/* Payment Reports Overview Section */}
+        {overviewData && (
+          <section className="animate-slide-up stagger-1" style={{ marginBottom: '40px' }}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold" style={{ color: '#1a3646' }}>Payment System Overview</h2>
+              <button 
+                onClick={handleDownloadPDF} 
+                disabled={actionLoading === 'pdf'}
+                className="inline-flex items-center gap-2 bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-rose-700 transition-all"
+              >
+                <FileText size={16} />
+                {actionLoading === 'pdf' ? 'Downloading...' : 'Download PDF'}
+              </button>
+            </div>
+            
+            {/* Payment Summary Cards */}
+            <div className="stats-grid-admin mb-6">
+              <div className="admin-stat-card" style={{ borderLeft: '4px solid #4f46e5' }}>
+                <div className="stat-icon-box total"><Ticket size={24} /></div>
+                <div className="stat-info">
+                  <h4 style={{ color: '#64748b' }}>Total Revenue</h4>
+                  <span className="stat-value" style={{ color: '#0f172a' }}>${overviewData.totalRevenue?.toFixed(2) || '0.00'}</span>
+                </div>
+              </div>
+              <div className="admin-stat-card">
+                <div className="stat-icon-box" style={{ background: '#f1f5f9', color: '#475569' }}><FileText size={24} /></div>
+                <div className="stat-info">
+                  <h4>Total Payments</h4><span className="stat-value">{overviewData.totalPayments || 0}</span>
+                </div>
+              </div>
+              <div className="admin-stat-card">
+                <div className="stat-icon-box approved"><CheckCircle size={24} /></div>
+                <div className="stat-info">
+                  <h4>Completed</h4><span className="stat-value">{overviewData.completed || 0}</span>
+                </div>
+              </div>
+              <div className="admin-stat-card">
+                <div className="stat-icon-box pending" style={{ background: '#fff3cd', color: '#856404' }}><Clock size={24} /></div>
+                <div className="stat-info">
+                  <h4>Pending</h4><span className="stat-value">{overviewData.pending || 0}</span>
+                </div>
+              </div>
+              <div className="admin-stat-card">
+                <div className="stat-icon-box" style={{ background: '#fde8e8', color: '#9b1c1c' }}><XCircle size={24} /></div>
+                <div className="stat-info">
+                  <h4>Failed</h4><span className="stat-value">{overviewData.failed || 0}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Payments Section */}
+            <div style={{ background: '#fff', padding: '20px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+              <h3 className="text-lg font-bold mb-4 text-slate-700">Recent Payments</h3>
+              {overviewData.recentPayments && overviewData.recentPayments.length > 0 ? (
+                <ul style={{ listStyleType: 'none', padding: 0 }}>
+                  {overviewData.recentPayments.map(payment => (
+                    <li key={payment._id} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #eee' }}>
+                      <div>
+                        <strong>User ID:</strong> {payment.userId} <br/>
+                        <span style={{ fontSize: '12px', color: '#666' }}>{payment.paymentFor} - {new Date(payment.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <strong style={{ color: '#10b981' }}>${payment.amount.toFixed(2)}</strong> <br/>
+                        <span style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', color: payment.status === 'approved' ? '#155724' : payment.status === 'pending' ? '#856404' : '#721c24' }}>
+                          {payment.status}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                 <p className="text-sm text-slate-500">No recent payments found.</p>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Stats Grid */}
         <section className="stats-grid-admin animate-slide-up stagger-2">
