@@ -144,7 +144,7 @@ const AdminPayments = () => {
             </div>
             <div className="stat-info">
               <h4>Page Revenue</h4>
-              <span className="stat-value">${stats.revenue.toFixed(2)}</span>
+              <span className="stat-value">Rs. {stats.revenue.toFixed(2)}</span>
             </div>
           </div>
         </section>
@@ -205,7 +205,7 @@ const AdminPayments = () => {
                       </td>
 
                       <td className="td-content">
-                        <div className="amount-value">${payment.amount.toFixed(2)}</div>
+                        <div className="amount-value">Rs. {payment.amount.toFixed(2)}</div>
                         <span className="payment-for-tag">{payment.paymentFor}</span>
                       </td>
 

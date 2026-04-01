@@ -8,6 +8,10 @@ const MyTickets = () => {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
+  const [editingTicket, setEditingTicket] = useState(null);
+  const [editStatus, setEditStatus] = useState('');
+  const [editResponse, setEditResponse] = useState('');
+
   const fetchTickets = async (e) => {
     if (e) e.preventDefault();
     if (!email) return;
@@ -21,7 +25,33 @@ const MyTickets = () => {
       alert('Error fetching tickets. Please check the backend.');
     }
     setLoading(false);
+    setLoading(false);
     setSearched(true);
+  };
+
+  const handleEditClick = (ticket) => {
+    setEditingTicket(ticket._id);
+    setEditStatus(ticket.status);
+    setEditResponse(ticket.response || '');
+  };
+
+  const cancelEdit = () => {
+    setEditingTicket(null);
+  };
+
+  const handleUpdate = async (id) => {
+    try {
+      await axios.put(`http://localhost:5050/admin-support/update/${id}`, {
+        status: editStatus,
+        response: editResponse
+      });
+      alert('Ticket updated successfully!');
+      setEditingTicket(null);
+      fetchTickets(); // refetch exactly as with email
+    } catch (error) {
+      console.error('Error updating ticket:', error);
+      alert('Failed to update ticket');
+    }
   };
 
   const getStatusClass = (status) => {
@@ -62,9 +92,21 @@ const MyTickets = () => {
               <h3 style={{ margin: '0 0 10px 0', color: '#333' }}>{ticket.subject}</h3>
               <p style={{ margin: '5px 0', fontSize: '14px', color: '#555' }}><strong>Submitted:</strong> {new Date(ticket.createdAt).toLocaleDateString()}</p>
             </div>
-            <span className={`ticket-status ${getStatusClass(ticket.status)}`} style={{ padding: '5px 12px', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.85em', textTransform: 'capitalize' }}>
-              {ticket.status}
-            </span>
+            {editingTicket === ticket._id ? (
+              <select
+                value={editStatus}
+                onChange={(e) => setEditStatus(e.target.value)}
+                style={{ padding: '5px 10px', borderRadius: '4px', border: '1px solid #ccc' }}
+              >
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            ) : (
+              <span className={`ticket-status ${getStatusClass(ticket.status)}`} style={{ padding: '5px 12px', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.85em', textTransform: 'capitalize' }}>
+                {ticket.status}
+              </span>
+            )}
           </div>
 
           <div style={{ marginBottom: '20px' }}>
@@ -74,9 +116,16 @@ const MyTickets = () => {
             </div>
           </div>
 
-          <div style={{ background: '#eef2f5', padding: '15px', borderRadius: '6px' }}>
+          <div style={{ background: '#eef2f5', padding: '15px', borderRadius: '6px', marginBottom: '15px' }}>
             <h4 style={{ margin: '0 0 10px 0', color: '#2c3e50', fontSize: '16px' }}>Admin Response:</h4>
-            {ticket.response ? (
+            {editingTicket === ticket._id ? (
+              <textarea
+                value={editResponse}
+                onChange={(e) => setEditResponse(e.target.value)}
+                placeholder="Type your response here..."
+                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc', minHeight: '80px' }}
+              />
+            ) : ticket.response ? (
               <div style={{ fontSize: '14px', color: '#333', whiteSpace: 'pre-wrap' }}>
                 {ticket.response}
               </div>
@@ -84,6 +133,29 @@ const MyTickets = () => {
               <div style={{ fontSize: '14px', color: '#666', fontStyle: 'italic' }}>
                 No response yet. Support will reply soon.
               </div>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+            {editingTicket === ticket._id ? (
+              <>
+                <button 
+                  onClick={cancelEdit} 
+                  style={{ padding: '8px 16px', background: '#ccc', color: '#333', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  Cancel
+                </button>
+                <button 
+                  onClick={() => handleUpdate(ticket._id)} 
+                  style={{ padding: '8px 16px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  Save Update
+                </button>
+              </>
+            ) : (
+              <button 
+                onClick={() => handleEditClick(ticket)} 
+                style={{ padding: '8px 16px', background: '#17a2b8', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                Edit / Update Ticket
+              </button>
             )}
           </div>
         </div>
