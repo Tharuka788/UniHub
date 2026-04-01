@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  LayoutDashboard, 
-  Search, 
-  BookOpen, 
-  Ticket, 
-  User, 
+import {
+  LayoutDashboard,
+  Search,
+  BookOpen,
+  Ticket,
+  User,
   Settings,
   Circle,
   CreditCard,
@@ -24,7 +24,7 @@ const Sidebar = () => {
     { name: 'Lost & Found', path: '/lost-and-found', icon: Search },
     { name: 'Kuppi Sessions', path: '/kuppi-request', icon: BookOpen },
     { name: 'Payments', path: '/payments', icon: CreditCard },
-    { name: 'Support Tickets', path: '/support', icon: Ticket },
+    { name: 'Support Tickets', path: '/admin-support/create', icon: Ticket },
     { name: 'Profile', path: '/profile', icon: User },
     { name: 'Settings', path: '/settings', icon: Settings },
   ];

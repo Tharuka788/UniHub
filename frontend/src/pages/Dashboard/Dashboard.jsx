@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Plus, 
-  Search, 
-  BookOpen, 
-  Ticket, 
-  Clock, 
-  CheckCircle, 
+import {
+  Plus,
+  Search,
+  BookOpen,
+  Ticket,
+  Clock,
+  CheckCircle,
   AlertCircle,
   MoreHorizontal,
   ChevronRight,
@@ -39,11 +39,13 @@ const Dashboard = () => {
       title: 'Lost & Found',
       icon: Search,
       items: [
-        { label: 'Recent Items', value: items.filter(i => {
-          const createdAt = new Date(i.createdAt);
-          const now = new Date();
-          return (now - createdAt) < 7 * 24 * 60 * 60 * 1000; // Last 7 days
-        }).length },
+        {
+          label: 'Recent Items', value: items.filter(i => {
+            const createdAt = new Date(i.createdAt);
+            const now = new Date();
+            return (now - createdAt) < 7 * 24 * 60 * 60 * 1000; // Last 7 days
+          }).length
+        },
         { label: 'Total Reported', value: items.length },
         { label: 'Items Matched', value: items.filter(i => i.itemType === 'Reclaimed').length, color: '#10b981' }
       ],
@@ -70,7 +72,7 @@ const Dashboard = () => {
         { label: 'Open Tickets Status', value: 'Normal', color: '#3b82f6' }
       ],
       buttonText: 'Create Ticket',
-      onClick: () => navigate('/support')
+      onClick: () => navigate('/admin-support/create')
     }
   ];
 
@@ -138,9 +140,9 @@ const Dashboard = () => {
                   <div className="item-details">
                     <div className="item-image-placeholder">
                       {item.image ? (
-                        <img 
-                          src={item.image.startsWith('http') ? item.image : `http://localhost:5050${item.image}`} 
-                          alt={item.name} 
+                        <img
+                          src={item.image.startsWith('http') ? item.image : `http://localhost:5050${item.image}`}
+                          alt={item.name}
                           style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
                         />
                       ) : (
