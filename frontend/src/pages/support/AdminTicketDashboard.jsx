@@ -132,15 +132,15 @@ const AdminTicketDashboard = () => {
       <div className="tickets-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h2 className="support-title">Admin Ticket Management Dashboard</h2>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button 
-            onClick={handleGenerateReport} 
+          <button
+            onClick={handleGenerateReport}
             disabled={generatingReport}
             style={{ padding: '10px 20px', background: '#17a2b8', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
           >
             {generatingReport ? 'Generating...' : 'Generate Report'}
           </button>
-          <button 
-            onClick={handleDownloadPDF} 
+          <button
+            onClick={handleDownloadPDF}
             disabled={downloadingPDF}
             style={{ padding: '10px 20px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
           >
