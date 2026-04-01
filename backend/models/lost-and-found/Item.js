@@ -5,7 +5,8 @@ const itemSchema = new mongoose.Schema(
     title: {
       type: String,
       required: [true, 'Please add a title'],
-      trim: true
+      trim: true,
+      match: [/^[a-zA-Z\s]*$/, 'Title can only contain letters and spaces']
     },
     category: {
       type: String,
@@ -13,7 +14,8 @@ const itemSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: [true, 'Please add a description']
+      required: [true, 'Please add a description'],
+      maxlength: [100, 'Description cannot exceed 100 characters']
     },
     image: {
       type: String,

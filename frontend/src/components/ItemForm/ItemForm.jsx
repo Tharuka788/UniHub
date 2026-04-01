@@ -19,8 +19,22 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
   const [suggestedMatches, setSuggestedMatches] = useState([]);
   const [showMatches, setShowMatches] = useState(false);
 
+  const [titleError, setTitleError] = useState('');
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    if (name === 'title') {
+      const regex = /^[a-zA-Z\s]*$/;
+      if (!regex.test(value)) {
+        setTitleError('Numbers and symbols are not allowed in titles.');
+        return; // Prevent the character from being added
+      } else {
+        setTitleError('');
+      }
+    }
+
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleImageChange = (e) => {
@@ -126,6 +140,7 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
               placeholder="e.g. Blue Puma Backpack" 
               required 
             />
+            {titleError && <small className="form-help-error" style={{ color: '#ef4444', marginTop: '4px', display: 'block' }}>{titleError}</small>}
           </div>
 
           <div className="form-group">
@@ -166,8 +181,17 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
               onChange={handleChange} 
               placeholder={`Where did you ${formType === 'Lost' ? 'lose' : 'find'} it? Any identifying marks?`} 
               rows="4" 
+              maxLength="100"
               required 
             ></textarea>
+            <div className="char-count" style={{ 
+              textAlign: 'right', 
+              fontSize: '0.8rem', 
+              color: formData.description.length >= 100 ? '#ef4444' : '#64748b',
+              marginTop: '4px' 
+            }}>
+              {formData.description.length}/100 characters
+            </div>
           </div>
 
           <div className="form-group">

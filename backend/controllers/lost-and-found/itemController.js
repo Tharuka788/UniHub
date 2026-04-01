@@ -70,6 +70,14 @@ const getItemById = async (req, res) => {
 const createItem = async (req, res) => {
   try {
     const { title, category, location, description, itemType } = req.body;
+
+    // Explicit validation
+    if (title && !/^[a-zA-Z\s]*$/.test(title)) {
+      return res.status(400).json({ message: 'Title can only contain letters and spaces' });
+    }
+    if (description && description.length > 100) {
+      return res.status(400).json({ message: 'Description cannot exceed 100 characters' });
+    }
     let imagePath = '';
     let imageEmbedding = null;
 
@@ -157,6 +165,14 @@ const updateItem = async (req, res) => {
     }
 
     let updatedData = { ...req.body };
+
+    // Explicit validation
+    if (updatedData.title && !/^[a-zA-Z\s]*$/.test(updatedData.title)) {
+      return res.status(400).json({ message: 'Title can only contain letters and spaces' });
+    }
+    if (updatedData.description && updatedData.description.length > 100) {
+      return res.status(400).json({ message: 'Description cannot exceed 100 characters' });
+    }
 
     if (req.file) {
       // If there's a new image, update to the Cloudinary URL
