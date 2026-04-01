@@ -65,12 +65,12 @@ const PaymentForm = () => {
             <label>Amount Paid</label>
             <div className="input-wrapper">
               <span className="currency">LKR</span>
-              <input 
-                type="number" 
-                name="amount" 
-                value={formData.amount} 
-                onChange={handleChange} 
-                placeholder="0.00" 
+              <input
+                type="number"
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                placeholder="0.00"
                 required
               />
             </div>
@@ -80,12 +80,12 @@ const PaymentForm = () => {
           <div className="input-group">
             <label>Purpose of Payment</label>
             <div className="input-wrapper">
-              <input 
-                type="text" 
-                name="paymentFor" 
-                value={formData.paymentFor} 
-                onChange={handleChange} 
-                placeholder="e.g. Library Fine" 
+              <input
+                type="text"
+                name="paymentFor"
+                value={formData.paymentFor}
+                onChange={handleChange}
+                placeholder="e.g. Library Fine"
                 required
               />
             </div>
@@ -100,10 +100,10 @@ const PaymentForm = () => {
               <p className="upload-text">Drag & Drop or <span className="blue-text">Click to Upload</span></p>
               <p className="upload-hint">JPG, PNG (max 5MB)</p>
               <button type="button" className="browse-btn">Browse Files</button>
-              <input 
-                type="file" 
-                className="file-input" 
-                onChange={(e) => processFile(e.target.files[0])} 
+              <input
+                type="file"
+                className="file-input"
+                onChange={(e) => processFile(e.target.files[0])}
                 accept="image/*"
               />
               {preview && <p className="file-selected-text">File selected! ✅</p>}

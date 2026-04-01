@@ -13,7 +13,7 @@ const PaymentHistory = () => {
   const userId = 'user123';
 
   // For summary stats (using placeholder if no payments)
-  const totalExpenses = "214,000.00"; 
+  const totalExpenses = "214,000.00";
   const lastPaymentDate = "Oct 24, 2023";
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const PaymentHistory = () => {
   const StatusBadge = ({ status }) => {
     const mappedStatus = getMappedStatus(status);
     let badgeClass = 'ph-status-pending';
-    
+
     if (mappedStatus === 'Completed') {
       badgeClass = 'ph-status-completed';
     } else if (mappedStatus === 'Failed') {
@@ -112,7 +112,7 @@ const PaymentHistory = () => {
         <div className="ph-controls">
           <div className="ph-filters">
             {['All', 'Completed', 'Pending', 'Failed'].map(f => (
-              <button 
+              <button
                 key={f}
                 className={`ph-filter-btn ${filter === f ? 'active' : ''}`}
                 onClick={() => setFilter(f)}
@@ -124,9 +124,9 @@ const PaymentHistory = () => {
           <div className="ph-controls-right">
             <div className="ph-search">
               <Search className="ph-search-icon" />
-              <input 
-                type="text" 
-                placeholder="Search reference..." 
+              <input
+                type="text"
+                placeholder="Search reference..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -139,7 +139,7 @@ const PaymentHistory = () => {
         </div>
 
         {error && <div className="ph-error">{error}</div>}
-        
+
         {loading ? (
           <div className="ph-loading">Loading payments...</div>
         ) : displayPayments.length === 0 ? (
@@ -148,15 +148,15 @@ const PaymentHistory = () => {
           <div className="ph-list">
             {displayPayments.map((payment, idx) => {
               const txnRef = `TXN-${payment._id ? payment._id.substring(payment._id.length - 5) : '89241'}`;
-              
+
               const dateObj = new Date(payment.createdAt);
-              const formattedDate = isNaN(dateObj.getTime()) 
-                ? 'Oct 24, 2023' 
+              const formattedDate = isNaN(dateObj.getTime())
+                ? 'Oct 24, 2023'
                 : dateObj.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
-              
+
               const amountValue = Number(payment.amount) || 0;
               const formattedAmount = amountValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-              
+
               return (
                 <div key={payment._id || idx} className="ph-list-item">
                   <div className="ph-item-icon-wrapper">

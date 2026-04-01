@@ -61,7 +61,8 @@
   align-items: center;
   justify-content: center;
   margin-right: 16px;
-  color: #3b82f6; /* A subtle blue highlight for the icon */
+  color: #3b82f6;
+  /* A subtle blue highlight for the icon */
 }
 
 .ph-summary-info {
@@ -172,7 +173,8 @@
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s;
-  height: 40px; /* match search input height */
+  height: 40px;
+  /* match search input height */
 }
 
 .ph-new-payment-btn:hover {
@@ -301,7 +303,9 @@
 }
 
 /* Loading Setup */
-.ph-loading, .ph-error, .ph-empty {
+.ph-loading,
+.ph-error,
+.ph-empty {
   text-align: center;
   padding: 40px;
   background-color: #ffffff;
@@ -316,28 +320,36 @@
   .ph-summary-cards {
     flex-direction: column;
   }
+
   .ph-controls {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
   }
+
   .ph-search {
     width: 100%;
   }
+
   .ph-list-item {
     flex-wrap: wrap;
     position: relative;
     padding-bottom: 20px;
   }
-  .ph-item-status-wrapper, .ph-item-ref {
-    display: none; /* Hide on very small screens or rearrange */
+
+  .ph-item-status-wrapper,
+  .ph-item-ref {
+    display: none;
+    /* Hide on very small screens or rearrange */
   }
+
   .ph-item-amount {
     text-align: left;
     margin-top: 10px;
     margin-right: 0;
     width: 100%;
   }
+
   .ph-item-action {
     position: absolute;
     right: 20px;
