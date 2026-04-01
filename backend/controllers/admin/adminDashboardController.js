@@ -74,7 +74,7 @@ const getPaymentOverviewPDF = async (req, res) => {
     doc.fontSize(16).font('Helvetica-Bold').text('Payment Statistics Summary', { underline: true });
     doc.moveDown(0.5);
     doc.fontSize(12).font('Helvetica').text(`Total Payments: ${totalPayments}`);
-    doc.text(`Total Revenue: $${totalRevenue.toFixed(2)}`);
+    doc.text(`Total Revenue: Rs. ${totalRevenue.toFixed(2)}`);
     doc.moveDown(1);
     doc.fillColor('#155724').text(`Completed: ${breakdown.approved}`);
     doc.fillColor('#856404').text(`Pending: ${breakdown.pending}`);
@@ -91,7 +91,7 @@ const getPaymentOverviewPDF = async (req, res) => {
       doc.fontSize(12).font('Helvetica-Oblique').text('No recent payments found.');
     } else {
       recentPayments.forEach((payment, index) => {
-        doc.fontSize(12).font('Helvetica-Bold').text(`${index + 1}. User: ${payment.userId} - $${payment.amount.toFixed(2)}`, { continued: true });
+        doc.fontSize(12).font('Helvetica-Bold').text(`${index + 1}. User: ${payment.userId} - Rs. ${payment.amount.toFixed(2)}`, { continued: true });
         
         if (payment.status === 'pending') doc.fillColor('#856404');
         else if (payment.status === 'approved') doc.fillColor('#155724');

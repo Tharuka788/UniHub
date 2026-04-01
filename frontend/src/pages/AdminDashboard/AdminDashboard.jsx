@@ -170,7 +170,7 @@ const AdminDashboard = () => {
                 <div className="stat-icon-box total"><Ticket size={24} /></div>
                 <div className="stat-info">
                   <h4 style={{ color: '#64748b' }}>Total Revenue</h4>
-                  <span className="stat-value" style={{ color: '#0f172a' }}>${overviewData.totalRevenue?.toFixed(2) || '0.00'}</span>
+                  <span className="stat-value" style={{ color: '#0f172a' }}>Rs. {overviewData.totalRevenue?.toFixed(2) || '0.00'}</span>
                 </div>
               </div>
               <div className="admin-stat-card">
@@ -211,7 +211,7 @@ const AdminDashboard = () => {
                         <span style={{ fontSize: '12px', color: '#666' }}>{payment.paymentFor} - {new Date(payment.createdAt).toLocaleDateString()}</span>
                       </div>
                       <div style={{ textAlign: 'right' }}>
-                        <strong style={{ color: '#10b981' }}>${payment.amount.toFixed(2)}</strong> <br/>
+                        <strong style={{ color: '#10b981' }}>Rs. {payment.amount.toFixed(2)}</strong> <br/>
                         <span style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', color: payment.status === 'approved' ? '#155724' : payment.status === 'pending' ? '#856404' : '#721c24' }}>
                           {payment.status}
                         </span>
@@ -264,7 +264,7 @@ const AdminDashboard = () => {
             </div>
             <div className="stat-info">
               <h4>Page Revenue</h4>
-              <span className="stat-value">${stats.revenue.toFixed(2)}</span>
+              <span className="stat-value">Rs. {stats.revenue.toFixed(2)}</span>
             </div>
           </div>
         </section>
@@ -325,7 +325,7 @@ const AdminDashboard = () => {
                       </td>
 
                       <td className="td-content">
-                        <div className="amount-value">${payment.amount.toFixed(2)}</div>
+                        <div className="amount-value">Rs. {payment.amount.toFixed(2)}</div>
                         <span className="payment-for-tag">{payment.paymentFor}</span>
                       </td>
 
