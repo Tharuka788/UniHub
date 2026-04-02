@@ -90,8 +90,23 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+// @desc    Get all users
+// @route   GET /api/users
+// @access  Private/Admin
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({}).sort({ createdAt: -1 });
+    console.log(`Backend: Fetched ${users.length} users for admin ${req.user.name}`);
+    res.json(users);
+  } catch (error) {
+    console.error('Backend: Error fetching users:', error);
+    res.status(500).json({ message: 'Server error fetching users' });
+  }
+};
+
 module.exports = {
   registerUser,
   authUser,
-  getUserProfile
+  getUserProfile,
+  getUsers
 };

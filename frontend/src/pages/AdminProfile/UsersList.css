@@ -1,0 +1,326 @@
+/* UsersList.css */
+
+.users-list-container {
+    padding: 2.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.users-list-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+    padding: 0;
+}
+
+.back-btn:hover {
+    color: #3b82f6;
+    transform: translateX(-5px);
+}
+
+.header-title-section {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.title-icon-box {
+    width: 56px;
+    height: 56px;
+    background: #1e293b;
+    color: white;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(30, 41, 59, 0.15);
+}
+
+.header-title-section h1 {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+}
+
+.header-title-section p {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+/* User Controls */
+.users-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.search-wrapper {
+    flex: 1;
+    max-width: 450px;
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1.5px solid #f1f5f9;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+.search-wrapper input {
+    width: 100%;
+    padding: 0.85rem 1rem 0.85rem 3rem;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    border-radius: 12px;
+    outline: none;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.control-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    border: 1.5px solid #f1f5f9;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    color: #475569;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.control-btn:hover {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.user-count-badge {
+    padding: 0.5rem 1rem;
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border-radius: 50px;
+    font-size: 0.85rem;
+}
+
+/* Glass Table Styles */
+.users-table-wrapper {
+    overflow-x: auto;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+
+.users-table th {
+    text-align: left;
+    padding: 1.25rem 2rem;
+    background: rgba(248, 250, 252, 0.6);
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1.5px solid #f1f5f9;
+}
+
+.users-table td {
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.user-row {
+    transition: background 0.2s;
+}
+
+.user-row:hover {
+    background: rgba(59, 130, 246, 0.02);
+}
+
+/* User Info Cell */
+.user-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-avatar-small {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+}
+
+.user-name {
+    display: block;
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.95rem;
+}
+
+.user-id {
+    display: block;
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+/* Contact Info Sub-items */
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #475569;
+}
+
+.contact-item svg {
+    color: #94a3b8;
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.badge.admin {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.badge.student {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.4rem;
+    padding-left: 0.25rem;
+}
+
+.status-indicator svg {
+    color: #10b981;
+}
+
+/* Date Cell */
+.date-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #475569;
+}
+
+.date-cell svg {
+    color: #94a3b8;
+}
+
+/* Row Action */
+.row-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #3b82f6;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+}
+
+.row-action-btn:hover {
+    background: rgba(59, 130, 246, 0.05);
+    transform: translateX(3px);
+}
+
+/* Empty State */
+.empty-state {
+    padding: 5rem 0 !important;
+    text-align: center;
+}
+
+.empty-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: #94a3b8;
+}
+
+.empty-content p {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .users-controls { flex-direction: column; align-items: stretch; }
+    .search-wrapper { max-width: none; }
+}

@@ -23,6 +23,8 @@ import Register from './pages/Auth/Register';
 import Profile from './pages/Profile/Profile';
 import AdminLostFound from './pages/AdminLostFound/AdminLostFound';
 import AdminPayments from './pages/AdminPayments/AdminPayments';
+import AdminProfile from './pages/AdminProfile/AdminProfile';
+import UsersList from './pages/AdminProfile/UsersList';
 import AdminTicketDashboard from './pages/support/AdminTicketDashboard';
 import MyTickets from './pages/support/MyTickets';
 import SubmitTicket from './pages/support/SubmitTicket';
@@ -87,6 +89,8 @@ function AdminLayout() {
   return (
     <Routes>
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      <Route path="/admin-profile" element={<AdminProfile />} />
+      <Route path="/admin-users" element={<UsersList />} />
       <Route path="/admin-kuppi" element={<AdminKuppiRequests />} />
       <Route path="/admin-payments" element={<AdminPayments />} />
       <Route path="/admin/payments" element={<AdminPayments />} />
@@ -112,6 +116,7 @@ const AppRouter = () => {
     location.pathname.startsWith('/admin-dashboard') ||
     location.pathname.startsWith('/admin-kuppi') ||
     location.pathname.startsWith('/admin-profile') ||
+    location.pathname.startsWith('/admin-users') ||
     location.pathname.startsWith('/admin-payments') ||
     location.pathname.startsWith('/admin-lost-found') ||
     location.pathname.startsWith('/admin-support') ||
