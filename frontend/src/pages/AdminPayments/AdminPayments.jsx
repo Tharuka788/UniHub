@@ -16,6 +16,8 @@ import {
   Search,
   Filter
 } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
 import './AdminPayments.css';
 
@@ -82,6 +84,77 @@ const AdminPayments = () => {
     }
   };
 
+  const generatePDFReport = () => {
+    const doc = new jsPDF();
+    const tableColumn = ["Student ID", "Date", "Amount (Rs.)", "Payment For", "Status", "Remarks"];
+    const tableRows = [];
+
+    payments.forEach(payment => {
+      const paymentData = [
+        payment.userId,
+        new Date(payment.createdAt).toLocaleDateString(),
+        payment.amount.toFixed(2),
+        payment.paymentFor,
+        payment.status.toUpperCase(),
+        payment.remarks || "No remarks"
+      ];
+      tableRows.push(paymentData);
+    });
+
+    // Add UniHub Header
+    doc.setFontSize(22);
+    doc.setTextColor(30, 41, 59); // Slate-800
+    doc.text("UniHub", 14, 20);
+    
+    doc.setFontSize(14);
+    doc.setTextColor(71, 85, 105); // Slate-600
+    doc.text("Financial Review Board - Payment Report", 14, 30);
+
+    doc.setFontSize(10);
+    doc.setTextColor(148, 163, 184); // Slate-400
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 36);
+
+    // Add Table
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 45,
+      theme: 'grid',
+      styles: {
+        fontSize: 10,
+        cellPadding: 4,
+        valign: 'middle',
+        overflow: 'linebreak',
+        font: 'helvetica'
+      },
+      headStyles: {
+        fillColor: [15, 23, 42], // Slate-900
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252] // Slate-50
+      },
+      margin: { top: 45 }
+    });
+
+    // Footer
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(148, 163, 184);
+      doc.text(
+        `Page ${i} of ${pageCount}`,
+        doc.internal.pageSize.getWidth() / 2,
+        doc.internal.pageSize.getHeight() - 10,
+        { align: "center" }
+      );
+    }
+
+    doc.save(`UniHub_Payments_Report_${new Date().getTime()}.pdf`);
+  };
+
   return (
     <div className="admin-layout">
       <AdminSidebar />
@@ -96,6 +169,14 @@ const AdminPayments = () => {
                 <p>Monitor and validate student payment submissions</p>
               </div>
               <div className="header-actions">
+                <button
+                  onClick={generatePDFReport}
+                  disabled={payments.length === 0}
+                  className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-indigo-700 transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <FileText size={18} />
+                  Export PDF
+                </button>
                 <button
                   onClick={() => navigate('/admin-kuppi')}
                   className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-800 transition-all hover:-translate-y-0.5"

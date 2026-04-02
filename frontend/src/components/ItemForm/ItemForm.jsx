@@ -115,7 +115,14 @@ const ItemForm = ({ formType }) => { // 'Lost' or 'Found'
         </div>
 
         <div className="form-actions" style={{ marginTop: '30px', justifyContent: 'center', display: 'flex' }}>
-          <button type="button" className="lf-btn-report lost" onClick={() => navigate('/lost-and-found')}>Go to Dashboard</button>
+          <button 
+            type="button" 
+            className="lf-btn-report lost" 
+            style={{ width: 'fit-content', padding: '0.75rem 2.5rem' }} 
+            onClick={() => navigate('/lost-and-found')}
+          >
+            Go to Dashboard
+          </button>
         </div>
       </div>
     );

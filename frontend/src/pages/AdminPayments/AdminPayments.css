@@ -44,6 +44,12 @@
   margin-top: 0.25rem;
 }
 
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
 .stats-grid-admin {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
