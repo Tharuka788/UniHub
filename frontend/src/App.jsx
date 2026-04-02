@@ -91,11 +91,12 @@ function AdminLayout() {
       <Route path="/admin-payments" element={<AdminPayments />} />
       <Route path="/admin/payments" element={<AdminPayments />} />
       <Route path="/admin-lost-found" element={<AdminLostFound />} />
-      <Route path="/admin-support" element={<PlaceholderPage title="Support Module" />} />
+      <Route path="/admin-support" element={<Navigate to="/admin-support/manage" />} />
       <Route path="/admin-events" element={<PlaceholderPage title="Event Module" />} />
       <Route path="/admin-support/manage" element={<AdminTicketDashboard />} />
       <Route path="/admin-support/tickets" element={<MyTickets />} />
-      <Route path="/admin-support/create" element={<SubmitTicket />} />      <Route path="*" element={<Navigate to="/admin-dashboard" />} />
+      <Route path="/admin-support/create" element={<SubmitTicket />} />
+      <Route path="*" element={<Navigate to="/admin-dashboard" />} />
     </Routes>
   );
 }

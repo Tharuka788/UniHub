@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { 
+  Search, 
+  Trash2, 
+  Edit3, 
+  FileText, 
+  Download, 
+  X, 
+  AlertCircle,
+  Clock,
+  CheckCircle2,
+  Filter
+} from 'lucide-react';
+import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
 import './Support.css';
 
 const AdminTicketDashboard = () => {
@@ -128,26 +141,34 @@ const AdminTicketDashboard = () => {
   };
 
   return (
-    <div className="support-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-      <div className="tickets-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h2 className="support-title">Admin Ticket Management Dashboard</h2>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            onClick={handleGenerateReport}
-            disabled={generatingReport}
-            style={{ padding: '10px 20px', background: '#17a2b8', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-          >
-            {generatingReport ? 'Generating...' : 'Generate Report'}
-          </button>
-          <button
-            onClick={handleDownloadPDF}
-            disabled={downloadingPDF}
-            style={{ padding: '10px 20px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-          >
-            {downloadingPDF ? 'Downloading...' : 'Download Report (PDF)'}
-          </button>
-        </div>
-      </div>
+    <div className="admin-layout">
+      <AdminSidebar />
+      <main className="admin-main-content">
+        <div className="support-container animate-slide-up">
+          <div className="tickets-header">
+            <div className="header-text">
+              <h1 className="support-title">Ticket Management</h1>
+              <p className="support-subtitle">Monitor and resolve student queries efficiently</p>
+            </div>
+            <div className="header-actions" style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={handleGenerateReport}
+                disabled={generatingReport}
+                className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-800 transition-all hover:-translate-y-0.5 disabled:opacity-50"
+              >
+                <FileText size={18} />
+                {generatingReport ? 'Generating...' : 'Generate Report'}
+              </button>
+              <button
+                onClick={handleDownloadPDF}
+                disabled={downloadingPDF}
+                className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-indigo-700 transition-all hover:-translate-y-0.5 disabled:opacity-50"
+              >
+                <Download size={18} />
+                {downloadingPDF ? 'Download' : 'Export PDF'}
+              </button>
+            </div>
+          </div>
 
       {reportData && (
         <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #dee2e6' }}>
@@ -173,60 +194,76 @@ const AdminTicketDashboard = () => {
         </div>
       )}
 
-      <form onSubmit={handleSearch} style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <input
-          type="email"
-          placeholder="Search by email..."
-          value={searchEmail}
-          onChange={(e) => setSearchEmail(e.target.value)}
-          style={{ padding: '10px', flex: 1, borderRadius: '4px', border: '1px solid #ccc' }}
-        />
-        <button type="submit" style={{ padding: '10px 20px', background: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Search</button>
+      <form onSubmit={handleSearch} className="search-bar" style={{ display: 'flex', gap: '12px', marginBottom: '2rem' }}>
+        <div style={{ position: 'relative', flex: 1 }}>
+          <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+          <input
+            type="email"
+            placeholder="Search by student email..."
+            value={searchEmail}
+            onChange={(e) => setSearchEmail(e.target.value)}
+            style={{ padding: '0.85rem 1rem 0.85rem 2.8rem', width: '100%', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '0.95rem' }}
+          />
+        </div>
+        <button type="submit" className="bg-slate-900 text-white px-6 py-2 rounded-xl font-bold hover:shadow-lg transition-all">
+          Find Ticket
+        </button>
         {searchEmail && (
-          <button type="button" onClick={handleClearSearch} style={{ padding: '10px 20px', background: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Clear</button>
+          <button type="button" onClick={handleClearSearch} className="bg-slate-100 text-slate-600 px-6 py-2 rounded-xl font-bold hover:bg-slate-200 transition-all">
+            Reset
+          </button>
         )}
       </form>
 
       {loading ? (
         <div style={{ textAlign: 'center', padding: '50px' }}>Loading Tickets...</div>
       ) : (
-        <div style={{ overflowX: 'auto' }}>
-          <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <div className="admin-table-container">
+          <table className="admin-table">
             <thead>
-              <tr style={{ background: '#f4f4f4', borderBottom: '2px solid #ddd' }}>
-                <th style={{ padding: '12px' }}>Name</th>
-                <th style={{ padding: '12px' }}>Email</th>
-                <th style={{ padding: '12px' }}>Subject</th>
-                <th style={{ padding: '12px' }}>Status</th>
-                <th style={{ padding: '12px' }}>Date</th>
-                <th style={{ padding: '12px' }}>Action</th>
+              <tr>
+                <th>Student Details</th>
+                <th>Subject & Query</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th className="text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {tickets.length > 0 ? tickets.map(ticket => (
-                <tr key={ticket._id} style={{ borderBottom: '1px solid #eee' }}>
-                  <td style={{ padding: '12px' }}>{ticket.name}</td>
-                  <td style={{ padding: '12px' }}>{ticket.email}</td>
-                  <td style={{ padding: '12px' }}>{ticket.subject}</td>
-                  <td style={{ padding: '12px' }}>
-                    <span className={`ticket-status ${getStatusClass(ticket.status)}`} style={{ padding: '5px 10px', borderRadius: '20px', fontSize: '0.85em', fontWeight: 'bold' }}>
+                <tr key={ticket._id}>
+                  <td>
+                    <div style={{ fontWeight: '700', color: '#1e293b' }}>{ticket.name}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{ticket.email}</div>
+                  </td>
+                  <td>
+                    <div style={{ fontWeight: '600', color: '#334155' }}>{ticket.subject}</div>
+                  </td>
+                  <td>
+                    <span className={`ticket-status ${getStatusClass(ticket.status)}`}>
+                      {ticket.status === 'Resolved' && <CheckCircle2 size={12} style={{ marginRight: '6px' }} />}
+                      {ticket.status === 'Pending' && <Clock size={12} style={{ marginRight: '6px' }} />}
                       {ticket.status}
                     </span>
                   </td>
-                  <td style={{ padding: '12px' }}>{new Date(ticket.createdAt).toLocaleDateString()}</td>
-                  <td style={{ padding: '12px', display: 'flex', gap: '10px' }}>
-                    <button
-                      onClick={() => openModal(ticket)}
-                      style={{ padding: '6px 12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                    >
-                      View / Update
-                    </button>
-                    <button
-                      onClick={() => handleDelete(ticket._id)}
-                      style={{ padding: '6px 12px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                    >
-                      Delete
-                    </button>
+                  <td>{new Date(ticket.createdAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                      <button
+                        onClick={() => openModal(ticket)}
+                        className="btn-icon-action edit"
+                        title="View Details"
+                      >
+                        <Edit3 size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(ticket._id)}
+                        className="btn-icon-action delete"
+                        title="Delete Ticket"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               )) : (
@@ -241,27 +278,44 @@ const AdminTicketDashboard = () => {
 
       {/* Modal for viewing and updating ticket */}
       {isModalOpen && selectedTicket && (
-        <div style={{
+        <div className="modal-overlay" style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-        }}>
-          <div style={{ background: '#fff', padding: '30px', borderRadius: '8px', width: '500px', maxWidth: '90%' }}>
-            <h3>Ticket Details</h3>
-            <p><strong>Name:</strong> {selectedTicket.name}</p>
-            <p><strong>Email:</strong> {selectedTicket.email}</p>
-            <p><strong>Subject:</strong> {selectedTicket.subject}</p>
-            <p><strong>Message:</strong></p>
-            <div style={{ background: '#f9f9f9', padding: '10px', borderRadius: '4px', marginBottom: '15px' }}>
-              {selectedTicket.message}
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+        }} onClick={closeModal}>
+          <div className="modal-content" style={{ background: '#fff', padding: '32px', width: '550px', maxWidth: '95%', position: 'relative' }} onClick={e => e.stopPropagation()}>
+            <button onClick={closeModal} style={{ position: 'absolute', right: '20px', top: '20px', border: 'none', background: 'none', color: '#94a3b8', cursor: 'pointer' }}>
+              <X size={24} />
+            </button>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '1.5rem' }}>Review Ticket</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div>
+                <label style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '800' }}>Student Name</label>
+                <div style={{ fontWeight: '600' }}>{selectedTicket.name}</div>
+              </div>
+              <div>
+                <label style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '800' }}>Email Address</label>
+                <div style={{ fontWeight: '600' }}>{selectedTicket.email}</div>
+              </div>
+            </div>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '800' }}>Subject</label>
+              <div style={{ fontWeight: '700', fontSize: '1.1rem' }}>{selectedTicket.subject}</div>
+            </div>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '800' }}>Student Message</label>
+              <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', color: '#334155', fontSize: '0.95rem', marginTop: '4px', border: '1px solid #e2e8f0' }}>
+                {selectedTicket.message}
+              </div>
             </div>
 
             <form onSubmit={handleUpdate}>
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Update Status</label>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', fontSize: '0.85rem' }}>Update Status</label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+                  className="action-select"
+                  style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '12px', background: '#f8fafc' }}
                   required
                 >
                   <option value="Pending">Pending</option>
@@ -270,24 +324,30 @@ const AdminTicketDashboard = () => {
                 </select>
               </div>
 
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Admin Response</label>
+              <div style={{ marginBottom: '2rem' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '700', fontSize: '0.85rem' }}>Admin Official Response</label>
                 <textarea
                   value={responseMsg}
                   onChange={(e) => setResponseMsg(e.target.value)}
-                  placeholder="Type your response here..."
-                  style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc', minHeight: '100px' }}
+                  placeholder="Provide a detailed response to the student..."
+                  style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '12px', background: '#f8fafc', minHeight: '120px' }}
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                <button type="button" onClick={closeModal} style={{ padding: '10px 20px', background: '#ccc', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ padding: '10px 20px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Save Update</button>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                <button type="button" onClick={closeModal} className="bg-slate-100 text-slate-600 px-6 py-2.5 rounded-xl font-bold hover:bg-slate-200 transition-all">
+                  Discard
+                </button>
+                <button type="submit" className="bg-indigo-600 text-white px-8 py-2.5 rounded-xl font-bold hover:shadow-lg transition-all">
+                  Commit Update
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
+        </div>
+      </main>
     </div>
   );
 };

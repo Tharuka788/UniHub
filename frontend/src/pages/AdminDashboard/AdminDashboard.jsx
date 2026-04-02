@@ -6,7 +6,8 @@ import {
   CreditCard, 
   ArrowRight, 
   ShieldCheck,
-  LayoutDashboard
+  LayoutDashboard,
+  Ticket
 } from 'lucide-react';
 import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
 import './AdminDashboard.css';
@@ -35,6 +36,13 @@ const AdminDashboard = () => {
       path: '/admin-payments',
       icon: CreditCard,
       color: 'green'
+    },
+    {
+      title: 'Support Module',
+      description: 'Manage and respond to student support tickets, track resolutions, and generate reports.',
+      path: '/admin-support/manage',
+      icon: Ticket,
+      color: 'indigo'
     }
   ];
 

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Mail, Clock, CheckCircle2, MessageSquare } from 'lucide-react';
+import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
 import './Support.css';
 
 const MyTickets = () => {
@@ -60,22 +62,28 @@ const MyTickets = () => {
   };
 
   return (
-    <div className="support-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
+    <div className="admin-layout">
+      <AdminSidebar />
+      <main className="admin-main-content">
+        <div className="support-container">
       <div className="tickets-header">
         <h2 className="support-title">My Support Tickets</h2>
       </div>
 
-      <form onSubmit={fetchTickets} className="search-bar" style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
-        <input
-          type="email"
-          placeholder="Enter your email to view tickets..."
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ padding: '10px', flex: 1, borderRadius: '4px', border: '1px solid #ccc' }}
-        />
-        <button type="submit" disabled={loading} style={{ padding: '10px 20px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-          {loading ? 'Searching...' : 'Search Tickets'}
+      <form onSubmit={fetchTickets} className="search-bar" style={{ display: 'flex', gap: '12px', marginBottom: '3rem' }}>
+        <div style={{ position: 'relative', flex: 1 }}>
+          <Mail size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+          <input
+            type="email"
+            placeholder="Enter your registered email to search..."
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            style={{ padding: '0.85rem 1rem 0.85rem 2.8rem', width: '100%', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '0.95rem' }}
+          />
+        </div>
+        <button type="submit" disabled={loading} className="bg-indigo-600 text-white px-8 py-2 rounded-xl font-bold hover:shadow-lg transition-all disabled:opacity-50">
+          {loading ? 'Searching...' : 'Retrieve Tickets'}
         </button>
       </form>
 
@@ -85,81 +93,50 @@ const MyTickets = () => {
         </div>
       )}
 
-      {tickets.map(ticket => (
-        <div key={ticket._id} className="ticket-card" style={{ background: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #eee', paddingBottom: '15px', marginBottom: '15px' }}>
-            <div>
-              <h3 style={{ margin: '0 0 10px 0', color: '#333' }}>{ticket.subject}</h3>
-              <p style={{ margin: '5px 0', fontSize: '14px', color: '#555' }}><strong>Submitted:</strong> {new Date(ticket.createdAt).toLocaleDateString()}</p>
-            </div>
-            {editingTicket === ticket._id ? (
-              <select
-                value={editStatus}
-                onChange={(e) => setEditStatus(e.target.value)}
-                style={{ padding: '5px 10px', borderRadius: '4px', border: '1px solid #ccc' }}
-              >
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Resolved">Resolved</option>
-              </select>
-            ) : (
-              <span className={`ticket-status ${getStatusClass(ticket.status)}`} style={{ padding: '5px 12px', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.85em', textTransform: 'capitalize' }}>
+      <div className="tickets-list">
+        {tickets.map((ticket, idx) => (
+          <div key={ticket._id} className="ticket-card animate-slide-up" style={{ animationDelay: `${idx * 0.1}s` }}>
+            <div className="ticket-card-header">
+              <div>
+                <h3 className="ticket-card-title">{ticket.subject}</h3>
+                <div className="ticket-card-meta">
+                  <Clock size={12} style={{ display: 'inline', marginRight: '4px' }} />
+                  Submitted on {new Date(ticket.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}
+                </div>
+              </div>
+              <span className={`ticket-status ${getStatusClass(ticket.status)}`}>
+                {ticket.status === 'Resolved' ? <CheckCircle2 size={12} style={{ marginRight: '6px' }} /> : <Clock size={12} style={{ marginRight: '6px' }} />}
                 {ticket.status}
               </span>
-            )}
-          </div>
+            </div>
 
-          <div style={{ marginBottom: '20px' }}>
-            <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#444' }}>Message:</p>
-            <div style={{ background: '#f5f5f5', padding: '12px', borderRadius: '4px', fontSize: '14px', color: '#333', whiteSpace: 'pre-wrap' }}>
-              {ticket.message}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#64748b', fontSize: '0.85rem', fontWeight: '700' }}>
+                <MessageSquare size={14} />
+                YOUR MESSAGE
+              </div>
+              <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', fontSize: '0.95rem', color: '#334155', border: '1px solid #f1f5f9' }}>
+                {ticket.message}
+              </div>
+            </div>
+
+            <div className="ticket-response-box">
+              <span className="response-label">Official Registry Response</span>
+              {ticket.response ? (
+                <div style={{ fontSize: '0.95rem', color: '#1e293b', lineHeight: '1.6' }}>
+                  {ticket.response}
+                </div>
+              ) : (
+                <div style={{ fontSize: '0.9rem', color: '#64748b', fontStyle: 'italic' }}>
+                  Our support team is currently reviewing your ticket. You will see a response here as soon as it's processed.
+                </div>
+              )}
             </div>
           </div>
-
-          <div style={{ background: '#eef2f5', padding: '15px', borderRadius: '6px', marginBottom: '15px' }}>
-            <h4 style={{ margin: '0 0 10px 0', color: '#2c3e50', fontSize: '16px' }}>Admin Response:</h4>
-            {editingTicket === ticket._id ? (
-              <textarea
-                value={editResponse}
-                onChange={(e) => setEditResponse(e.target.value)}
-                placeholder="Type your response here..."
-                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc', minHeight: '80px' }}
-              />
-            ) : ticket.response ? (
-              <div style={{ fontSize: '14px', color: '#333', whiteSpace: 'pre-wrap' }}>
-                {ticket.response}
-              </div>
-            ) : (
-              <div style={{ fontSize: '14px', color: '#666', fontStyle: 'italic' }}>
-                No response yet. Support will reply soon.
-              </div>
-            )}
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-            {editingTicket === ticket._id ? (
-              <>
-                <button 
-                  onClick={cancelEdit} 
-                  style={{ padding: '8px 16px', background: '#ccc', color: '#333', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  Cancel
-                </button>
-                <button 
-                  onClick={() => handleUpdate(ticket._id)} 
-                  style={{ padding: '8px 16px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  Save Update
-                </button>
-              </>
-            ) : (
-              <button 
-                onClick={() => handleEditClick(ticket)} 
-                style={{ padding: '8px 16px', background: '#17a2b8', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-                Edit / Update Ticket
-              </button>
-            )}
-          </div>
+        ))}
+      </div>
         </div>
-      ))}
+      </main>
     </div>
   );
 };

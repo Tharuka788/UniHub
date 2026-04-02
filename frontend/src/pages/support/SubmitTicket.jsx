@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
 import './Support.css';
 
 const SubmitTicket = () => {
@@ -34,35 +35,55 @@ const SubmitTicket = () => {
   };
 
   return (
-    <div className="support-container">
-      <h2 className="support-title">Submit a Support Ticket</h2>
-      {feedbackMsg && <div style={{ padding: '10px', background: feedbackMsg.includes('Error') ? '#f8d7da' : '#d4edda', color: feedbackMsg.includes('Error') ? '#721c24' : '#155724', borderRadius: '8px', marginBottom: '20px', textAlign: 'center' }}>{feedbackMsg}</div>}
+    <div className="admin-layout">
+      <AdminSidebar />
+      <main className="admin-main-content">
+        <div className="support-container animate-slide-up">
+          <h1 className="support-title">Submit a Support Ticket</h1>
+          <p className="support-subtitle">Please provide details of your issue, and our team will get back to you shortly.</p>
+          
+          {feedbackMsg && (
+            <div style={{ 
+              padding: '1rem', 
+              background: feedbackMsg.includes('Error') ? '#fef2f2' : '#f0fdf4', 
+              color: feedbackMsg.includes('Error') ? '#991b1b' : '#166534', 
+              borderRadius: '12px', 
+              marginBottom: '2rem', 
+              textAlign: 'center',
+              fontWeight: '600',
+              border: `1px solid ${feedbackMsg.includes('Error') ? '#fecaca' : '#bbf7d0'}`
+            }}>
+              {feedbackMsg}
+            </div>
+          )}
 
-      <form onSubmit={handleSubmit} className="support-form">
-        <div className="form-group">
-          <label>Full Name</label>
-          <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="Enter your full name" />
-        </div>
+        <form onSubmit={handleSubmit} className="support-form">
+          <div className="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="e.g. John Doe" />
+          </div>
 
-        <div className="form-group">
-          <label>Email Address</label>
-          <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="Enter your email" />
-        </div>
+          <div className="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="john@example.com" />
+          </div>
 
-        <div className="form-group">
-          <label>Subject</label>
-          <input type="text" name="subject" value={formData.subject} onChange={handleChange} required placeholder="Brief description of the issue" />
-        </div>
+          <div className="form-group full-width">
+            <label>Subject</label>
+            <input type="text" name="subject" value={formData.subject} onChange={handleChange} required placeholder="Brief description of the issue" />
+          </div>
 
-        <div className="form-group">
-          <label>Message</label>
-          <textarea name="message" value={formData.message} onChange={handleChange} required rows="5" placeholder="Detailed explanation..."></textarea>
-        </div>
+          <div className="form-group full-width">
+            <label>Detailed Message</label>
+            <textarea name="message" value={formData.message} onChange={handleChange} required rows="5" placeholder="Please explain your issue in detail..."></textarea>
+          </div>
 
         <button type="submit" className="submit-btn" disabled={loading}>
           {loading ? 'Submitting...' : 'Submit Ticket'}
         </button>
       </form>
+        </div>
+      </main>
     </div>
   );
 };
