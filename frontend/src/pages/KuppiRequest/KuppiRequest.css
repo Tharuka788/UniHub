@@ -24,6 +24,8 @@
   padding: 0.8rem;
   border-radius: 10px;
   border: 1px solid #ccc;
+  background: #e5e7eb; /* or use your theme variable */
+  color: var(--text-main);
 }
 
 .kuppi-form button {
@@ -41,4 +43,21 @@
   text-align: center;
   color: var(--text-main);
   font-weight: 600;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-error {
+  border: 1px solid #dc2626 !important;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 0.85rem;
+  margin: 0;
+  padding-left: 4px;
 }
