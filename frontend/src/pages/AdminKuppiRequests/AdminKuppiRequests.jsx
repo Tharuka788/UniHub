@@ -241,6 +241,9 @@ const AdminKuppiRequests = () => {
                       <th>Batch Rep</th>
                       <th>Email</th>
                       <th>Module</th>
+                      <th>Module Code</th>
+                      <th>Year</th>
+                      <th>Semester</th>
                       <th>Faculty</th>
                       <th>Description</th>
                       <th>Letter</th>
@@ -256,6 +259,9 @@ const AdminKuppiRequests = () => {
                         <td>{request.batchRepName}</td>
                         <td>{request.email || "—"}</td>
                         <td>{request.module}</td>
+                        <td>{request.moduleCode || "—"}</td>
+                        <td>{request.year || "—"}</td>
+                        <td>{request.semester || "—"}</td>
                         <td>{request.faculty}</td>
                         <td>{request.description || "—"}</td>
                         <td>

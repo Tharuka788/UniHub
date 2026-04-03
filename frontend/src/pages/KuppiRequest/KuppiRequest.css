@@ -153,3 +153,32 @@
     font-size: 1.65rem;
   }
 }
+
+.kuppi-form select {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(241, 245, 249, 0.95);
+  color: #0f172a;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+    background 0.2s ease, transform 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.kuppi-form select:focus {
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+  background: rgba(248, 250, 252, 0.98);
+  transform: translateY(-1px);
+}
+
+.kuppi-form select.input-error {
+  border: 1px solid #dc2626 !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08) !important;
+}

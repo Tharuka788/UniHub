@@ -1,0 +1,173 @@
+.kuppi-notices-section {
+  margin: 2rem 0;
+}
+
+.kuppi-notices-header {
+  margin-bottom: 1rem;
+}
+
+.kuppi-notices-header h2 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.02em;
+}
+
+.kuppi-notices-header p {
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.kuppi-notices-message {
+  color: #64748b;
+  font-weight: 600;
+  padding: 1rem 0;
+}
+
+.kuppi-slider-card {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(172, 171, 195, 0.587),
+    rgba(1, 31, 62, 0.644)
+  );
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.kuppi-slider-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.kuppi-slider-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.kuppi-slider-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.kuppi-arrow-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: #14324a;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.kuppi-arrow-btn:hover {
+  transform: translateY(-1px);
+  background: #1d4768;
+  box-shadow: 0 10px 20px rgba(20, 50, 74, 0.18);
+}
+
+.kuppi-slider-content h3 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.kuppi-slider-content p {
+  color: #475569;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 0.9rem;
+  max-width: 720px;
+}
+
+.kuppi-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.kuppi-register-btn {
+  margin-top: 0.5rem;
+  padding: 0.9rem 1.3rem;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #14324a, #244f73);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kuppi-register-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(20, 50, 74, 0.2);
+}
+
+.kuppi-slider-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 1.3rem;
+}
+
+.kuppi-dot {
+  width: 10px;
+  height: 10px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kuppi-dot.active {
+  width: 28px;
+  background: #1d4ed8;
+}
+
+@media (max-width: 768px) {
+  .kuppi-slider-card {
+    padding: 1.2rem;
+    border-radius: 20px;
+  }
+
+  .kuppi-slider-content h3 {
+    font-size: 1.35rem;
+  }
+
+  .kuppi-slider-content p {
+    font-size: 0.98rem;
+  }
+
+  .kuppi-slider-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

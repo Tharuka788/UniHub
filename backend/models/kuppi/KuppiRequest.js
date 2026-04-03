@@ -18,6 +18,22 @@ const kuppiRequestSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    moduleCode: {
+      type: String,
+      required: true,
+      trim: true,
+      uppercase: true,
+    },
+    year: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    semester: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     faculty: {
       type: String,
       required: true,

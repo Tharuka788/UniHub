@@ -1,12 +1,27 @@
-
-
 const KuppiRequest = require("../../models/kuppi/KuppiRequest");
 
 const createKuppiRequest = async (req, res) => {
   try {
-    const { batchRepName, email, module, faculty, description } = req.body;
+    const {
+      batchRepName,
+      email,
+      module,
+      moduleCode,
+      year,
+      semester,
+      faculty,
+      description,
+    } = req.body;
 
-    if (!batchRepName || !email || !module || !faculty) {
+    if (
+      !batchRepName ||
+      !email ||
+      !module ||
+      !moduleCode ||
+      !year ||
+      !semester ||
+      !faculty
+    ) {
       return res.status(400).json({ message: "Please fill all required fields" });
     }
 
@@ -18,6 +33,9 @@ const createKuppiRequest = async (req, res) => {
       batchRepName,
       email,
       module,
+      moduleCode,
+      year,
+      semester,
       faculty,
       description,
       letterUrl: req.file.path,
@@ -124,7 +142,3 @@ module.exports = {
   approveKuppiRequest,
   rejectKuppiRequest,
 };
-
-
-
-

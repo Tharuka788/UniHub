@@ -7,6 +7,9 @@ const KuppiRequest = () => {
     batchRepName: "",
     email: "",
     module: "",
+    moduleCode: "",
+    year: "",
+    semester: "",
     faculty: "",
     description: "",
     letter: null,
@@ -16,6 +19,9 @@ const KuppiRequest = () => {
     batchRepName: "",
     email: "",
     module: "",
+    moduleCode: "",
+    year: "",
+    semester: "",
     faculty: "",
     description: "",
     letter: "",
@@ -54,6 +60,27 @@ const KuppiRequest = () => {
         if (!value || !value.trim()) return "Module Name is required";
         if (value.trim().length < 2) {
           return "Module Name must be at least 2 characters";
+        }
+        return "";
+
+      case "moduleCode":
+        if (!value || !value.trim()) return "Module Code is required";
+        if (!/^[A-Za-z0-9-]+$/.test(value.trim())) {
+          return "Module Code can only contain letters, numbers, and hyphens";
+        }
+        return "";
+
+      case "year":
+        if (!value || !value.trim()) return "Year is required";
+        if (!["1", "2", "3", "4"].includes(value.trim())) {
+          return "Please select a valid year";
+        }
+        return "";
+
+      case "semester":
+        if (!value || !value.trim()) return "Semester is required";
+        if (!["1", "2"].includes(value.trim())) {
+          return "Please select a valid semester";
         }
         return "";
 
@@ -96,6 +123,9 @@ const KuppiRequest = () => {
       batchRepName: validateField("batchRepName", formData.batchRepName),
       email: validateField("email", formData.email),
       module: validateField("module", formData.module),
+      moduleCode: validateField("moduleCode", formData.moduleCode),
+      year: validateField("year", formData.year),
+      semester: validateField("semester", formData.semester),
       faculty: validateField("faculty", formData.faculty),
       description: validateField("description", formData.description),
       letter: validateField("letter", formData.letter),
@@ -162,6 +192,9 @@ const KuppiRequest = () => {
       submitData.append("batchRepName", formData.batchRepName.trim());
       submitData.append("email", formData.email.trim());
       submitData.append("module", formData.module.trim());
+      submitData.append("moduleCode", formData.moduleCode.trim().toUpperCase());
+      submitData.append("year", formData.year.trim());
+      submitData.append("semester", formData.semester.trim());
       submitData.append("faculty", formData.faculty.trim());
       submitData.append("description", formData.description.trim());
       submitData.append("letter", formData.letter);
@@ -182,6 +215,9 @@ const KuppiRequest = () => {
         batchRepName: "",
         email: "",
         module: "",
+        moduleCode: "",
+        year: "",
+        semester: "",
         faculty: "",
         description: "",
         letter: null,
@@ -191,6 +227,9 @@ const KuppiRequest = () => {
         batchRepName: "",
         email: "",
         module: "",
+        moduleCode: "",
+        year: "",
+        semester: "",
         faculty: "",
         description: "",
         letter: "",
@@ -254,6 +293,53 @@ const KuppiRequest = () => {
         <div className="form-group">
           <input
             type="text"
+            name="moduleCode"
+            placeholder="Module Code"
+            value={formData.moduleCode}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={errors.moduleCode ? "input-error" : ""}
+          />
+          {errors.moduleCode && (
+            <p className="error-text">{errors.moduleCode}</p>
+          )}
+        </div>
+
+        <div className="form-group">
+          <select
+            name="year"
+            value={formData.year}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={errors.year ? "input-error" : ""}
+          >
+            <option value="">Select Year</option>
+            <option value="1">Year 1</option>
+            <option value="2">Year 2</option>
+            <option value="3">Year 3</option>
+            <option value="4">Year 4</option>
+          </select>
+          {errors.year && <p className="error-text">{errors.year}</p>}
+        </div>
+
+        <div className="form-group">
+          <select
+            name="semester"
+            value={formData.semester}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={errors.semester ? "input-error" : ""}
+          >
+            <option value="">Select Semester</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+          </select>
+          {errors.semester && <p className="error-text">{errors.semester}</p>}
+        </div>
+
+        <div className="form-group">
+          <input
+            type="text"
             name="faculty"
             placeholder="Faculty Name"
             value={formData.faculty}
@@ -301,4 +387,3 @@ const KuppiRequest = () => {
 };
 
 export default KuppiRequest;
-

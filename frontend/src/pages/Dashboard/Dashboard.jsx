@@ -8,11 +8,11 @@ import {
   Ticket,
   Clock,
   CheckCircle,
-  AlertCircle,
   MoreHorizontal,
   ChevronRight,
   Package
 } from 'lucide-react';
+import KuppiNotices from '../KuppiNotices/KuppiNotices';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -40,14 +40,19 @@ const Dashboard = () => {
       icon: Search,
       items: [
         {
-          label: 'Recent Items', value: items.filter(i => {
+          label: 'Recent Items',
+          value: items.filter((i) => {
             const createdAt = new Date(i.createdAt);
             const now = new Date();
-            return (now - createdAt) < 7 * 24 * 60 * 60 * 1000; // Last 7 days
+            return now - createdAt < 7 * 24 * 60 * 60 * 1000;
           }).length
         },
         { label: 'Total Reported', value: items.length },
-        { label: 'Items Matched', value: items.filter(i => i.itemType === 'Reclaimed').length, color: '#10b981' }
+        {
+          label: 'Items Matched',
+          value: items.filter((i) => i.itemType === 'Reclaimed').length,
+          color: '#10b981'
+        }
       ],
       buttonText: 'Report Lost Item',
       onClick: () => navigate('/report-lost')
@@ -76,24 +81,41 @@ const Dashboard = () => {
     }
   ];
 
-  const recentItems = items.slice(0, 3).map(item => ({
+  const recentItems = items.slice(0, 3).map((item) => ({
     name: item.title,
     location: item.location || 'Campus',
-    time: new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    time: new Date(item.createdAt).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    }),
     status: item.itemType,
     image: item.image
   }));
 
   const upcomingSessions = [
-    { subject: 'Advanced Mathematics', tutor: 'Prof. Silva', time: 'Tomorrow, 2:00 PM', status: 'Confirmed' },
-    { subject: 'Data Structures', tutor: 'Kamal Perera', time: 'Oct 28, 10:00 AM', status: 'Pending' },
-    { subject: 'Physics 101', tutor: 'Nimali Fernando', time: 'Oct 30, 4:00 PM', status: 'Confirmed' }
+    {
+      subject: 'Advanced Mathematics',
+      tutor: 'Prof. Silva',
+      time: 'Tomorrow, 2:00 PM',
+      status: 'Confirmed'
+    },
+    {
+      subject: 'Data Structures',
+      tutor: 'Kamal Perera',
+      time: 'Oct 28, 10:00 AM',
+      status: 'Pending'
+    },
+    {
+      subject: 'Physics 101',
+      tutor: 'Nimali Fernando',
+      time: 'Oct 30, 4:00 PM',
+      status: 'Confirmed'
+    }
   ];
 
   return (
     <div className="dashboard-content animate-fade-in">
-
-
       <div className="stats-grid">
         {stats.map((stat) => (
           <div key={stat.title} className="stat-card">
@@ -105,15 +127,23 @@ const Dashboard = () => {
                 <MoreHorizontal size={18} />
               </button>
             </div>
+
             <h3 className="card-title">{stat.title}</h3>
+
             <div className="card-items">
               {stat.items.map((item) => (
                 <div key={item.label} className="card-item">
                   <span className="item-label">{item.label}</span>
-                  <span className="item-value" style={item.color ? { color: item.color } : {}}>{item.value}</span>
+                  <span
+                    className="item-value"
+                    style={item.color ? { color: item.color } : {}}
+                  >
+                    {item.value}
+                  </span>
                 </div>
               ))}
             </div>
+
             <button className="card-action-btn" onClick={stat.onClick}>
               <Plus size={16} />
               <span>{stat.buttonText}</span>
@@ -122,18 +152,32 @@ const Dashboard = () => {
         ))}
       </div>
 
+      <KuppiNotices />
+
       <div className="dashboard-sections">
         <div className="dashboard-section recent-lost">
           <div className="section-header">
             <h3>Recent Lost & Found</h3>
-            <button className="view-all-btn" onClick={() => navigate('/lost-and-found')}>
+            <button
+              className="view-all-btn"
+              onClick={() => navigate('/lost-and-found')}
+            >
               <span>View All</span>
               <ChevronRight size={16} />
             </button>
           </div>
+
           <div className="list-items">
             {loading ? (
-              <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>Loading...</div>
+              <div
+                style={{
+                  padding: '2rem',
+                  textAlign: 'center',
+                  color: '#64748b'
+                }}
+              >
+                Loading...
+              </div>
             ) : recentItems.length > 0 ? (
               recentItems.map((item, idx) => (
                 <div key={idx} className="list-item">
@@ -141,24 +185,47 @@ const Dashboard = () => {
                     <div className="item-image-placeholder">
                       {item.image ? (
                         <img
-                          src={item.image.startsWith('http') ? item.image : `http://localhost:5050${item.image}`}
+                          src={
+                            item.image.startsWith('http')
+                              ? item.image
+                              : `http://localhost:5050${item.image}`
+                          }
                           alt={item.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            borderRadius: '8px'
+                          }}
                         />
                       ) : (
                         <Package size={18} />
                       )}
                     </div>
+
                     <div className="item-info">
                       <h4 className="item-name">{item.name}</h4>
-                      <span className="item-meta">{item.location} • {item.time}</span>
+                      <span className="item-meta">
+                        {item.location} • {item.time}
+                      </span>
                     </div>
                   </div>
-                  <span className={`status-tag ${item.status.toLowerCase()}`}>{item.status}</span>
+
+                  <span className={`status-tag ${item.status.toLowerCase()}`}>
+                    {item.status}
+                  </span>
                 </div>
               ))
             ) : (
-              <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>No recent items found</div>
+              <div
+                style={{
+                  padding: '2rem',
+                  textAlign: 'center',
+                  color: '#64748b'
+                }}
+              >
+                No recent items found
+              </div>
             )}
           </div>
         </div>
@@ -166,11 +233,15 @@ const Dashboard = () => {
         <div className="dashboard-section kuppi-schedule">
           <div className="section-header">
             <h3>My Kuppi Schedule</h3>
-            <button className="view-all-btn" onClick={() => navigate('/kuppi-request')}>
+            <button
+              className="view-all-btn"
+              onClick={() => navigate('/kuppi-request')}
+            >
               <span>View All</span>
               <ChevronRight size={16} />
             </button>
           </div>
+
           <div className="list-items">
             {upcomingSessions.map((session, idx) => (
               <div key={idx} className="list-item">
@@ -178,13 +249,21 @@ const Dashboard = () => {
                   <div className="item-avatar-placeholder">
                     {session.subject.charAt(0)}
                   </div>
+
                   <div className="item-info">
                     <h4 className="item-name">{session.subject}</h4>
-                    <span className="item-meta">{session.tutor} • {session.time}</span>
+                    <span className="item-meta">
+                      {session.tutor} • {session.time}
+                    </span>
                   </div>
                 </div>
+
                 <span className={`status-tag ${session.status.toLowerCase()}`}>
-                  {session.status === 'Confirmed' ? <CheckCircle size={12} /> : <Clock size={12} />}
+                  {session.status === 'Confirmed' ? (
+                    <CheckCircle size={12} />
+                  ) : (
+                    <Clock size={12} />
+                  )}
                   {session.status}
                 </span>
               </div>
