@@ -1,6 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { BookOpen, Clock3, CheckCircle2, FileText, XCircle } from "lucide-react";
+import {
+  BookOpen,
+  Clock3,
+  CheckCircle2,
+  FileText,
+  XCircle,
+  AlertTriangle,
+} from "lucide-react";
 import AdminSidebar from "../../components/AdminSidebar/AdminSidebar";
 import "./AdminKuppiRequests.css";
 
@@ -10,6 +17,7 @@ const AdminKuppiRequests = () => {
   const [scheduleInputs, setScheduleInputs] = useState({});
   const [rejectInputs, setRejectInputs] = useState({});
   const [actionLoading, setActionLoading] = useState("");
+  const [activeFilter, setActiveFilter] = useState("all");
 
   const getMinDateTime = () => {
     const now = new Date();
@@ -19,6 +27,7 @@ const AdminKuppiRequests = () => {
 
   const fetchRequests = async () => {
     try {
+      setLoading(true);
       const response = await axios.get("http://localhost:5050/api/kuppi");
       setRequests(response.data || []);
     } catch (error) {
@@ -73,11 +82,51 @@ const AdminKuppiRequests = () => {
 
   const totalRequests = requests.length;
   const pendingRequests = requests.filter(
-    (request) => request.status === "pending"
+    (request) => request.status?.toLowerCase() === "pending"
   ).length;
   const approvedRequests = requests.filter(
-    (request) => request.status === "approved"
+    (request) => request.status?.toLowerCase() === "approved"
   ).length;
+  const rejectedRequests = requests.filter(
+    (request) => request.status?.toLowerCase() === "rejected"
+  ).length;
+
+  const sortedRequests = useMemo(() => {
+    return [...requests].sort(
+      (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+    );
+  }, [requests]);
+
+  const filteredRequests = useMemo(() => {
+    if (activeFilter === "pending") {
+      return sortedRequests.filter(
+        (request) => request.status?.toLowerCase() === "pending"
+      );
+    }
+
+    if (activeFilter === "approved") {
+      return sortedRequests.filter(
+        (request) => request.status?.toLowerCase() === "approved"
+      );
+    }
+
+    if (activeFilter === "rejected") {
+      return sortedRequests.filter(
+        (request) => request.status?.toLowerCase() === "rejected"
+      );
+    }
+
+    return sortedRequests;
+  }, [sortedRequests, activeFilter]);
+
+  const tableTitle =
+    activeFilter === "pending"
+      ? "Pending Requests"
+      : activeFilter === "approved"
+      ? "Approved Requests"
+      : activeFilter === "rejected"
+      ? "Rejected Requests"
+      : "All Requests";
 
   return (
     <div className="admin-layout">
@@ -92,36 +141,97 @@ const AdminKuppiRequests = () => {
             </div>
           </div>
 
-          <div className="admin-kuppi-summary-grid">
-            <div className="admin-kuppi-summary-card blue">
-              <div className="summary-icon-box">
+          <div className="admin-kuppi-summary-grid four-cards">
+            <div
+              className={`admin-kuppi-summary-card glass-card clickable-card ${
+                activeFilter === "all" ? "active-card" : ""
+              }`}
+              onClick={() => setActiveFilter("all")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  setActiveFilter("all");
+                }
+              }}
+            >
+              <div className="summary-icon-box icon-all">
                 <BookOpen size={20} />
               </div>
               <h3>Total Requests</h3>
               <p>{loading ? "..." : totalRequests}</p>
             </div>
 
-            <div className="admin-kuppi-summary-card yellow">
-              <div className="summary-icon-box">
+            <div
+              className={`admin-kuppi-summary-card glass-card clickable-card ${
+                activeFilter === "pending" ? "active-card" : ""
+              }`}
+              onClick={() => setActiveFilter("pending")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  setActiveFilter("pending");
+                }
+              }}
+            >
+              <div className="summary-icon-box icon-pending">
                 <Clock3 size={20} />
               </div>
               <h3>Pending Requests</h3>
               <p>{loading ? "..." : pendingRequests}</p>
             </div>
 
-            <div className="admin-kuppi-summary-card green">
-              <div className="summary-icon-box">
+            <div
+              className={`admin-kuppi-summary-card glass-card clickable-card ${
+                activeFilter === "approved" ? "active-card" : ""
+              }`}
+              onClick={() => setActiveFilter("approved")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  setActiveFilter("approved");
+                }
+              }}
+            >
+              <div className="summary-icon-box icon-approved">
                 <CheckCircle2 size={20} />
               </div>
               <h3>Approved Requests</h3>
               <p>{loading ? "..." : approvedRequests}</p>
             </div>
+
+            <div
+              className={`admin-kuppi-summary-card glass-card clickable-card ${
+                activeFilter === "rejected" ? "active-card" : ""
+              }`}
+              onClick={() => setActiveFilter("rejected")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  setActiveFilter("rejected");
+                }
+              }}
+            >
+              <div className="summary-icon-box icon-rejected">
+                <AlertTriangle size={20} />
+              </div>
+              <h3>Rejected Requests</h3>
+              <p>{loading ? "..." : rejectedRequests}</p>
+            </div>
           </div>
 
           <div className="admin-kuppi-table-card">
+            <div className="admin-kuppi-table-header">
+              <h2>{tableTitle}</h2>
+              <span>{loading ? "..." : `${filteredRequests.length} record(s)`}</span>
+            </div>
+
             {loading ? (
               <p className="admin-kuppi-message">Loading requests...</p>
-            ) : requests.length === 0 ? (
+            ) : filteredRequests.length === 0 ? (
               <p className="admin-kuppi-message">No Kuppi requests found.</p>
             ) : (
               <div className="admin-kuppi-table-wrapper">
@@ -141,7 +251,7 @@ const AdminKuppiRequests = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {requests.map((request) => (
+                    {filteredRequests.map((request) => (
                       <tr key={request._id}>
                         <td>{request.batchRepName}</td>
                         <td>{request.email || "—"}</td>
@@ -165,7 +275,7 @@ const AdminKuppiRequests = () => {
                           </span>
                         </td>
                         <td>
-                          {request.status === "pending" ? (
+                          {request.status?.toLowerCase() === "pending" ? (
                             <input
                               type="datetime-local"
                               value={scheduleInputs[request._id] || ""}
@@ -185,7 +295,7 @@ const AdminKuppiRequests = () => {
                           )}
                         </td>
                         <td>
-                          {request.status === "pending" ? (
+                          {request.status?.toLowerCase() === "pending" ? (
                             <input
                               type="text"
                               placeholder="Optional reason"
@@ -205,7 +315,7 @@ const AdminKuppiRequests = () => {
                           )}
                         </td>
                         <td>
-                          {request.status === "pending" ? (
+                          {request.status?.toLowerCase() === "pending" ? (
                             <div className="action-buttons">
                               <button
                                 className="approve-btn"
@@ -241,4 +351,3 @@ const AdminKuppiRequests = () => {
 };
 
 export default AdminKuppiRequests;
-
