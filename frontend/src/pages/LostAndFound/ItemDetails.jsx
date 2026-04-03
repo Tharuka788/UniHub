@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import Chat from '../../components/Chat/Chat';
 import { 
   MapPin, 
   Calendar, 
@@ -22,18 +21,21 @@ import './ItemDetails.css';
 const ItemDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const chatWith = queryParams.get('chatWith');
+
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sharing, setSharing] = useState(false);
-  const [showChat, setShowChat] = useState(false);
 
   const currentUserId = localStorage.getItem('userId') || 'mockUserId123';
   const token = localStorage.getItem('token') || 'mock-jwt-token';
 
   useEffect(() => {
     fetchItemDetails();
-  }, [id]);
+  }, [id, chatWith]);
 
   const fetchItemDetails = async () => {
     setLoading(true);
@@ -63,6 +65,30 @@ const ItemDetails = () => {
     setSharing(false);
   };
 
+  const handleRequestHandshake = async () => {
+    try {
+      await axios.post(`http://localhost:5050/api/connections/${id}/request-handshake`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Handshake request sent to owner!');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to request handshake.');
+    }
+  };
+
+  const handleAcceptHandshake = async () => {
+    if (!chatWith) return alert('No requester identified in current context.');
+    try {
+      await axios.post(`http://localhost:5050/api/connections/${id}/accept-handshake/${chatWith}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Handshake accepted! Identity revealed.');
+      fetchItemDetails();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to accept handshake.');
+    }
+  };
+
   if (loading) return (
     <div className="lf-details-loading">
       <div className="lf-spinner"></div>
@@ -82,7 +108,8 @@ const ItemDetails = () => {
   );
 
   const isOwner = item.owner && (item.owner._id === currentUserId || item.owner === currentUserId);
-  const canSeeContact = item.isContactShared || isOwner;
+  const isClaimedByMe = item.claimedBy === currentUserId;
+  const canSeeContact = item.isContactShared || isOwner || isClaimedByMe;
 
   return (
     <div className="lf-details-container">
@@ -105,6 +132,9 @@ const ItemDetails = () => {
           <span className={`lf-details-badge badge-${item.itemType.toLowerCase()}`}>
             {item.itemType}
           </span>
+          {item.status !== 'Available' && (
+            <span className="lf-status-banner">{item.status}</span>
+          )}
         </div>
 
         <div className="lf-details-info">
@@ -143,7 +173,7 @@ const ItemDetails = () => {
           <div className="lf-contact-section">
             <div className="lf-contact-header">
               <h3><User size={18} /> Contact Information</h3>
-              {item.isContactShared ? (
+              {canSeeContact ? (
                 <span className="lf-status-tag shared"><Unlock size={14} /> Identity Shared</span>
               ) : (
                 <span className="lf-status-tag masked"><Lock size={14} /> Identity Masked</span>
@@ -155,7 +185,7 @@ const ItemDetails = () => {
                 <div className="lf-contact-overlay">
                   <Lock size={32} />
                   <p>Contact information is hidden for privacy.</p>
-                  <p className="subtext">The owner must share their identity first.</p>
+                  <p className="subtext">{isClaimedByMe ? "Accepted your request! Refreshing..." : "Connect formally to see the owner's identity."}</p>
                 </div>
               )}
               
@@ -176,46 +206,28 @@ const ItemDetails = () => {
             {isOwner ? (
               <div className="lf-owner-actions">
                 <p className="lf-help-text">
-                  {item.isContactShared 
-                    ? "Your contact information is currently visible to everyone." 
-                    : "Only you can see your contact info. Share it to help others reach you."}
+                  {item.claimedBy 
+                    ? "Handshake complete! Contact details revealed to claimant." 
+                    : "Connect with verified students to share contact details privately."}
                 </p>
                 <div className="lf-owner-btn-group">
-                  <button 
-                    className={`lf-handshake-btn ${item.isContactShared ? 'undo' : 'share'}`}
-                    onClick={handleToggleShare}
-                    disabled={sharing}
-                  >
-                    {item.isContactShared ? <Lock size={18} /> : <Unlock size={18} />}
-                    {sharing ? 'Updating...' : (item.isContactShared ? 'Mask Identity' : 'Share Contact Info')}
-                  </button>
-                  <button className="lf-chat-toggle-btn" onClick={() => setShowChat(!showChat)}>
-                    <MessageSquare size={18} /> {showChat ? 'Close Chat' : 'View Messages'}
-                  </button>
+                  {chatWith && item.claimedBy !== chatWith && (
+                    <button className="lf-accept-btn" onClick={handleAcceptHandshake}>
+                      <CheckCircle size={18} /> Accept Handshake with this User
+                    </button>
+                  )}
                 </div>
               </div>
             ) : (
               <div className="lf-viewer-actions">
-                {!item.isContactShared && (
-                  <button className="lf-request-btn" onClick={() => alert('Handshake request sent to owner!')}>
-                    <CheckCircle size={18} /> Request Contact Handshake
+                {!canSeeContact && (
+                  <button className="lf-request-btn" onClick={handleRequestHandshake}>
+                    <CheckCircle size={18} /> Request Identity Connection
                   </button>
                 )}
-                <button className={`lf-chat-toggle-btn ${showChat ? 'active' : ''}`} onClick={() => setShowChat(!showChat)}>
-                  <MessageSquare size={18} /> {showChat ? 'Close Chat' : 'Anonymous Chat'}
-                </button>
               </div>
             )}
 
-            {showChat && (
-              <div className="lf-chat-section">
-                <Chat 
-                  itemId={item._id} 
-                  receiverId={isOwner ? 'finder' : (item.owner?._id || 'owner')} 
-                  currentUserId={currentUserId} 
-                />
-              </div>
-            )}
           </div>
         </div>
       </div>

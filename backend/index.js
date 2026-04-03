@@ -14,9 +14,11 @@ const kuppiRequestRoutes = require('./routes/kuppi/kuppiRequestRoutes');
 const adminRoutes = require('./admin/routes/adminRoutes');
 const userRoutes = require('./routes/user/userRoutes');
 const ticketRoutes = require('./routes/support/ticketRoutes');
+const notificationRoutes = require('./routes/chat/notificationRoutes');
+const connectionRoutes = require('./routes/lost-and-found/connectionRoutes');
 
 // Models
-const Message = require('./models/chat/Message');
+const Notification = require('./models/chat/Notification');
 
 // Initialize the Express app
 const app = express();
@@ -44,23 +46,9 @@ io.on('connection', (socket) => {
     console.log(`User joined room: ${roomId}`);
   });
 
-  socket.on('send_message', async (data) => {
-    try {
-      const newMessage = await Message.create({
-        sender: data.sender,
-        receiver: data.receiver,
-        itemId: data.itemId,
-        content: data.content,
-      });
-
-      io.to(data.roomId).emit('receive_message', {
-        ...data,
-        id: newMessage._id,
-        createdAt: newMessage.createdAt,
-      });
-    } catch (err) {
-      console.error('Error saving message:', err);
-    }
+  socket.on('join_user_room', (userId) => {
+    socket.join(`user-${userId}`);
+    console.log(`User joined private room: user-${userId}`);
   });
 
   socket.on('disconnect', () => {
@@ -78,6 +66,8 @@ app.use('/api/kuppi', kuppiRequestRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/admin-support', ticketRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/connections', connectionRoutes);
 
 // Connect to Database
 connectDB()
