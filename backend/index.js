@@ -16,6 +16,7 @@ const userRoutes = require('./routes/user/userRoutes');
 const ticketRoutes = require('./routes/support/ticketRoutes');
 const notificationRoutes = require('./routes/chat/notificationRoutes');
 const connectionRoutes = require('./routes/lost-and-found/connectionRoutes');
+const studentManagementRoutes = require('./routes/student-management');
 
 // Models
 const Notification = require('./models/chat/Notification');
@@ -33,7 +34,10 @@ const io = new Server(server, {
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -68,6 +72,7 @@ app.use('/api/users', userRoutes);
 app.use('/admin-support', ticketRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/connections', connectionRoutes);
+app.use('/api/students', studentManagementRoutes);
 
 // Connect to Database
 connectDB()

@@ -1,7 +1,7 @@
 import { appConfig } from '../app/config'
 
 function buildUrl(path, query) {
-  const url = new URL(`${appConfig.apiBaseUrl}${path}`, window.location.origin)
+  const url = new URL(`${appConfig.apiBaseUrl}/students${path}`, window.location.origin)
 
   if (query) {
     Object.entries(query).forEach(([key, value]) => {

@@ -10,7 +10,8 @@ import {
   Settings,
   Circle,
   CreditCard,
-  ShieldCheck
+  ShieldCheck,
+  GraduationCap
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -31,6 +32,7 @@ const Sidebar = () => {
 
   const adminItems = [
     { name: 'Admin Dashboard', path: '/admin-dashboard', icon: ShieldCheck },
+    { name: 'Students Portal', path: '/admin-students-portal', icon: GraduationCap },
   ];
 
   return (
