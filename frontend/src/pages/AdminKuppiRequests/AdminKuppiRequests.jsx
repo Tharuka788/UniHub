@@ -8,6 +8,8 @@ import {
   XCircle,
   AlertTriangle,
 } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import AdminSidebar from "../../components/AdminSidebar/AdminSidebar";
 import "./AdminKuppiRequests.css";
 
@@ -128,6 +130,78 @@ const AdminKuppiRequests = () => {
       ? "Rejected Requests"
       : "All Requests";
 
+  const handleGeneratePdfReport = () => {
+    if (!filteredRequests.length) {
+      alert("No data available to generate the PDF report.");
+      return;
+    }
+
+    const doc = new jsPDF("landscape");
+    const reportDate = new Date().toLocaleString();
+
+    doc.setFontSize(18);
+    doc.text("Kuppi Requests Report", 14, 15);
+
+    doc.setFontSize(11);
+    doc.text(`Filter: ${tableTitle}`, 14, 23);
+    doc.text(`Generated: ${reportDate}`, 14, 29);
+    doc.text(`Total Records: ${filteredRequests.length}`, 14, 35);
+
+    const tableColumn = [
+      "Batch Rep",
+      "Email",
+      "Module",
+      "Module Code",
+      "Year",
+      "Semester",
+      "Faculty",
+      "Status",
+      "Scheduled Date",
+      "Reject Reason",
+    ];
+
+    const tableRows = filteredRequests.map((request) => [
+      request.batchRepName || "—",
+      request.email || "—",
+      request.module || "—",
+      request.moduleCode || "—",
+      request.year || "—",
+      request.semester || "—",
+      request.faculty || "—",
+      request.status || "—",
+      request.scheduledDate
+        ? new Date(request.scheduledDate).toLocaleString()
+        : "—",
+      request.rejectionReason || "—",
+    ]);
+
+    autoTable(doc, {
+      startY: 42,
+      head: [tableColumn],
+      body: tableRows,
+      styles: {
+        fontSize: 9,
+        cellPadding: 3,
+        valign: "middle",
+      },
+      headStyles: {
+        fillColor: [20, 50, 74],
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+      },
+      alternateRowStyles: {
+        fillColor: [245, 247, 250],
+      },
+      margin: { top: 42 },
+    });
+
+    doc.save(
+      `kuppi_requests_${activeFilter}_${new Date()
+        .toISOString()
+        .slice(0, 10)}.pdf`
+    );
+  };
+
   return (
     <div className="admin-layout">
       <AdminSidebar />
@@ -225,8 +299,20 @@ const AdminKuppiRequests = () => {
 
           <div className="admin-kuppi-table-card">
             <div className="admin-kuppi-table-header">
-              <h2>{tableTitle}</h2>
-              <span>{loading ? "..." : `${filteredRequests.length} record(s)`}</span>
+              <div>
+                <h2>{tableTitle}</h2>
+                <span>
+                  {loading ? "..." : `${filteredRequests.length} record(s)`}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="report-btn"
+                onClick={handleGeneratePdfReport}
+              >
+                Generate PDF Report
+              </button>
             </div>
 
             {loading ? (
@@ -276,7 +362,9 @@ const AdminKuppiRequests = () => {
                           </a>
                         </td>
                         <td>
-                          <span className={`status-badge ${request.status?.toLowerCase()}`}>
+                          <span
+                            className={`status-badge ${request.status?.toLowerCase()}`}
+                          >
                             {request.status}
                           </span>
                         </td>
