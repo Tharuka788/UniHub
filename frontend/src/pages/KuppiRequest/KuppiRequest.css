@@ -24,6 +24,8 @@
   padding: 0.8rem;
   border-radius: 10px;
   border: 1px solid #ccc;
+  background: #e5e7eb; /* or use your theme variable */
+  color: var(--text-main);
 }
 
 .kuppi-form button {

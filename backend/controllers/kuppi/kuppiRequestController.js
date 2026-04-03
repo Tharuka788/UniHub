@@ -2,9 +2,9 @@ const KuppiRequest = require("../../models/kuppi/KuppiRequest");
 
 const createKuppiRequest = async (req, res) => {
   try {
-    const { batchRepName, module, faculty, description } = req.body;
+    const { batchRepName, email, module, faculty, description } = req.body;
 
-    if (!batchRepName || !module || !faculty) {
+    if (!batchRepName || !email || !module || !faculty) {
       return res.status(400).json({ message: "Please fill all required fields" });
     }
 
@@ -14,6 +14,7 @@ const createKuppiRequest = async (req, res) => {
 
     const newRequest = new KuppiRequest({
       batchRepName,
+      email,
       module,
       faculty,
       description,
@@ -49,6 +50,17 @@ const approveKuppiRequest = async (req, res) => {
 
     if (!scheduledDate) {
       return res.status(400).json({ message: "Scheduled date and time is required" });
+    }
+
+    const selectedDate = new Date(scheduledDate);
+    const now = new Date();
+
+    if (isNaN(selectedDate.getTime())) {
+      return res.status(400).json({ message: "Invalid scheduled date" });
+    }
+
+    if (selectedDate <= now) {
+      return res.status(400).json({ message: "Please select a future date and time" });
     }
 
     const updatedRequest = await KuppiRequest.findByIdAndUpdate(

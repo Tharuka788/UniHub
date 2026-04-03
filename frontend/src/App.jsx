@@ -22,6 +22,7 @@ import PaymentAdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import KuppiRequest from './pages/KuppiRequest/KuppiRequest';
 import AdminKuppiRequests from './pages/AdminKuppiRequests/AdminKuppiRequests';
 import KuppiNotices from "./pages/KuppiNotices/KuppiNotices";
+import KuppiRequestDetails from "./pages/KuppiRequestDetails/KuppiRequestDetails";
 
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
@@ -90,6 +91,7 @@ function AdminLayout() {
       <Route path="/admin-kuppi" element={<AdminKuppiRequests />} />
       <Route path="/admin/payments" element={<PaymentAdminDashboard />} />
       <Route path="/kuppi-notices" element={<KuppiNotices />} />
+      <Route path="/admin-kuppi-details/:type" element={<KuppiRequestDetails />} />
       <Route
         path="/admin-profile"
         element={<PlaceholderPage title="Admin Profile" />}

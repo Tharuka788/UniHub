@@ -258,3 +258,18 @@
     padding: 1rem;
   }
 }
+
+.clickable-summary-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clickable-summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+}
+
+.clickable-summary-card:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}

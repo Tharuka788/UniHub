@@ -5,17 +5,28 @@ const kuppiRequestSchema = new mongoose.Schema(
     batchRepName: {
       type: String,
       required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
     },
     module: {
       type: String,
       required: true,
+      trim: true,
     },
     faculty: {
       type: String,
       required: true,
+      trim: true,
     },
     description: {
       type: String,
+      trim: true,
+      default: "",
     },
     letterUrl: {
       type: String,
@@ -33,6 +44,7 @@ const kuppiRequestSchema = new mongoose.Schema(
     rejectionReason: {
       type: String,
       default: "",
+      trim: true,
     },
   },
   { timestamps: true }

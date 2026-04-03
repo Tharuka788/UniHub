@@ -11,6 +11,12 @@ const AdminKuppiRequests = () => {
   const [rejectInputs, setRejectInputs] = useState({});
   const [actionLoading, setActionLoading] = useState("");
 
+  const getMinDateTime = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  };
+
   const fetchRequests = async () => {
     try {
       const response = await axios.get("http://localhost:5050/api/kuppi");
@@ -39,6 +45,7 @@ const AdminKuppiRequests = () => {
       await axios.put(`http://localhost:5050/api/kuppi/approve/${id}`, {
         scheduledDate,
       });
+      alert("Kuppi request approved successfully");
       await fetchRequests();
     } catch (error) {
       console.error("Approve error:", error);
@@ -54,6 +61,7 @@ const AdminKuppiRequests = () => {
       await axios.put(`http://localhost:5050/api/kuppi/reject/${id}`, {
         rejectionReason: rejectInputs[id] || "",
       });
+      alert("Kuppi request rejected successfully");
       await fetchRequests();
     } catch (error) {
       console.error("Reject error:", error);
@@ -121,6 +129,7 @@ const AdminKuppiRequests = () => {
                   <thead>
                     <tr>
                       <th>Batch Rep</th>
+                      <th>Email</th>
                       <th>Module</th>
                       <th>Faculty</th>
                       <th>Description</th>
@@ -135,6 +144,7 @@ const AdminKuppiRequests = () => {
                     {requests.map((request) => (
                       <tr key={request._id}>
                         <td>{request.batchRepName}</td>
+                        <td>{request.email || "—"}</td>
                         <td>{request.module}</td>
                         <td>{request.faculty}</td>
                         <td>{request.description || "—"}</td>
@@ -159,6 +169,7 @@ const AdminKuppiRequests = () => {
                             <input
                               type="datetime-local"
                               value={scheduleInputs[request._id] || ""}
+                              min={getMinDateTime()}
                               onChange={(e) =>
                                 setScheduleInputs({
                                   ...scheduleInputs,

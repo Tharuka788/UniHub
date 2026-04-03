@@ -45,9 +45,11 @@ const MainAdminDashboard = () => {
   }, [kuppiRequests]);
 
   const totalRequests = kuppiRequests.length;
+
   const pendingRequests = kuppiRequests.filter(
     (r) => r.status?.toLowerCase() === 'pending'
   ).length;
+
   const approvedRequests = kuppiRequests.filter(
     (r) => r.status?.toLowerCase() === 'approved'
   ).length;
@@ -56,6 +58,10 @@ const MainAdminDashboard = () => {
     sortedRequests.length > 0 && sortedRequests[0].createdAt
       ? new Date(sortedRequests[0].createdAt).toLocaleDateString()
       : 'No requests yet';
+
+  const handleSummaryCardClick = (type) => {
+    navigate(`/admin-kuppi-details/${type}`);
+  };
 
   const moduleCards = [
     {
@@ -124,7 +130,17 @@ const MainAdminDashboard = () => {
           </div>
 
           <div className="admin-summary-grid">
-            <div className="admin-summary-card gradient-blue">
+            <div
+              className="admin-summary-card gradient-blue clickable-summary-card"
+              onClick={() => handleSummaryCardClick('all')}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleSummaryCardClick('all');
+                }
+              }}
+            >
               <div className="summary-icon">
                 <LayoutDashboard size={20} />
               </div>
@@ -132,7 +148,17 @@ const MainAdminDashboard = () => {
               <p className="summary-value">{loading ? '...' : totalRequests}</p>
             </div>
 
-            <div className="admin-summary-card gradient-yellow">
+            <div
+              className="admin-summary-card gradient-yellow clickable-summary-card"
+              onClick={() => handleSummaryCardClick('pending')}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleSummaryCardClick('pending');
+                }
+              }}
+            >
               <div className="summary-icon pending">
                 <Clock3 size={20} />
               </div>
@@ -140,7 +166,17 @@ const MainAdminDashboard = () => {
               <p className="summary-value">{loading ? '...' : pendingRequests}</p>
             </div>
 
-            <div className="admin-summary-card gradient-green">
+            <div
+              className="admin-summary-card gradient-green clickable-summary-card"
+              onClick={() => handleSummaryCardClick('approved')}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleSummaryCardClick('approved');
+                }
+              }}
+            >
               <div className="summary-icon approved">
                 <CheckCircle2 size={20} />
               </div>
@@ -148,7 +184,17 @@ const MainAdminDashboard = () => {
               <p className="summary-value">{loading ? '...' : approvedRequests}</p>
             </div>
 
-            <div className="admin-summary-card gradient-purple">
+            <div
+              className="admin-summary-card gradient-purple clickable-summary-card"
+              onClick={() => handleSummaryCardClick('latest')}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleSummaryCardClick('latest');
+                }
+              }}
+            >
               <div className="summary-icon">
                 <BookOpen size={20} />
               </div>
