@@ -17,7 +17,7 @@ const upload = multer({ storage });
 
 // Configure routes
 router.route('/')
-  .get(getItems)
+  .get(loadUser, getItems)
   .post(protect, upload.single('image'), createItem);
 
 router.get('/stats', protect, admin, getItemStats);
