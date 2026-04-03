@@ -404,3 +404,215 @@
 .badge-lost { background-color: #fee2e2; color: #ef4444; }
 .badge-found { background-color: #dcfce7; color: #22c55e; }
 .badge-reclaimed { background-color: #f1f5f9; color: #64748b; }
+
+/* Claims Management Section */
+.lf-claims-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px dashed #e2e8f0;
+}
+
+.lf-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.lf-section-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.lf-claim-count {
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+}
+
+.lf-claims-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.lf-claim-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.lf-claim-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.lf-claim-card.status-accepted {
+  border-left: 4px solid #10b981;
+}
+
+.lf-claim-card.status-rejected {
+  opacity: 0.7;
+}
+
+.claim-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.requester-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.requester-name {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 1rem;
+}
+
+.claim-date {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.claim-status-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+}
+
+.claim-status-badge.pending { background: #fef3c7; color: #d97706; }
+.claim-status-badge.accepted { background: #dcfce7; color: #16a34a; }
+.claim-status-badge.rejected { background: #fee2e2; color: #ef4444; }
+
+.claim-proof {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.25rem;
+}
+
+.claim-proof label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.claim-proof p {
+  font-size: 0.95rem;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.claim-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.claim-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.claim-action-btn.accept {
+  background: #10b981;
+  color: white;
+}
+
+.claim-action-btn.accept:hover {
+  background: #059669;
+}
+
+.claim-action-btn.reject {
+  background: white;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+}
+
+.claim-action-btn.reject:hover {
+  background: #fff1f2;
+}
+
+.lf-empty-claims {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: #f8fafc;
+  border-radius: 20px;
+  border: 2px dashed #e2e8f0;
+  color: #94a3b8;
+}
+
+.lf-empty-claims svg {
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.lf-empty-claims p {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Viewer Actions */
+.lf-viewer-claims-section {
+  margin-top: 2rem;
+}
+
+.lf-claim-button-large {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #6366f1;
+  color: white;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+  transition: all 0.2s;
+}
+
+.lf-claim-button-large:hover {
+  transform: translateY(-2px);
+  background: #4f46e5;
+  box-shadow: 0 15px 20px -3px rgba(99, 102, 241, 0.4);
+}
+
+.lf-claim-status-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f8fafc;
+  color: #64748b;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 1px solid #e2e8f0;
+}

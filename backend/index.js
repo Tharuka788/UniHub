@@ -16,6 +16,7 @@ const userRoutes = require('./routes/user/userRoutes');
 const ticketRoutes = require('./routes/support/ticketRoutes');
 const notificationRoutes = require('./routes/chat/notificationRoutes');
 const connectionRoutes = require('./routes/lost-and-found/connectionRoutes');
+const claimRoutes = require('./routes/lost-and-found/claimRoutes');
 const studentManagementRoutes = require('./routes/student-management');
 
 // Models
@@ -72,6 +73,7 @@ app.use('/api/users', userRoutes);
 app.use('/admin-support', ticketRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/connections', connectionRoutes);
+app.use('/api/claims', claimRoutes);
 app.use('/api/students', studentManagementRoutes);
 
 // Connect to Database

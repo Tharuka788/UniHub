@@ -1,5 +1,6 @@
 const Item = require('../../models/lost-and-found/Item');
 const User = require('../../models/user/User');
+const Claim = require('../../models/lost-and-found/Claim');
 const path = require('path');
 const fs = require('fs');
 const { generateImageEmbedding, cosineSimilarity } = require('../../utils/aiService');
@@ -9,29 +10,67 @@ const { generateImageEmbedding, cosineSimilarity } = require('../../utils/aiServ
 // @access  Public
 const getItems = async (req, res) => {
   try {
-    const { itemType, search, category, location } = req.query;
-    let query = {};
+    const { itemType, search, category, location, owner } = req.query;
+    let matchQuery = {};
 
     if (itemType && itemType !== 'All') {
-      query.itemType = itemType;
+      matchQuery.itemType = itemType;
     }
     if (category && category !== 'All Categories') {
-      query.category = category;
+      matchQuery.category = category;
     }
     if (location && location !== 'All Locations') {
-      query.location = location;
+      matchQuery.location = location;
     }
     if (search) {
-      query.$or = [
+      matchQuery.$or = [
         { title: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } }
       ];
     }
     
-    const items = await Item.find(query)
-      .populate('owner', 'name')
-      .sort({ createdAt: -1 });
-    res.status(200).json(items);
+    // Support filtering by current user's items
+    if (owner === 'self' && req.user) {
+      matchQuery.owner = req.user._id;
+    }
+
+    const items = await Item.aggregate([
+      { $match: matchQuery },
+      {
+        $lookup: {
+          from: 'claims',
+          let: { itemId: '$_id' },
+          pipeline: [
+            { 
+              $match: { 
+                $expr: { 
+                  $and: [
+                    { $eq: ['$item', '$$itemId'] },
+                    { $eq: ['$status', 'Pending'] }
+                  ]
+                } 
+              } 
+            },
+            { $count: 'count' }
+          ],
+          as: 'pendingClaims'
+        }
+      },
+      {
+        $addFields: {
+          pendingClaimsCount: { 
+            $ifNull: [{ $arrayElemAt: ['$pendingClaims.count', 0] }, 0] 
+          }
+        }
+      },
+      { $project: { pendingClaims: 0 } },
+      { $sort: { createdAt: -1 } }
+    ]);
+
+    // Manually populate owner name for frontend consistency
+    const populatedItems = await Item.populate(items, { path: 'owner', select: 'name' });
+
+    res.status(200).json(populatedItems);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
