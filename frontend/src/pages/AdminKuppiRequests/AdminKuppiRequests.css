@@ -362,3 +362,26 @@
     grid-template-columns: 1fr;
   }
 }
+
+.report-btn {
+  border: none;
+  outline: none;
+  padding: 0.85rem 1.2rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #14324a, #244f73);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 10px 20px rgba(20, 50, 74, 0.18);
+}
+
+.report-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 24px rgba(20, 50, 74, 0.24);
+}
+
+.report-btn:active {
+  transform: translateY(0);
+}
