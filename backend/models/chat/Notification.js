@@ -24,7 +24,7 @@ const notificationSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['message', 'handshake'],
+      enum: ['message', 'handshake', 'claim', 'system'],
       default: 'message'
     }
   },

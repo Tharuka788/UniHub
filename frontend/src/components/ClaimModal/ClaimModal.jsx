@@ -6,12 +6,14 @@ const ClaimModal = ({ isOpen, onClose, onSubmit, itemName }) => {
   const [proofText, setProofText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!proofText.trim()) return;
 
     setIsSubmitting(true);
+    setErrorMessage('');
     try {
       await onSubmit({ proofText });
       setSubmitted(true);
@@ -22,6 +24,11 @@ const ClaimModal = ({ isOpen, onClose, onSubmit, itemName }) => {
       }, 2000);
     } catch (error) {
       console.error('Claim submission error:', error);
+      if (error.response && error.response.data && error.response.data.message) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage('Failed to submit claim. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -51,6 +58,13 @@ const ClaimModal = ({ isOpen, onClose, onSubmit, itemName }) => {
               <h2>Claim Request</h2>
               <p>Prove that <strong>{itemName}</strong> belongs to you.</p>
             </div>
+            
+            {errorMessage && (
+              <div style={{ background: '#fef2f2', color: '#dc2626', padding: '0.8rem', borderRadius: '8px', fontSize: '0.85rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <AlertCircle size={16} />
+                {errorMessage}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="claim-form">
               <div className="claim-form-group">

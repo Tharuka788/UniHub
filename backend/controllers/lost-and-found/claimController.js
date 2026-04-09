@@ -1,6 +1,8 @@
 const Claim = require('../../models/lost-and-found/Claim');
 const Item = require('../../models/lost-and-found/Item');
 const { sendEmail } = require('../../services/mailerService');
+const User = require('../../models/user/User');
+const Notification = require('../../models/chat/Notification');
 
 // @desc    Submit a claim for an item
 // @route   POST /api/claims
@@ -14,19 +16,25 @@ exports.createClaim = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    if (item.owner && item.owner._id.toString() === req.user._id.toString()) {
-      return res.status(400).json({ message: 'You cannot claim your own item' });
+    const userId = req.user._id || req.user.id;
+    const reqUserIdStr = userId ? userId.toString() : '';
+
+    if (item.owner) {
+      const ownerId = item.owner._id || item.owner.id || item.owner;
+      if (ownerId.toString() === reqUserIdStr) {
+        return res.status(400).json({ message: 'You cannot claim your own item' });
+      }
     }
 
     // Check if user already has a pending claim for this item
-    const existingClaim = await Claim.findOne({ item: itemId, requester: req.user._id, status: 'Pending' });
+    const existingClaim = await Claim.findOne({ item: itemId, requester: userId, status: 'Pending' });
     if (existingClaim) {
       return res.status(400).json({ message: 'You already have a pending claim for this item' });
     }
 
     const claim = await Claim.create({
       item: itemId,
-      requester: req.user._id,
+      requester: userId,
       proofText,
       proofImage
     });
@@ -48,6 +56,26 @@ exports.createClaim = async (req, res) => {
       }
     }
 
+    // Notify all system administrators
+    try {
+      const admins = await User.find({ isAdmin: true });
+      for (const admin of admins) {
+        const adminNotif = await Notification.create({
+          recipientId: admin._id ? admin._id.toString() : admin.id.toString(),
+          senderId: reqUserIdStr,
+          messagePreview: `New claim submitted for item: ${item.title}`,
+          itemId: item._id ? item._id.toString() : item.id.toString(),
+          type: 'claim'
+        });
+
+        if (req.io) {
+          req.io.to(`user-${admin._id}`).emit('new_notification', adminNotif);
+        }
+      }
+    } catch (notifError) {
+      console.error('Admin notification failed:', notifError);
+    }
+
     res.status(201).json(claim);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -64,13 +92,16 @@ exports.getItemClaims = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    // Only owner can see claims
-    if (item.owner.toString() !== req.user._id.toString()) {
+    const userId = req.user._id || req.user.id;
+    const ownerId = item.owner._id || item.owner.id || item.owner;
+    // Only owner or Admin can see claims
+    if (!req.user.isAdmin && ownerId.toString() !== userId.toString()) {
       return res.status(403).json({ message: 'Not authorized to see claims for this item' });
     }
 
     const claims = await Claim.find({ item: req.params.itemId })
       .populate('requester', 'name email phoneNumber')
+      .populate('item', 'title image status itemType')
       .sort('-createdAt');
 
     res.json(claims);
@@ -94,8 +125,10 @@ exports.updateClaimStatus = async (req, res) => {
       return res.status(404).json({ message: 'Claim not found' });
     }
 
-    // Only item owner can approve/reject
-    if (claim.item.owner.toString() !== req.user._id.toString()) {
+    const userId = req.user._id || req.user.id;
+    const ownerId = claim.item.owner._id || claim.item.owner.id || claim.item.owner;
+    // Only item owner or Admin can approve/reject
+    if (!req.user.isAdmin && ownerId.toString() !== userId.toString()) {
       return res.status(403).json({ message: 'Not authorized to update this claim' });
     }
 

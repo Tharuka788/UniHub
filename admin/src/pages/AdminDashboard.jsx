@@ -4,8 +4,10 @@ import { LogOut, LayoutDashboard, CreditCard, PackageSearch, Users, RefreshCcw }
 
 const AdminDashboard = ({ logout }) => {
   const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ payments: 0, items: 0 });
+  const [loading, setLoading] = useState(false);
+  const [lostData, setLostData] = useState(null);
+  const [kuppiData, setKuppiData] = useState(null);
+  const [ticketData, setTicketData] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -14,17 +16,57 @@ const AdminDashboard = ({ logout }) => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('adminToken');
-      const [payRes, itemRes] = await Promise.all([
-        axios.get('http://localhost:5050/api/payments', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get('http://localhost:5050/api/items', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      ]);
-      setPayments(payRes.data.payments || []);
-    //   setStats({ payments: payRes.data.total, items: itemRes.data.length });
+      // Fetch all data with proper error handling
+      const itemsPromise = axios.get('http://localhost:5050/api/items').catch(() => ({ data: [] }));
+      const kuppiPromise = axios.get('http://localhost:5050/api/kuppi').catch(() => ({ data: [] }));
+      const ticketsPromise = axios.get('http://localhost:5050/admin-support/tickets').catch(() => ({ data: {} }));
+
+      const [itemsRes, kuppiRes, ticketsRes] = await Promise.all([itemsPromise, kuppiPromise, ticketsPromise]);
+
+      // Process Lost & Found Items
+      try {
+        const items = Array.isArray(itemsRes.data) ? itemsRes.data : [];
+        const week = Date.now() - 7 * 24 * 60 * 60 * 1000;
+        setLostData({
+          total:    items.length,
+          recent:   items.filter((i) => i.createdAt && new Date(i.createdAt) > week).length,
+          lost:     items.filter((i) => i.itemType?.toLowerCase() === 'lost').length,
+          found:    items.filter((i) => i.itemType?.toLowerCase() === 'found').length,
+          reclaimed: items.filter((i) => i.itemType?.toLowerCase() === 'reclaimed').length,
+        });
+      } catch (e) {
+        console.error('Error processing items:', e);
+        setLostData({ total: 0, recent: 0, lost: 0, found: 0, reclaimed: 0 });
+      }
+
+      // Process Kuppi Sessions
+      try {
+        const sessions = Array.isArray(kuppiRes.data) ? kuppiRes.data : [];
+        setKuppiData({
+          total:    sessions.length,
+          pending:  sessions.filter((s) => s.status?.toLowerCase() === 'pending').length,
+          approved: sessions.filter((s) => s.status?.toLowerCase() === 'approved').length,
+          rejected: sessions.filter((s) => s.status?.toLowerCase() === 'rejected').length,
+        });
+      } catch (e) {
+        console.error('Error processing kuppi:', e);
+        setKuppiData({ total: 0, pending: 0, approved: 0, rejected: 0 });
+      }
+
+      // Process Support Tickets
+      try {
+        const ticketDataRes = ticketsRes.data || {};
+        const tickets = Array.isArray(ticketDataRes.tickets) ? ticketDataRes.tickets : [];
+        setTicketData({
+          total:    tickets.length,
+          open:     tickets.filter((t) => t.status?.toLowerCase() === 'open').length,
+          resolved: tickets.filter((t) => t.status?.toLowerCase() === 'resolved').length,
+          pending:  tickets.filter((t) => t.status?.toLowerCase() === 'pending').length,
+        });
+      } catch (e) {
+        console.error('Error processing tickets:', e);
+        setTicketData({ total: 0, open: 0, resolved: 0, pending: 0 });
+      }
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
@@ -77,6 +119,72 @@ const AdminDashboard = ({ logout }) => {
           <StatCard title="Found Items" value="156" color="bg-emerald-50 text-emerald-700" />
         </div>
 
+        {/* Module Summary Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          {/* Lost & Found Summary */}
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl border border-blue-200 shadow-sm">
+            <h4 className="text-sm font-bold text-blue-600 uppercase mb-4">📦 Lost & Found</h4>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600 text-sm">Total Items</span>
+                <span className="text-2xl font-bold text-blue-700">{lostData?.total ?? 0}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-blue-200">
+                <div>
+                  <p className="text-xs text-slate-500">Lost</p>
+                  <p className="text-lg font-bold text-slate-700">{lostData?.lost ?? 0}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Found</p>
+                  <p className="text-lg font-bold text-slate-700">{lostData?.found ?? 0}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Kuppi Sessions Summary */}
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-2xl border border-purple-200 shadow-sm">
+            <h4 className="text-sm font-bold text-purple-600 uppercase mb-4">👥 Kuppi Sessions</h4>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600 text-sm">Total Sessions</span>
+                <span className="text-2xl font-bold text-purple-700">{kuppiData?.total ?? 0}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-purple-200">
+                <div>
+                  <p className="text-xs text-slate-500">Pending</p>
+                  <p className="text-lg font-bold text-slate-700">{kuppiData?.pending ?? 0}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Approved</p>
+                  <p className="text-lg font-bold text-slate-700">{kuppiData?.approved ?? 0}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Support Tickets Summary */}
+          <div className="bg-gradient-to-br from-rose-50 to-rose-100 p-6 rounded-2xl border border-rose-200 shadow-sm">
+            <h4 className="text-sm font-bold text-rose-600 uppercase mb-4">🎫 Support Tickets</h4>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600 text-sm">Total Tickets</span>
+                <span className="text-2xl font-bold text-rose-700">{ticketData?.total ?? 0}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-rose-200">
+                <div>
+                  <p className="text-xs text-slate-500">Open</p>
+                  <p className="text-lg font-bold text-slate-700">{ticketData?.open ?? 0}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Resolved</p>
+                  <p className="text-lg font-bold text-slate-700">{ticketData?.resolved ?? 0}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Recent Activity */}
         <div className="glass-panel p-6 bg-white">
           <h3 className="text-xl font-bold mb-6">Recent Payments</h3>
@@ -91,19 +199,17 @@ const AdminDashboard = ({ logout }) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {loading ? (
-                    <tr><td colSpan="4" className="py-10 text-center text-dim">Loading records...</td></tr>
-                ) : payments.length === 0 ? (
-                    <tr><td colSpan="4" className="py-10 text-center text-dim">No recent payments</td></tr>
+                {payments.length === 0 ? (
+                    <tr><td colSpan="4" className="py-10 text-center text-slate-500">No payments recorded</td></tr>
                 ) : (
                     payments.slice(0, 5).map((pay) => (
                         <tr key={pay._id} className="hover:bg-slate-50 transition-colors">
-                            <td className="py-4 px-4 font-semibold">{pay.userId}</td>
-                            <td className="py-4 px-4 font-bold text-slate-900">${pay.amount}</td>
-                            <td className="py-4 px-4 text-dim text-sm">{new Date(pay.createdAt).toLocaleDateString()}</td>
+                            <td className="py-4 px-4 font-semibold">{pay.userId || 'N/A'}</td>
+                            <td className="py-4 px-4 font-bold text-slate-900">${pay.amount || 0}</td>
+                            <td className="py-4 px-4 text-slate-500 text-sm">{pay.createdAt ? new Date(pay.createdAt).toLocaleDateString() : 'N/A'}</td>
                             <td className="py-4 px-4">
                                 <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${pay.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                                    {pay.status}
+                                    {pay.status || 'pending'}
                                 </span>
                             </td>
                         </tr>
