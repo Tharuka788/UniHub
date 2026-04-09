@@ -18,7 +18,7 @@ const TopBar = () => {
   const fetchNotifications = async () => {
     if (!user) return;
     try {
-      const userId = user._id || user.id || 'mockUserId123';
+      const userId = user._id || user.id || '65f0123456789abcdef01234';
       const token = user.token || localStorage.getItem('token') || 'mock-jwt-token';
       const response = await axios.get(`http://localhost:5050/api/notifications/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -37,7 +37,7 @@ const TopBar = () => {
     setSocket(newSocket);
 
     if (user) {
-      const userId = user._id || user.id || 'mockUserId123';
+      const userId = user._id || user.id || '65f0123456789abcdef01234';
       newSocket.emit('join_user_room', userId);
     }
 
@@ -70,7 +70,7 @@ const TopBar = () => {
 
   const markAllAsRead = async () => {
     try {
-      const userId = user._id || user.id || 'mockUserId123';
+      const userId = user._id || user.id || '65f0123456789abcdef01234';
       const token = user.token || localStorage.getItem('token') || 'mock-jwt-token';
       await axios.patch(`http://localhost:5050/api/notifications/user/${userId}/read-all`, {}, {
         headers: { Authorization: `Bearer ${token}` }

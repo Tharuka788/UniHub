@@ -39,7 +39,7 @@ const ItemDetails = () => {
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [fetchingClaims, setFetchingClaims] = useState(false);
 
-  const currentUserId = localStorage.getItem('userId') || 'mockUserId123';
+  const currentUserId = localStorage.getItem('userId') || '65f0123456789abcdef01234';
   const token = localStorage.getItem('token') || 'mock-jwt-token';
 
   const fetchItemDetails = useCallback(async () => {
