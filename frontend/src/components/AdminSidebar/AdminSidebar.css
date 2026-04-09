@@ -1,18 +1,15 @@
 /* =========================================
-   AdminSidebar V2 — Light Theme Glassmorphism
+   AdminSidebar V2 — Curved Cutout Style
    ========================================= */
 
 .admin-sidebar-v2 {
-  width: 240px;
-  min-width: 240px;
+  width: 260px;
+  min-width: 260px;
   min-height: 100vh;
-  background: rgba(22, 27, 34, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  background: #4A63E0; /* Solid matte blue matching requested style */
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 0 1.5rem 1rem; /* Left padding, no right padding to attach items */
   position: relative;
   z-index: 10;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
@@ -23,42 +20,33 @@
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  padding: 0.25rem 0.5rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  margin-bottom: 1.5rem;
+  padding: 0.25rem 1rem 2.5rem 0.5rem;
 }
 
 .sidebar-logo-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #1D4ED8, #3B82F6);
-  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: white;
+  color: #4A63E0;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-brand-name {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  color: #93c5fd;
+  color: white;
   letter-spacing: -0.02em;
   font-family: 'Inter', sans-serif;
 }
 
 /* Section Label */
 .sidebar-section-label {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: rgba(148, 163, 184, 0.5);
-  padding: 0 0.5rem;
-  margin-bottom: 0.5rem;
-  font-family: 'Inter', sans-serif;
-  text-transform: uppercase;
+  display: none; /* Removed for cleaner solid design */
 }
 
 /* Nav */
@@ -70,15 +58,15 @@
 }
 
 .sidebar-nav-item {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.7rem 0.85rem;
-  border-radius: 10px;
-  color: #94a3b8;
+  gap: 0.85rem;
+  padding: 0.95rem 1.25rem;
+  color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
   transition: all 0.2s ease;
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   font-weight: 500;
   font-family: 'Inter', sans-serif;
   cursor: pointer;
@@ -86,21 +74,23 @@
   background: transparent;
   width: 100%;
   text-align: left;
+  border-radius: 30px 0 0 30px; /* Only round left side */
+  z-index: 2;
 }
 
-.sidebar-nav-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #e2e8f0;
+.sidebar-nav-item:hover:not(.active) {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-nav-item.active {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
+  background: var(--bg-light, #F8FAFC); /* EXACT background of main dashboard */
+  color: #4A63E0; 
   font-weight: 600;
 }
 
 .sidebar-nav-item.active .sidebar-nav-icon {
-  color: #3B82F6;
+  color: #4A63E0;
 }
 
 .sidebar-nav-icon {
@@ -108,31 +98,57 @@
   color: currentColor;
 }
 
+/* =========================================
+   The Curved Cutout (Inverse Border-Radius)
+   ========================================= */
+.sidebar-nav-item.active::before,
+.sidebar-nav-item.active::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.sidebar-nav-item.active::before {
+  top: -40px;
+  box-shadow: 20px 20px 0 var(--bg-light, #F8FAFC);
+}
+
+.sidebar-nav-item.active::after {
+  bottom: -40px;
+  box-shadow: 20px -20px 0 var(--bg-light, #F8FAFC);
+}
+
 /* Footer */
 .sidebar-footer-v2 {
   margin-top: auto;
   padding-top: 0.5rem;
+  padding-right: 1rem; /* Because parent has 0 right padding */
 }
 
 .sidebar-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.07);
-  margin-bottom: 0.75rem;
+  display: none;
 }
 
 .logout-btn {
-  color: #f87171;
+  border-radius: 20px;
+  width: calc(100% - 1rem); /* Subtracting padding */
 }
 
 .logout-btn:hover {
-  background: rgba(248, 113, 113, 0.08);
-  color: #fca5a5;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white;
 }
 
 /* Responsive */
 @media (max-width: 900px) {
   .admin-sidebar-v2 {
-    width: 200px;
-    min-width: 200px;
+    width: 220px;
+    min-width: 220px;
   }
 }

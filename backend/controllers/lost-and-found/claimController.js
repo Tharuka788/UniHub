@@ -94,13 +94,14 @@ exports.getItemClaims = async (req, res) => {
 
     const userId = req.user._id || req.user.id;
     const ownerId = item.owner._id || item.owner.id || item.owner;
-    // Only owner can see claims
-    if (ownerId.toString() !== userId.toString()) {
+    // Only owner or Admin can see claims
+    if (!req.user.isAdmin && ownerId.toString() !== userId.toString()) {
       return res.status(403).json({ message: 'Not authorized to see claims for this item' });
     }
 
     const claims = await Claim.find({ item: req.params.itemId })
       .populate('requester', 'name email phoneNumber')
+      .populate('item', 'title image status itemType')
       .sort('-createdAt');
 
     res.json(claims);
@@ -126,8 +127,8 @@ exports.updateClaimStatus = async (req, res) => {
 
     const userId = req.user._id || req.user.id;
     const ownerId = claim.item.owner._id || claim.item.owner.id || claim.item.owner;
-    // Only item owner can approve/reject
-    if (ownerId.toString() !== userId.toString()) {
+    // Only item owner or Admin can approve/reject
+    if (!req.user.isAdmin && ownerId.toString() !== userId.toString()) {
       return res.status(403).json({ message: 'Not authorized to update this claim' });
     }
 

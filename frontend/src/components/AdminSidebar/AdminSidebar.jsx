@@ -37,10 +37,12 @@ const AdminSidebar = () => {
     <aside className="admin-sidebar-v2">
       {/* Branding */}
       <div className="sidebar-brand">
-        <div className="sidebar-logo-icon">
-          <Shield size={18} />
-        </div>
-        <span className="sidebar-brand-name">UniHub</span>
+        <img 
+          src="/logo.png" 
+          alt="UniHub Logo" 
+          className="sidebar-logo-img" 
+          style={{ width: '100%', maxHeight: '150px', objectFit: 'contain' }}
+        />
       </div>
 
       {/* Nav Label */}

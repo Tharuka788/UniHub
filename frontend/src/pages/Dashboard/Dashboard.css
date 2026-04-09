@@ -120,7 +120,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #1a3646, #2b7490, #1a3646);
+  background: linear-gradient(90deg, #213448, #2c4661, #213448);
   background-size: 200% 100%;
   border-radius: 22px 22px 0 0;
   transform: scaleX(0);
@@ -186,7 +186,7 @@
 }
 
 .stat-card:hover .card-icon-wrapper {
-  background: linear-gradient(135deg, #1a3646, #2b7490);
+  background: linear-gradient(135deg, #213448, #2c4661);
   color: white;
   transform: rotate(-6deg) scale(1.1);
   box-shadow: 0 6px 18px rgba(26, 54, 70, 0.3);
@@ -262,7 +262,7 @@
 
 .card-action-btn {
   margin-top: auto;
-  background: linear-gradient(135deg, #1a3646 0%, #2b7490 100%);
+  background: linear-gradient(135deg, #213448 0%, #2c4661 100%);
   color: white;
   border: none;
   padding: 0.875rem 1.25rem;
@@ -286,7 +286,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #2b7490 0%, #405b6b 100%);
+  background: linear-gradient(135deg, #2c4661 0%, #3a5c7f 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -369,8 +369,8 @@
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  color: var(--primary-color);
-  background: rgba(26, 54, 70, 0.06);
+  color: #213448;
+  background: rgba(33, 52, 72, 0.08);
   border: none;
   font-weight: 600;
   font-size: 0.8rem;
@@ -385,7 +385,7 @@
 }
 
 .view-all-btn:hover {
-  background: var(--primary-color);
+  background: #213448;
   color: white;
   transform: translateX(4px);
   gap: 0.55rem;
