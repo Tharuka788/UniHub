@@ -4,7 +4,7 @@ import { UploadCloud, CheckCircle2, AlertCircle } from 'lucide-react';
 import './payment.css';
 
 const PaymentForm = () => {
-  const [formData, setFormData] = useState({ amount: '', paymentFor: '', userId: 'user123' });
+  const [formData, setFormData] = useState({ amount: '', paymentFor: '', email: '', userId: 'user123' });
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ const PaymentForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.amount || !formData.paymentFor || !file) {
+    if (!formData.amount || !formData.paymentFor || !formData.email || !file) {
       alert('Please fill all fields and attach the slip.');
       return;
     }
@@ -32,6 +32,7 @@ const PaymentForm = () => {
 
     const data = new FormData();
     data.append('userId', formData.userId);
+    data.append('email', formData.email);
     data.append('amount', formData.amount);
     data.append('paymentFor', formData.paymentFor);
     data.append('slipImage', file);
@@ -41,7 +42,7 @@ const PaymentForm = () => {
         headers: { Authorization: 'Bearer mock-jwt-token' }
       });
       alert('Bank slip uploaded successfully!');
-      setFormData({ amount: '', paymentFor: '', userId: 'user123' });
+      setFormData({ amount: '', paymentFor: '', email: '', userId: 'user123' });
       setFile(null);
       setPreview(null);
     } catch (err) {
@@ -71,6 +72,21 @@ const PaymentForm = () => {
                 value={formData.amount}
                 onChange={handleChange}
                 placeholder="0.00"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Email Field */}
+          <div className="input-group">
+            <label>Student Email</label>
+            <div className="input-wrapper">
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="your.email@university.edu"
                 required
               />
             </div>
@@ -116,7 +132,7 @@ const PaymentForm = () => {
               {loading ? "Processing..." : "Submit Slip"}
             </button>
             <button type="button" className="cancel-btn" onClick={() => {
-              setFormData({ amount: '', paymentFor: '', userId: 'user123' });
+              setFormData({ amount: '', paymentFor: '', email: '', userId: 'user123' });
               setFile(null);
               setPreview(null);
             }}>Cancel</button>

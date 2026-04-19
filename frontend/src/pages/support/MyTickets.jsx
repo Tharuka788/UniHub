@@ -1,24 +1,31 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Mail, Clock, CheckCircle2, MessageSquare } from 'lucide-react';
+import { Clock, CheckCircle2, MessageSquare, Inbox } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import './Support.css';
 
 const MyTickets = () => {
-  const [email, setEmail] = useState('');
+  const { user } = useAuth();
   const [tickets, setTickets] = useState([]);
+  const [totalTickets, setTotalTickets] = useState(0);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  const fetchTickets = async (e) => {
+  const fetchMyTickets = async (e) => {
     if (e) e.preventDefault();
-    if (!email) return;
+    if (!user || !user.token) {
+      alert('You must be logged in to view your requests.');
+      return;
+    }
 
     setLoading(true);
     try {
       const { data } = await axios.get(
-        `http://localhost:5050/admin-support/tickets?email=${encodeURIComponent(email)}`
+        `http://localhost:5050/admin-support/my-tickets`,
+        { headers: { Authorization: `Bearer ${user.token}` } }
       );
       setTickets(data.tickets || []);
+      setTotalTickets(data.total || 0);
     } catch (error) {
       console.error('Error fetching tickets:', error);
       alert('Error fetching tickets. Please check the backend.');
@@ -35,51 +42,26 @@ const MyTickets = () => {
   return (
     <div className="support-container">
       {/* Header */}
-      <div className="tickets-header">
-        <h2 className="support-title">My Support Tickets</h2>
-      </div>
-
-      {/* Search */}
-      <form
-        onSubmit={fetchTickets}
-        className="search-bar"
-        style={{ display: 'flex', gap: '12px', marginBottom: '3rem' }}
-      >
-        <div style={{ position: 'relative', flex: 1 }}>
-          <Mail
-            size={18}
-            style={{
-              position: 'absolute',
-              left: '14px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: '#94a3b8',
-            }}
-          />
-          <input
-            type="email"
-            placeholder="Enter your registered email to search..."
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{
-              padding: '0.85rem 1rem 0.85rem 2.8rem',
-              width: '100%',
-              borderRadius: '12px',
-              border: '1px solid #e2e8f0',
-              fontSize: '0.95rem',
-            }}
-          />
+      {/* Header */}
+      <div className="tickets-header" style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h2 className="support-title">My Support Tickets</h2>
+          {searched && (
+             <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+               Total Requests: <span style={{ fontWeight: 'bold', color: '#1e293b' }}>{totalTickets}</span>
+             </p>
+          )}
         </div>
-
+        
         <button
-          type="submit"
+          onClick={fetchMyTickets}
           disabled={loading}
-          className="bg-indigo-600 text-white px-8 py-2 rounded-xl font-bold hover:shadow-lg transition-all disabled:opacity-50"
+          className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg transition-all disabled:opacity-50 inline-flex items-center gap-2"
         >
-          {loading ? 'Searching...' : 'Retrieve Tickets'}
+          <Inbox size={20} />
+          {loading ? 'Retrieving...' : 'My Requests'}
         </button>
-      </form>
+      </div>
 
       {/* No Results */}
       {searched && tickets.length === 0 && (
@@ -90,9 +72,10 @@ const MyTickets = () => {
             color: '#666',
             background: '#f9f9f9',
             borderRadius: '8px',
+            marginBottom: '2rem'
           }}
         >
-          No tickets found for this email.
+          You haven't submitted any support requests yet.
         </div>
       )}
 

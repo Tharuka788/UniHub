@@ -123,15 +123,33 @@ const AdminPayments = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this payment record? This action cannot be undone.')) {
+      setActionLoading(id);
+      try {
+        await axios.delete(`http://localhost:5050/api/payments/${id}`, {
+          headers: { Authorization: 'Bearer mock-jwt-admin-token' }
+        });
+        fetchPayments(page);
+        fetchStats();
+      } catch (err) {
+        alert('Error deleting payment.');
+      } finally {
+        setActionLoading(null);
+      }
+    }
+  };
+
   const generatePDFReport = () => {
     // ... (Keep existing jsPDF code)
     const doc = new jsPDF();
-    const tableColumn = ["Student ID", "Date", "Amount (Rs.)", "Payment For", "Status", "Remarks"];
+    const tableColumn = ["Student ID", "Email", "Date", "Amount (Rs.)", "Payment For", "Status", "Remarks"];
     const tableRows = [];
 
     payments.forEach(payment => {
       const paymentData = [
         payment.userId,
+        payment.email || 'N/A',
         new Date(payment.createdAt).toLocaleDateString(),
         payment.amount.toFixed(2),
         payment.paymentFor,
@@ -394,6 +412,7 @@ const AdminPayments = () => {
                   <thead className="table-header-modern">
                     <tr>
                       <th>Student & Date</th>
+                      <th>Email</th>
                       <th>Payment Details</th>
                       <th className="text-center">Verification Slip</th>
                       <th className="text-center">Status</th>
@@ -404,7 +423,7 @@ const AdminPayments = () => {
                   <tbody className="divide-y divide-slate-100">
                     {loading ? (
                       <tr>
-                        <td colSpan="5" className="py-20 text-center">
+                        <td colSpan="6" className="py-20 text-center">
                           <div className="inline-flex flex-col items-center gap-3">
                             <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                             <span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Loading records...</span>
@@ -413,7 +432,7 @@ const AdminPayments = () => {
                       </tr>
                     ) : payments.length === 0 ? (
                       <tr>
-                        <td colSpan="5" className="py-20 text-center">
+                        <td colSpan="6" className="py-20 text-center">
                           <div className="flex flex-col items-center gap-2 text-slate-400">
                             <FileText size={48} strokeWidth={1} />
                             <p className="font-bold text-sm">No payment records found.</p>
@@ -432,6 +451,12 @@ const AdminPayments = () => {
                                 <span className="student-name">{payment.userId}</span>
                                 <span className="student-date">{new Date(payment.createdAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}</span>
                               </div>
+                            </div>
+                          </td>
+
+                          <td className="td-content">
+                            <div className="text-sm text-slate-500 truncate" style={{ maxWidth: '150px' }} title={payment.email}>
+                              {payment.email || 'N/A'}
                             </div>
                           </td>
 
@@ -492,6 +517,16 @@ const AdminPayments = () => {
                                 <span className="note-text">{payment.remarks || 'No remarks provided.'}</span>
                               </div>
                             )}
+
+                            <div className="mt-2 text-right">
+                              <button
+                                onClick={() => handleDelete(payment._id)}
+                                disabled={actionLoading === payment._id}
+                                className="text-xs font-bold text-rose-500 hover:text-rose-700 hover:underline transition-colors focus:outline-none"
+                              >
+                                {actionLoading === payment._id ? 'Deleting...' : 'Delete Record'}
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))

@@ -5,7 +5,7 @@ const Payment = require('../../models/payment/Payment');
 // @access  Private
 const uploadPayment = async (req, res) => {
   try {
-    const { userId, amount, paymentFor } = req.body;
+    const { userId, email, amount, paymentFor } = req.body;
 
     // File uploaded by Multer is in req.file
     if (!req.file) {
@@ -16,6 +16,7 @@ const uploadPayment = async (req, res) => {
 
     const payment = await Payment.create({
       userId,
+      email,
       amount,
       paymentFor,
       slipImage
@@ -125,10 +126,29 @@ const getPaymentStats = async (req, res) => {
   }
 };
 
+// @desc    Delete payment
+// @route   DELETE /api/payments/:id
+// @access  Private/Admin
+const deletePayment = async (req, res) => {
+  try {
+    const payment = await Payment.findById(req.params.id);
+    if (!payment) {
+      return res.status(404).json({ message: 'Payment not found' });
+    }
+    
+    await Payment.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Payment removed' });
+  } catch (error) {
+    console.error('Error deleting payment:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 module.exports = {
   uploadPayment,
   getUserPayments,
   getAllPayments,
   updatePaymentStatus,
-  getPaymentStats
+  getPaymentStats,
+  deletePayment
 };

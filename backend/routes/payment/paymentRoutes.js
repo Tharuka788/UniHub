@@ -7,7 +7,8 @@ const {
   getUserPayments,
   getAllPayments,
   updatePaymentStatus,
-  getPaymentStats
+  getPaymentStats,
+  deletePayment
 } = require('../../controllers/payment/paymentController');
 
 // Multer error handling wrapper
@@ -26,5 +27,6 @@ router.get('/user/:userId', protect, getUserPayments);
 router.get('/report-stats', protect, admin, getPaymentStats);
 router.get('/', protect, admin, getAllPayments);
 router.put('/:id', protect, admin, updatePaymentStatus);
+router.delete('/:id', protect, admin, deletePayment);
 
 module.exports = router;

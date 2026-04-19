@@ -279,9 +279,32 @@ const getTicketReportsPDF = async (req, res) => {
   }
 };
 
+// @desc    Get logged in user's tickets
+// @route   GET /admin-support/my-tickets
+// @access  Private
+const getMyTickets = async (req, res) => {
+  try {
+    const email = req.user.email;
+    
+    // Safety check just in case email is not present on user object somehow
+    if (!email) {
+      return res.status(400).json({ message: 'User email not found in token' });
+    }
+
+    const tickets = await Ticket.find({ email }).sort({ createdAt: -1 });
+    const total = await Ticket.countDocuments({ email });
+    
+    res.status(200).json({ tickets, total });
+  } catch (error) {
+    console.error('Error fetching my tickets:', error);
+    res.status(500).json({ message: 'Server error while fetching my tickets' });
+  }
+};
+
 module.exports = {
   createTicket,
   getTickets,
+  getMyTickets,
   updateTicket,
   getTicketById,
   deleteTicket,

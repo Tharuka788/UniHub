@@ -5,6 +5,10 @@ const paymentSchema = new mongoose.Schema({
     type: String, // Stored as a string to accommodate dynamic/dummy user IDs easily
     required: [true, 'User ID is required']
   },
+  email: {
+    type: String,
+    required: [true, 'Email is required']
+  },
   amount: {
     type: Number,
     required: [true, 'Payment amount is required']
