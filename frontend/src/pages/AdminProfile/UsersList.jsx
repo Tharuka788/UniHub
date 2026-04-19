@@ -8,10 +8,11 @@ import {
   Shield, 
   Calendar, 
   ArrowLeft,
-  ChevronRight,
   Filter,
   UserCheck,
-  UserX
+  UserX,
+  Trash2,
+  ChevronRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
@@ -43,6 +44,24 @@ const UsersList = () => {
 
         fetchUsers();
     }, []);
+
+    const handleDelete = async (userId) => {
+        if (window.confirm("Are you sure you want to permanently delete this user?")) {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const config = {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                };
+                await axios.delete(`http://localhost:5050/api/users/${userId}`, config);
+                setUsers(users.filter(u => u._id !== userId));
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                alert(error.response?.data?.message || 'Failed to delete user');
+            }
+        }
+    };
 
     const filteredUsers = users.filter(user => 
         user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -159,10 +178,20 @@ const UsersList = () => {
                                                 </div>
                                             </td>
                                             <td>
-                                                <button className="row-action-btn">
-                                                    View Details
-                                                    <ChevronRight size={16} />
-                                                </button>
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <button className="row-action-btn">
+                                                        View Details
+                                                        <ChevronRight size={16} />
+                                                    </button>
+                                                    <button 
+                                                        className="row-action-btn" 
+                                                        style={{ color: '#ef4444', background: '#fee2e2' }}
+                                                        onClick={() => handleDelete(user._id)}
+                                                    >
+                                                        Delete
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))

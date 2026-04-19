@@ -1,5 +1,6 @@
 const Ticket = require('../../models/support/Ticket');
 const PDFDocument = require('pdfkit');
+const { sendTicketUpdateEmail } = require('../../utils/emailNotifier');
 
 // @desc    Create a new support ticket
 // @route   POST /admin-support/create
@@ -87,6 +88,9 @@ const updateTicket = async (req, res) => {
     if (response) ticket.response = response;
 
     const updatedTicket = await ticket.save();
+
+    // Fire email notification asynchronously
+    sendTicketUpdateEmail(updatedTicket);
 
     res.status(200).json({ message: 'Ticket updated successfully', ticket: updatedTicket });
   } catch (error) {
