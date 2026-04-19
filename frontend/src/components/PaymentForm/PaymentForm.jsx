@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { UploadCloud, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import './payment.css';
 
 const PaymentForm = () => {
-  const [formData, setFormData] = useState({ amount: '', paymentFor: '', email: '', userId: 'user123' });
+  const { user } = useAuth();
+  const [formData, setFormData] = useState({ amount: '', paymentFor: '', email: '', userId: '' });
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        email: user.email || '',
+        userId: user._id || ''
+      }));
+    }
+  }, [user]);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -39,10 +51,10 @@ const PaymentForm = () => {
 
     try {
       await axios.post('http://localhost:5050/api/payments/upload', data, {
-        headers: { Authorization: 'Bearer mock-jwt-token' }
+        headers: { Authorization: `Bearer ${user.token}` }
       });
       alert('Bank slip uploaded successfully!');
-      setFormData({ amount: '', paymentFor: '', email: '', userId: 'user123' });
+      setFormData({ amount: '', paymentFor: '', email: user?.email || '', userId: user?._id || '' });
       setFile(null);
       setPreview(null);
     } catch (err) {
@@ -132,7 +144,7 @@ const PaymentForm = () => {
               {loading ? "Processing..." : "Submit Slip"}
             </button>
             <button type="button" className="cancel-btn" onClick={() => {
-              setFormData({ amount: '', paymentFor: '', email: '', userId: 'user123' });
+              setFormData({ amount: '', paymentFor: '', email: user?.email || '', userId: user?._id || '' });
               setFile(null);
               setPreview(null);
             }}>Cancel</button>

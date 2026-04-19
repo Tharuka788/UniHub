@@ -1,39 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { Wallet, CalendarDays, GraduationCap, BookOpen, Home, FileText, Building, Download, Search, Plus } from 'lucide-react';
+import { Wallet, CalendarDays, GraduationCap, BookOpen, Home, FileText, Building, Download, Search, Plus, Inbox } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import './PaymentHistory.css';
 
 const PaymentHistory = () => {
+  const { user } = useAuth();
   const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('All'); // 'All', 'Completed', 'Pending', 'Failed'
-  const userId = 'user123';
+  const [searched, setSearched] = useState(false);
 
-  // For summary stats (using placeholder if no payments)
-  const totalExpenses = "214,000.00";
-  const lastPaymentDate = "Oct 24, 2023";
-
-  useEffect(() => {
-    const fetchPayments = async () => {
-      try {
-        const res = await axios.get(`http://localhost:5050/api/payments/user/${userId}`, {
-          headers: { Authorization: 'Bearer mock-jwt-token' }
-        });
-        setPayments(res.data);
-      } catch (err) {
-        setError('Unable to load your payment history. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPayments();
-
-    // If API falls back or we want dummy data to replicate image exactly when empty
-    // we would set Payments here, but we will trust the existing API.
-  }, [userId]);
+  const fetchMyPayments = async () => {
+    if (!user || !user.token) {
+      alert('Authentication required!');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      const res = await axios.get(`http://localhost:5050/api/payments/my-payments`, {
+        headers: { Authorization: `Bearer ${user.token}` }
+      });
+      setPayments(res.data);
+    } catch (err) {
+      setError('Unable to load your payment history. Please try again later.');
+    } finally {
+      setLoading(false);
+      setSearched(true);
+    }
+  };
 
   const getPaymentIcon = (paymentFor) => {
     const normalized = (paymentFor || '').toLowerCase();
@@ -69,6 +68,18 @@ const PaymentHistory = () => {
       </span>
     );
   };
+
+  // Dynamic Summary Statistics
+  const totalExpensesRaw = payments
+    .filter(p => getMappedStatus(p.status) === 'Completed')
+    .reduce((acc, curr) => acc + curr.amount, 0);
+  const totalExpenses = totalExpensesRaw.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  
+  const completedPayments = payments.filter(p => getMappedStatus(p.status) === 'Completed');
+  const lastPaymentDateRaw = completedPayments.length > 0 
+    ? new Date(Math.max(...completedPayments.map(e => new Date(e.createdAt)))) 
+    : null;
+  const lastPaymentDate = lastPaymentDateRaw ? lastPaymentDateRaw.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : 'N/A';
 
   const filteredPayments = payments.filter(p => {
     const matchesSearch = (p.paymentFor || '').toLowerCase().includes(searchTerm.toLowerCase());
@@ -122,6 +133,15 @@ const PaymentHistory = () => {
             ))}
           </div>
           <div className="ph-controls-right">
+            <button
+              onClick={fetchMyPayments}
+              disabled={loading}
+              className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 disabled:opacity-50 inline-flex items-center gap-2"
+              style={{ border: 'none', cursor: 'pointer' }}
+            >
+              <Inbox size={16} />
+              {loading ? 'Fetching...' : 'My Payments'}
+            </button>
             <div className="ph-search">
               <Search className="ph-search-icon" />
               <input
@@ -142,6 +162,8 @@ const PaymentHistory = () => {
 
         {loading ? (
           <div className="ph-loading">Loading payments...</div>
+        ) : !searched ? (
+          <div className="ph-empty">Click "My Payments" to securely fetch your payment records.</div>
         ) : displayPayments.length === 0 ? (
           <div className="ph-empty">No payments found matching your criteria.</div>
         ) : (
@@ -165,6 +187,9 @@ const PaymentHistory = () => {
                   <div className="ph-item-details">
                     <span className="ph-item-title">{payment.paymentFor || 'Unknown Purpose'}</span>
                     <span className="ph-item-date">{formattedDate}</span>
+                  </div>
+                  <div className="ph-item-email" title={payment.email || 'No email provided'}>
+                    {payment.email || 'N/A'}
                   </div>
                   <div className="ph-item-status-wrapper">
                     <StatusBadge status={payment.status} />

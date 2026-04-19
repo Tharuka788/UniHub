@@ -38,11 +38,14 @@ const createTicket = async (req, res) => {
 // @access  Public / Admin
 const getTickets = async (req, res) => {
   try {
-    const { email, page = 1, limit = 10 } = req.query;
+    const { email, status, page = 1, limit = 10 } = req.query;
 
     const query = {};
     if (email) {
       query.email = email;
+    }
+    if (status && status !== 'All') {
+      query.status = status;
     }
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -193,7 +196,7 @@ const getTicketReports = async (req, res) => {
 // @access  Admin
 const getTicketReportsPDF = async (req, res) => {
   try {
-    const { startDate, endDate } = req.query;
+    const { startDate, endDate, email, status } = req.query;
     
     const matchStage = {};
     if (startDate || endDate) {
@@ -201,6 +204,9 @@ const getTicketReportsPDF = async (req, res) => {
       if (startDate) matchStage.createdAt.$gte = new Date(startDate);
       if (endDate) matchStage.createdAt.$lte = new Date(endDate);
     }
+
+    if (email) matchStage.email = email;
+    if (status && status !== 'All') matchStage.status = status;
 
     const statusCounts = await Ticket.aggregate([
       { $match: matchStage },
@@ -215,7 +221,7 @@ const getTicketReportsPDF = async (req, res) => {
       breakdown[item._id] = item.count;
     });
 
-    const recentTickets = await Ticket.find(matchStage).sort({ createdAt: -1 }).limit(20);
+    const recentTickets = await Ticket.find(matchStage).sort({ createdAt: -1 });
 
     const doc = new PDFDocument({ margin: 50 });
     
@@ -233,10 +239,16 @@ const getTicketReportsPDF = async (req, res) => {
     if (startDate || endDate) {
       doc.text(`Date Range: ${startDate || 'Beginning'} to ${endDate || 'Current'}`, { align: 'right' });
     }
+    if (email) {
+      doc.text(`Filtered by Student: ${email}`, { align: 'right' });
+    }
+    if (status && status !== 'All') {
+      doc.text(`Filtered by Status: ${status}`, { align: 'right' });
+    }
     doc.moveDown(2);
 
     // Summary Section
-    doc.fontSize(16).font('Helvetica-Bold').text('Ticket Status Summary', { underline: true });
+    doc.fontSize(16).font('Helvetica-Bold').text('Ticket Report Summary', { underline: true });
     doc.moveDown(0.5);
     doc.fontSize(12).font('Helvetica').text(`Total Tickets: ${totalTickets}`);
     doc.fillColor('#856404').text(`Pending: ${breakdown.Pending}`);
@@ -264,8 +276,10 @@ const getTicketReportsPDF = async (req, res) => {
         doc.fillColor('black').font('Helvetica').text(`  |  ${ticket.email}`, { align: 'right' });
         
         doc.fontSize(10).fillColor('grey').text(`Submitted: ${new Date(ticket.createdAt).toLocaleDateString()}`);
+        doc.moveDown(0.3);
+        doc.fillColor('#334155').text(`Ticket Message/Summary: ${ticket.message}`);
         doc.fillColor('black');
-        doc.moveDown(0.5);
+        doc.moveDown(0.8);
       });
     }
 

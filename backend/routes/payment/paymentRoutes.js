@@ -8,7 +8,8 @@ const {
   getAllPayments,
   updatePaymentStatus,
   getPaymentStats,
-  deletePayment
+  deletePayment,
+  getMyPayments
 } = require('../../controllers/payment/paymentController');
 
 // Multer error handling wrapper
@@ -23,6 +24,7 @@ const uploadHandler = (req, res, next) => {
 };
 
 router.post('/upload', protect, uploadHandler, uploadPayment);
+router.get('/my-payments', protect, getMyPayments);
 router.get('/user/:userId', protect, getUserPayments);
 router.get('/report-stats', protect, admin, getPaymentStats);
 router.get('/', protect, admin, getAllPayments);

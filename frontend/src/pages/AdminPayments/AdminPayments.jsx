@@ -53,11 +53,12 @@ const AdminPayments = () => {
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [statsData, setStatsData] = useState(null);
   const [statsLoading, setStatsLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('All');
 
   const fetchPayments = async (pageNum = 1) => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5050/api/payments?page=${pageNum}&limit=6`, {
+      const res = await axios.get(`http://localhost:5050/api/payments?page=${pageNum}&limit=6&status=${statusFilter}`, {
         headers: { Authorization: 'Bearer mock-jwt-admin-token' }
       });
       setPayments(res.data.payments);
@@ -88,7 +89,12 @@ const AdminPayments = () => {
   useEffect(() => {
     fetchPayments(page);
     fetchStats();
-  }, [page]);
+  }, [page, statusFilter]);
+
+  const handleFilterChange = (e) => {
+    setStatusFilter(e.target.value);
+    setPage(1);
+  };
 
   const stats = useMemo(() => {
     const pending = payments.filter(p => p.status === 'pending').length;
@@ -227,6 +233,16 @@ const AdminPayments = () => {
                 <p>Monitor and validate student payment submissions</p>
               </div>
               <div className="header-actions">
+                <select 
+                  className="bg-white border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm outline-none cursor-pointer"
+                  value={statusFilter}
+                  onChange={handleFilterChange}
+                >
+                  <option value="All">All Statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
                 <button
                   onClick={generatePDFReport}
                   disabled={payments.length === 0}

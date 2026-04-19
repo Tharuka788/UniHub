@@ -19,6 +19,7 @@ const AdminTicketDashboard = () => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchEmail, setSearchEmail] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
 
   // Modal states
   const [selectedTicket, setSelectedTicket] = useState(null);
@@ -31,13 +32,17 @@ const AdminTicketDashboard = () => {
   const [generatingReport, setGeneratingReport] = useState(false);
   const [downloadingPDF, setDownloadingPDF] = useState(false);
 
-  const fetchTickets = async (emailQuery = '') => {
+  const fetchTickets = async (emailQuery = searchEmail, statusQuery = statusFilter) => {
     setLoading(true);
     try {
       let url = 'http://localhost:5050/admin-support/tickets';
-      if (emailQuery) {
-        url += `?email=${encodeURIComponent(emailQuery)}`;
-      }
+      const params = new URLSearchParams();
+      if (emailQuery) params.append('email', emailQuery);
+      if (statusQuery && statusQuery !== 'All') params.append('status', statusQuery);
+      
+      const queryString = params.toString();
+      if (queryString) url += `?${queryString}`;
+      
       const { data } = await axios.get(url);
       setTickets(data.tickets || []);
     } catch (error) {
@@ -63,12 +68,19 @@ const AdminTicketDashboard = () => {
   const handleDownloadPDF = async () => {
     setDownloadingPDF(true);
     try {
-      const response = await axios.get('http://localhost:5050/admin-support/reports/pdf', {
+      const params = new URLSearchParams();
+      if (searchEmail) params.append('email', searchEmail);
+      if (statusFilter && statusFilter !== 'All') params.append('status', statusFilter);
+      
+      const queryString = params.toString();
+      const url = `http://localhost:5050/admin-support/reports/pdf${queryString ? `?${queryString}` : ''}`;
+      
+      const response = await axios.get(url, {
         responseType: 'blob',
       });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
-      link.href = url;
+      link.href = blobUrl;
       link.setAttribute('download', 'Support_Ticket_Report.pdf');
       document.body.appendChild(link);
       link.click();
@@ -83,16 +95,16 @@ const AdminTicketDashboard = () => {
 
   useEffect(() => {
     fetchTickets();
-  }, []);
+  }, [statusFilter]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchTickets(searchEmail);
+    fetchTickets(searchEmail, statusFilter);
   };
 
   const handleClearSearch = () => {
     setSearchEmail('');
-    fetchTickets('');
+    fetchTickets('', statusFilter);
   };
 
   const openModal = (ticket) => {
@@ -116,7 +128,7 @@ const AdminTicketDashboard = () => {
       });
       alert('Ticket updated successfully!');
       closeModal();
-      fetchTickets(searchEmail);
+      fetchTickets(searchEmail, statusFilter);
     } catch (error) {
       console.error('Error updating ticket', error);
       alert('Failed to update ticket');
@@ -127,7 +139,7 @@ const AdminTicketDashboard = () => {
     if (window.confirm('Are you sure you want to delete this ticket?')) {
       try {
         await axios.delete(`http://localhost:5050/admin-support/delete/${id}`);
-        fetchTickets(searchEmail);
+        fetchTickets(searchEmail, statusFilter);
       } catch (error) {
         console.error('Error deleting ticket', error);
         alert('Failed to delete ticket');
@@ -205,6 +217,16 @@ const AdminTicketDashboard = () => {
             style={{ padding: '0.85rem 1rem 0.85rem 2.8rem', width: '100%', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '0.95rem' }}
           />
         </div>
+        <select 
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          style={{ padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '0.95rem', background: '#fff', outline: 'none' }}
+        >
+          <option value="All">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+        </select>
         <button type="submit" className="bg-slate-900 text-white px-6 py-2 rounded-xl font-bold hover:shadow-lg transition-all">
           Find Ticket
         </button>

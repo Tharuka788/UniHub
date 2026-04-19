@@ -42,6 +42,25 @@ const getUserPayments = async (req, res) => {
   }
 };
 
+// @desc    Get logged in user's payments
+// @route   GET /api/payments/my-payments
+// @access  Private
+const getMyPayments = async (req, res) => {
+  try {
+    const email = req.user.email;
+    
+    if (!email) {
+      return res.status(400).json({ message: 'User email not found in token' });
+    }
+
+    const payments = await Payment.find({ email }).sort({ createdAt: -1 });
+    res.json(payments);
+  } catch (error) {
+    console.error('Error fetching my payments:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 // @desc    Get all payments (Admin)
 // @route   GET /api/payments
 // @access  Private/Admin
@@ -52,8 +71,13 @@ const getAllPayments = async (req, res) => {
     const limit = Number(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const payments = await Payment.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit);
-    const count = await Payment.countDocuments({});
+    const query = {};
+    if (req.query.status && req.query.status !== 'All') {
+      query.status = req.query.status;
+    }
+
+    const payments = await Payment.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit);
+    const count = await Payment.countDocuments(query);
 
     res.json({
       payments,
@@ -150,5 +174,6 @@ module.exports = {
   getAllPayments,
   updatePaymentStatus,
   getPaymentStats,
-  deletePayment
+  deletePayment,
+  getMyPayments
 };

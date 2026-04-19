@@ -237,6 +237,16 @@
   color: #94a3b8;
 }
 
+.ph-item-email {
+  flex: 1.5;
+  font-size: 13px;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 12px;
+}
+
 .ph-item-status-wrapper {
   flex: 1;
   display: flex;
