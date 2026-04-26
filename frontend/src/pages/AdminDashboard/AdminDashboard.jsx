@@ -237,57 +237,7 @@ function AnalyticsCharts({ lostData, kuppiData, ticketData }) {
     </div>
   );
 }
-
-/* ── Admin Claim Review Modal ── */
-function AdminClaimReviewModal({ claim, onClose, onAction }) {
-  if (!claim) return null;
-
-  return (
-    <div className="claim-modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-      <div className="claim-modal-content" style={{ background: 'white', borderRadius: '16px', width: '100%', maxWidth: '500px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
-        <div style={{ padding: '1.5rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600, color: '#0f172a' }}>Claim Request</h2>
-            <p style={{ margin: '4px 0 0 0', fontSize: '0.875rem', color: '#64748b' }}>For item: <strong style={{color: '#0f172a'}}>{claim.item?.title || 'Unknown'}</strong></p>
-          </div>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8' }}>
-            <X size={20} />
-          </button>
-        </div>
-        
-        <div style={{ padding: '1.5rem' }}>
-          {claim.item?.image && (
-            <div style={{ marginBottom: '1.5rem', borderRadius: '12px', overflow: 'hidden', height: '200px', backgroundColor: '#f8fafc' }}>
-              <img src={`http://localhost:5050${claim.item.image}`} alt="Lost Item" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-            </div>
-          )}
-          
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h3 style={{ fontSize: '0.875rem', fontWeight: 600, color: '#475569', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Finder's Proof Description</h3>
-            <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', fontSize: '0.95rem', color: '#334155', border: '1px solid #e2e8f0', minHeight: '80px', whiteSpace: 'pre-wrap' }}>
-              {claim.proofText}
-            </div>
-          </div>
-          
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button 
-              onClick={() => onAction(claim._id, 'Rejected')}
-              style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', border: '1px solid #ef4444', background: 'white', color: '#ef4444', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
-            >
-              Reject Claim
-            </button>
-            <button 
-              onClick={() => onAction(claim._id, 'Accepted')}
-              style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', border: 'none', background: '#3b82f6', color: 'white', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 14px 0 rgba(59, 130, 246, 0.39)' }}
-            >
-              Approve Claim
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+import AdminClaimReviewModal from '../../components/ClaimModal/AdminClaimReviewModal';
 
 /* ── Main Dashboard ── */
 const AdminDashboard = () => {

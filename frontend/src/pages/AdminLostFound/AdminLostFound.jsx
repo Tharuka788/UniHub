@@ -12,10 +12,12 @@ import {
   Clock,
   ExternalLink,
   ChevronRight,
-  BarChart2
+  BarChart2,
+  MessageSquare
 } from 'lucide-react';
 import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
 import AdminTopBar from '../../components/AdminTopBar/AdminTopBar';
+import AdminClaimReviewModal from '../../components/ClaimModal/AdminClaimReviewModal';
 import LostFoundAnalytics from './LostFoundAnalytics';
 import './AdminLostFound.css';
 
@@ -29,6 +31,61 @@ const AdminLostFound = () => {
   const [actionLoading, setActionLoading] = useState(null);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [statsData, setStatsData] = useState(null);
+
+  // Claim States
+  const [selectedClaim, setSelectedClaim] = useState(null);
+  const [showClaimModal, setShowClaimModal] = useState(false);
+
+  const handleStatusUpdate = async (id, status) => {
+    setActionLoading(id);
+    try {
+      await axios.patch(`http://localhost:5050/api/items/${id}`, { status });
+      fetchItems();
+    } catch (err) {
+      setError('Failed to update status');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReviewClaims = async (itemId) => {
+    setActionLoading(itemId);
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = user?.token;
+      const { data } = await axios.get(`http://localhost:5050/api/claims/item/${itemId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const pendingClaim = data.find(c => c.status === 'Pending');
+      if (pendingClaim) {
+        setSelectedClaim(pendingClaim);
+      } else {
+        alert('No pending claims found for this item.');
+      }
+    } catch (err) {
+      console.error('Error fetching claims:', err);
+      alert('Error fetching claims.');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleClaimAction = async (claimId, status) => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = user?.token;
+      await axios.patch(`http://localhost:5050/api/claims/${claimId}/status`, { status }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSelectedClaim(null);
+      fetchItems(); // Refresh to show new status
+      alert(`Claim successfully ${status.toLowerCase()}!`);
+    } catch (err) {
+      console.error('Error updating status', err);
+      alert('Error updating claim status.');
+    }
+  };
 
   const fetchItems = async () => {
     setLoading(true);
@@ -74,21 +131,6 @@ const AdminLostFound = () => {
     }
   };
 
-  const handleStatusUpdate = async (id, newType) => {
-    setActionLoading(id);
-    try {
-      await axios.put(
-        `http://localhost:5050/api/items/${id}`,
-        { itemType: newType },
-        { headers: { Authorization: 'Bearer mock-jwt-admin-token' } }
-      );
-      setItems(items.map(item => item._id === id ? { ...item, itemType: newType } : item));
-    } catch (err) {
-      alert('Error updating status.');
-    } finally {
-      setActionLoading(null);
-    }
-  };
 
   const categories = useMemo(() => {
     const cats = [...new Set(items.map(item => item.category))];
@@ -278,7 +320,43 @@ const AdminLostFound = () => {
                           </td>
                           <td className="text-right">
                             <div className="action-btns">
-                              {item.itemType !== 'Reclaimed' && (
+                              {item.itemType === 'Found' && item.status !== 'Reclaimed' && (
+                                <button 
+                                  className="btn-icon review" 
+                                  title={item.pendingClaimsCount > 0 ? `Review ${item.pendingClaimsCount} Pending Claims` : "No pending claims"}
+                                  onClick={() => handleReviewClaims(item._id)}
+                                  disabled={actionLoading === item._id}
+                                  style={{ 
+                                    color: item.pendingClaimsCount > 0 ? '#6366f1' : '#94a3b8',
+                                    position: 'relative',
+                                    background: item.pendingClaimsCount > 0 ? '#e0e7ff' : '#f1f5f9'
+                                  }}
+                                >
+                                  <MessageSquare size={16} />
+                                  {item.pendingClaimsCount > 0 && (
+                                    <span style={{
+                                      position: 'absolute',
+                                      top: '-6px',
+                                      right: '-6px',
+                                      background: '#ef4444',
+                                      color: 'white',
+                                      fontSize: '9px',
+                                      fontWeight: 'bold',
+                                      borderRadius: '50%',
+                                      width: '16px',
+                                      height: '16px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      border: '2px solid white',
+                                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                    }}>
+                                      {item.pendingClaimsCount}
+                                    </span>
+                                  )}
+                                </button>
+                              )}
+                              {item.itemType !== 'Reclaimed' && item.status !== 'Reclaimed' && (
                                 <button 
                                   className="btn-icon check" 
                                   title="Mark as Reclaimed"
@@ -299,6 +377,7 @@ const AdminLostFound = () => {
                               <a 
                                 href={`/item/${item._id}`} 
                                 target="_blank" 
+                                rel="noreferrer"
                                 className="btn-icon view" 
                                 title="View Public Page"
                               >
@@ -316,6 +395,15 @@ const AdminLostFound = () => {
           )}
         </div>
       </main>
+
+      {/* Claim Review Modal */}
+      {selectedClaim && (
+        <AdminClaimReviewModal 
+          claim={selectedClaim}
+          onClose={() => setSelectedClaim(null)}
+          onAction={handleClaimAction}
+        />
+      )}
     </div>
   );
 };

@@ -1,0 +1,239 @@
+.my-claims-container {
+  padding: 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 2.5rem;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a3646;
+  margin-bottom: 0.5rem;
+}
+
+.page-header p {
+  color: #64748b;
+}
+
+.claims-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  gap: 1.5rem;
+}
+
+.claim-card {
+  background: white;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.claim-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+.claim-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.item-preview {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.item-img-container {
+  width: 60px;
+  height: 60px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.item-img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item-preview h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.claim-date {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.status-badge.pending { background: #fef3c7; color: #d97706; }
+.status-badge.accepted { background: #dcfce7; color: #16a34a; }
+.status-badge.rejected { background: #fee2e2; color: #dc2626; }
+
+.claim-card-body {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1.25rem;
+}
+
+.proof-text {
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.qr-section {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.qr-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #0369a1;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.btn-show-qr {
+  background: #0ea5e9;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-show-qr:hover {
+  background: #0284c7;
+}
+
+/* Modal Styles */
+.qr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.qr-modal-content {
+  background: white;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  position: relative;
+  text-align: center;
+}
+
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.qr-modal-content h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  color: #1e293b;
+}
+
+.qr-modal-content p {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.qr-display {
+  background: white;
+  padding: 1rem;
+  border: 2px solid #f1f5f9;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.qr-display img {
+  width: 100%;
+  max-width: 250px;
+}
+
+.token-display {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.token-display code {
+  color: #0ea5e9;
+  font-weight: 700;
+}
+
+.token-only-display {
+  padding: 2rem 1rem;
+  background: #f0f9ff;
+  border-radius: 1rem;
+  border: 2px dashed #bae6fd;
+  margin-bottom: 1.5rem;
+}
+
+.token-badge {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0369a1;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}

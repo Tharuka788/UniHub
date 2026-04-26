@@ -23,6 +23,7 @@ const Sidebar = () => {
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Lost & Found', path: '/lost-and-found', icon: Search },
+    { name: 'My Claims', path: '/my-claims', icon: ShieldCheck },
     { name: 'Kuppi Sessions', path: '/kuppi-request', icon: BookOpen },
     { name: 'Payments', path: '/payments', icon: CreditCard },
     { name: 'Support Tickets', path: '/admin-support/tickets', icon: Ticket },

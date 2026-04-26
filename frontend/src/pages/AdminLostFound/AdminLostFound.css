@@ -301,6 +301,7 @@
 
 .btn-icon:hover { transform: scale(1.1); }
 .btn-icon.check:hover { background: var(--admin-green); color: white; }
+.btn-icon.review:hover { background: #6366f1; color: white; }
 .btn-icon.delete:hover { background: var(--admin-red); color: white; }
 .btn-icon.view:hover { background: var(--admin-blue); color: white; }
 
