@@ -9,6 +9,7 @@ import {
   AlertCircle, TrendingUp, Users, Ticket, MapPin, X
 } from 'lucide-react';
 import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
+import AdminTopBar from '../../components/AdminTopBar/AdminTopBar';
 import { useAuth } from '../../context/AuthContext';
 import './AdminDashboard.css';
 
@@ -452,56 +453,7 @@ const AdminDashboard = () => {
     <div className="ad-layout">
       <AdminSidebar />
       <main className="ad-main">
-        <header className="ad-topbar">
-          <div className="ad-topbar-search">
-            <Search size={15} className="ad-search-icon" />
-            <input type="text" placeholder="Search insights..." className="ad-search-input" />
-          </div>
-          <div className="ad-topbar-right">
-            <div style={{ position: 'relative' }}>
-              <button 
-                className="ad-icon-btn" 
-                onClick={() => setShowNotifDropdown(!showNotifDropdown)}
-              >
-                <Bell size={18} />
-                {unreadCount > 0 && <span className="ad-notif-dot" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '16px', height: '16px', background: '#ef4444', color: 'white', fontSize: '10px', borderRadius: '50%', position: 'absolute', top: '2px', right: '2px', padding: '0 4px', border: '2px solid white' }}>{unreadCount}</span>}
-              </button>
-
-              {showNotifDropdown && (
-                <div style={{ position: 'absolute', right: 0, top: '45px', width: '320px', background: 'white', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', border: '1px solid var(--border-color)', zIndex: 50, overflow: 'hidden' }}>
-                  <div style={{ padding: '1rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600 }}>Notifications</h3>
-                    {unreadCount > 0 && (
-                      <button onClick={markAllAsRead} style={{ background: 'transparent', border: 'none', color: 'var(--primary-blue)', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}>Mark all as read</button>
-                    )}
-                  </div>
-                  <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
-                    {notifications.length === 0 ? (
-                      <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>No new notifications</div>
-                    ) : (
-                      notifications.map(notif => (
-                        <div 
-                          key={notif._id} 
-                          onClick={() => handleNotificationClick(notif)}
-                          style={{ padding: '1rem', borderBottom: '1px solid #f8fafc', cursor: 'pointer', background: notif.isRead ? 'white' : '#f0fdf4', transition: 'background 0.2s', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}
-                        >
-                          <div style={{ fontSize: '0.8rem', color: 'var(--text-main)', fontWeight: notif.isRead ? 500 : 600 }}>{notif.messagePreview}</div>
-                          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{formatTime(notif.createdAt)}</div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <div className="ad-user-chip">
-              <div className="ad-user-avatar"><span>{initials}</span></div>
-              <span className="ad-user-name">{displayName}</span>
-              <ChevronDown size={14} className="ad-user-chevron" />
-            </div>
-          </div>
-        </header>
+        <AdminTopBar />
 
         <div className="ad-content">
           <ModuleSummarySection lostData={lostData} kuppiData={kuppiData} ticketData={ticketData} ready={ready} />

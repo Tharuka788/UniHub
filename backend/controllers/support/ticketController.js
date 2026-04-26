@@ -1,6 +1,8 @@
 const Ticket = require('../../models/support/Ticket');
 const PDFDocument = require('pdfkit');
 const { sendTicketUpdateEmail } = require('../../utils/emailNotifier');
+const Notification = require('../../models/chat/Notification');
+const User = require('../../models/user/User');
 
 // @desc    Create a new support ticket
 // @route   POST /admin-support/create
@@ -18,14 +20,27 @@ const createTicket = async (req, res) => {
       return res.status(400).json({ message: 'Invalid email format' });
     }
 
-    const ticket = new Ticket({
-      name,
-      email,
-      subject,
-      message,
-    });
-
+    const ticket = new Ticket({ name, email, subject, message });
     await ticket.save();
+
+    // Notify all admins via socket
+    try {
+      const admins = await User.find({ isAdmin: true });
+      for (const admin of admins) {
+        const adminNotif = await Notification.create({
+          recipientId: admin._id.toString(),
+          senderId: admin._id.toString(),
+          messagePreview: `🎫 New ticket from ${name}: "${subject}"`,
+          itemId: ticket._id.toString(),
+          type: 'ticket',
+        });
+        if (req.io) {
+          req.io.to(`user-${admin._id}`).emit('new_notification', adminNotif);
+        }
+      }
+    } catch (notifErr) {
+      console.error('Admin ticket notification failed:', notifErr.message);
+    }
 
     res.status(201).json({ message: 'Ticket created successfully', ticket });
   } catch (error) {

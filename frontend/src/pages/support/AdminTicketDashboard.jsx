@@ -13,6 +13,7 @@ import {
   Filter
 } from 'lucide-react';
 import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
+import AdminTopBar from '../../components/AdminTopBar/AdminTopBar';
 import { appConfig } from '../../app/config';
 import './Support.css';
 
@@ -166,6 +167,7 @@ const AdminTicketDashboard = () => {
     <div className="admin-layout">
       <AdminSidebar />
       <main className="admin-main-content">
+        <AdminTopBar />
         <div className="support-container animate-slide-up">
           <div className="tickets-header">
             <div className="header-text">
