@@ -63,6 +63,19 @@ function renderDispatchSummaryReport(doc, report) {
         `${row.studentName} | ${row.recipient} | ${row.kuppiSession} | ${row.status} | ${new Date(row.createdAt).toLocaleString('en-US')}`,
     )
   }
+
+  writeSectionTitle(doc, 'Dispatch Targets')
+
+  if (report.exportRows.length === 0) {
+    doc.fontSize(10).fillColor('#334155').text('No dispatch targets for the selected filters.')
+  } else {
+    writeRows(
+      doc,
+      report.exportRows,
+      (row) =>
+        `${row.studentName} | ${row.email} | ${row.kuppiSession} | Delivery: ${row.deliveryStatus} | Ref: ${row.paymentReference || 'N/A'}`,
+    )
+  }
 }
 
 function renderClassOfferingSummaryReport(doc, report) {
