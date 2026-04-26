@@ -8,6 +8,7 @@ const connectDB = async () => {
     console.log("✅ Connected to MongoDB via Legacy String!");
   } catch (error) {
     console.error("❌ Still having issues:", error.message);
+    console.log("💡 Tip: Make sure your IP is whitelisted in Atlas (Network Access -> 0.0.0.0/0).");
     process.exit(1);
   }
 };
