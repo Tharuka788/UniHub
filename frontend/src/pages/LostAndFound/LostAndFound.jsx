@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -27,31 +27,26 @@ const LostAndFound = () => {
   const categories = ['All Categories', 'Electronics', 'Bags', 'Keys', 'Books', 'Clothing', 'Documents', 'Other'];
   const locations = ['All Locations', 'Library', 'Engineering Faculty', 'Canteen', 'Gym', 'Hostel', 'Computing Faculty', 'Science Faculty', 'Main Hall'];
 
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      fetchItems();
-    }, 300);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [activeTab, searchQuery, categoryFilter, locationFilter]);
-
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     setLoading(true);
+    const token = localStorage.getItem('token');
     try {
       const response = await axios.get('http://localhost:5050/api/items', {
         params: {
-          itemType: activeTab,
+          itemType: activeTab === 'My Posts' ? 'All' : activeTab,
           search: searchQuery,
           category: categoryFilter,
-          location: locationFilter
-        }
+          location: locationFilter,
+          owner: activeTab === 'My Posts' ? 'self' : undefined
+        },
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       setItems(response.data);
     } catch (error) {
       console.error('Error fetching items:', error);
     }
     setLoading(false);
-  };
+  }, [activeTab, searchQuery, categoryFilter, locationFilter]);
 
   const getBadgeColor = (type) => {
     switch (type) {
@@ -61,6 +56,14 @@ const LostAndFound = () => {
       default: return '';
     }
   };
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      fetchItems();
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [fetchItems]);
 
   return (
     <div className="lf-container">
@@ -97,7 +100,7 @@ const LostAndFound = () => {
         {/* Filters Section */}
         <div className="lf-filters-row">
           <div className="lf-tabs-new">
-            {['All', 'Lost', 'Found', 'Reclaimed'].map(tab => (
+            {['All', 'Lost', 'Found', 'Reclaimed', 'My Posts'].map(tab => (
               <button 
                 key={tab}
                 className={`lf-tab-new ${activeTab === tab ? 'active' : ''}`}
@@ -152,7 +155,7 @@ const LostAndFound = () => {
                 <div className="lf-card-img-container">
                   {item.image ? (
                     <img 
-                      src={item.image.startsWith('http') ? item.image : `http://localhost:5050${item.image}`} 
+                      src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:5050${item.image}`} 
                       alt={item.title} 
                     />
                   ) : (
@@ -163,6 +166,12 @@ const LostAndFound = () => {
                   <span className={`lf-card-badge ${getBadgeColor(item.itemType)}`}>
                     {item.itemType}
                   </span>
+                  {item.pendingClaimsCount > 0 && (
+                    <div className="lf-claim-alert-badge">
+                      <span className="dot"></span>
+                      {item.pendingClaimsCount} New Claim{item.pendingClaimsCount > 1 ? 's' : ''}
+                    </div>
+                  )}
                 </div>
                 <div className="lf-card-info">
                   <span className="lf-card-category">{item.category}</span>

@@ -183,4 +183,124 @@
   margin: 0.25rem 1rem;
 }
 
-/* Dark mode overrides removed for consistent light theme */
+/* Notification Dropdown Styles */
+.notification-container {
+  position: relative;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 15px);
+  right: -80px;
+  width: 320px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid #edf2f7;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 100;
+  animation: dropdownFadeIn 0.2s ease-out;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding: 0 0.5rem;
+}
+
+.notification-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.mark-all-read {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.mark-all-read:hover {
+  opacity: 0.7;
+}
+
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem;
+  border-radius: 12px;
+  background-color: #f7fafc;
+  border-left: 4px solid transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.notification-item.unread {
+  background-color: #ebf8ff;
+  border-left-color: #4299e1;
+}
+
+.notification-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.notif-sender {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.notif-message {
+  font-size: 0.85rem;
+  color: #4a5568;
+  line-height: 1.4;
+}
+
+.notif-time {
+  font-size: 0.7rem;
+  color: #a0aec0;
+  font-weight: 500;
+}
+
+.no-notifications {
+  padding: 2rem;
+  text-align: center;
+  color: #a0aec0;
+  font-size: 0.875rem;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 18px;
+  height: 18px;
+  background-color: #f56565;
+  color: white;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

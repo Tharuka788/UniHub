@@ -90,9 +90,45 @@ const updatePaymentStatus = async (req, res) => {
   }
 };
 
+// @desc    Get payment report stats (Admin)
+// @route   GET /api/payments/report/stats
+// @access  Private/Admin
+const getPaymentStats = async (req, res) => {
+  try {
+    const totalPayments = await Payment.countDocuments({});
+    const totalAmount = await Payment.aggregate([
+      { $match: { status: 'approved' } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+
+    const statusTotals = await Payment.aggregate([
+      { $group: { _id: '$status', count: { $sum: 1 } } }
+    ]);
+
+    const categoryTotals = await Payment.aggregate([
+      { $match: { status: 'approved' } },
+      { $group: { _id: '$paymentFor', total: { $sum: '$amount' } } }
+    ]);
+
+    // Format stats for frontend
+    const stats = {
+      totalRecords: totalPayments,
+      totalRevenue: totalAmount[0]?.total || 0,
+      statusBreakdown: statusTotals.map(s => ({ name: s._id, value: s.count })),
+      categoryBreakdown: categoryTotals.map(c => ({ name: c._id, value: c.total }))
+    };
+
+    res.json(stats);
+  } catch (error) {
+    console.error('Error fetching payment stats:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 module.exports = {
   uploadPayment,
   getUserPayments,
   getAllPayments,
-  updatePaymentStatus
+  updatePaymentStatus,
+  getPaymentStats
 };

@@ -1,73 +1,80 @@
 .sidebar {
   width: 260px;
   height: 100vh;
-  background-color: var(--sidebar-bg);
-  border-right: 1px solid #edf2f7;
+  background-color: #3852B4;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
+  padding: 1.5rem 0 1.5rem 1rem; /* Left padding, no right padding */
   position: fixed;
   left: 0;
   top: 0;
   z-index: 50;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar-logo {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem;
+  padding: 0.25rem 1rem 1.5rem 0.5rem;
   margin-bottom: 2rem;
-  color: var(--primary-color);
+  color: #fff;
 }
 
 .logo-icon {
-  background-color: var(--primary-color);
-  color: #fff;
+  background-color: #fff;
+  color: #3852B4;
   border-radius: 8px;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-logo h1 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1a202c;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
 }
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  flex: 1;
 }
 
 .nav-link {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  color: #718096;
+  padding: 0.95rem 1.25rem;
+  border-radius: 30px 0 0 30px; /* Cutout left side only */
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
   transition: all 0.2s ease;
   text-decoration: none;
+  z-index: 2;
 }
 
-.nav-link:hover {
-  background-color: #f7fafc;
-  color: var(--primary-color);
+.nav-link:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 .nav-link.active {
-  background-color: var(--primary-light);
-  color: var(--primary-color);
+  background-color: #ffffff; /* User Dashboard background color */
+  color: #3852B4;
+  font-weight: 600;
 }
 
 .nav-icon {
   transition: transform 0.2s ease;
+  flex-shrink: 0;
 }
 
 .nav-link:hover .nav-icon {
@@ -75,45 +82,92 @@
 }
 
 .nav-link.active .nav-icon {
-  color: var(--primary-color);
+  color: #3852B4;
+}
+
+/* =========================================
+   The Curved Cutout (Inverse Border-Radius)
+   ========================================= */
+.nav-link.active::before,
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.nav-link.active::before {
+  top: -40px;
+  box-shadow: 20px 20px 0 #ffffff; /* Matches Dashboard background */
+}
+
+.nav-link.active::after {
+  bottom: -40px;
+  box-shadow: 20px -20px 0 #ffffff; /* Matches Dashboard background */
 }
 
 .sidebar-divider {
-  margin: 1.5rem 0 0.75rem;
-  padding: 0 1rem;
+  display: none;
+}
+
+.admin-nav-link {
+  position: relative;
   display: flex;
   align-items: center;
+  gap: 1rem;
+  padding: 0.95rem 1.25rem;
+  border-radius: 20px;
+  color: #fca5a5;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  margin-right: 1rem;
 }
 
-.sidebar-divider span {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #a0aec0;
-  background-color: #fff;
-  padding-right: 0.75rem;
-}
-
-.sidebar-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background-color: #edf2f7;
+.admin-nav-link:first-of-type {
+  margin-top: auto;
 }
 
 .admin-nav-link:hover {
-  background-color: #fef2f2;
-  color: #dc2626;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 .admin-nav-link.active {
-  background-color: #fee2e2;
+  background-color: #ffffff;
   color: #dc2626;
+  border-radius: 30px 0 0 30px;
+  margin-right: 0;
+}
+
+.admin-nav-link.active::before,
+.admin-nav-link.active::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.admin-nav-link.active::before {
+  top: -40px;
+  box-shadow: 20px 20px 0 #ffffff;
+}
+
+.admin-nav-link.active::after {
+  bottom: -40px;
+  box-shadow: 20px -20px 0 #ffffff;
 }
 
 .admin-nav-link.active .nav-icon {
   color: #dc2626;
 }
-
-/* Dark mode overrides removed for consistent light theme */

@@ -14,10 +14,25 @@ import {
   AlertCircle,
   TrendingUp,
   Search,
-  Filter
+  Filter,
+  BarChart3,
+  PieChart as PieChartIcon
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
 import './AdminPayments.css';
 
@@ -33,6 +48,11 @@ const AdminPayments = () => {
   const [remarksInput, setRemarksInput] = useState({});
   const [actionLoading, setActionLoading] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+
+  // New Analytics State
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [statsData, setStatsData] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(false);
 
   const fetchPayments = async (pageNum = 1) => {
     setLoading(true);
@@ -51,8 +71,23 @@ const AdminPayments = () => {
     }
   };
 
+  const fetchStats = async () => {
+    setStatsLoading(true);
+    try {
+      const res = await axios.get('http://localhost:5050/api/payments/report-stats', {
+        headers: { Authorization: 'Bearer mock-jwt-admin-token' }
+      });
+      setStatsData(res.data);
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchPayments(page);
+    fetchStats();
   }, [page]);
 
   const stats = useMemo(() => {
@@ -66,6 +101,9 @@ const AdminPayments = () => {
     };
   }, [payments, totalRecords]);
 
+  // Colors for charts
+  const COLORS = ['#4f46e5', '#10b981', '#f43f5e', '#f59e0b', '#8b5cf6'];
+
   const handleStatusUpdate = async (id, status) => {
     const remarks = remarksInput[id] || '';
     setActionLoading(id);
@@ -76,6 +114,7 @@ const AdminPayments = () => {
         { headers: { Authorization: 'Bearer mock-jwt-admin-token' } }
       );
       fetchPayments(page);
+      fetchStats(); // Update stats as well
       setRemarksInput({ ...remarksInput, [id]: '' });
     } catch (err) {
       alert('Error updating status.');
@@ -85,6 +124,7 @@ const AdminPayments = () => {
   };
 
   const generatePDFReport = () => {
+    // ... (Keep existing jsPDF code)
     const doc = new jsPDF();
     const tableColumn = ["Student ID", "Date", "Amount (Rs.)", "Payment For", "Status", "Remarks"];
     const tableRows = [];
@@ -178,6 +218,13 @@ const AdminPayments = () => {
                   Export PDF
                 </button>
                 <button
+                  onClick={() => setShowAnalytics(!showAnalytics)}
+                  className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg transition-all hover:-translate-y-0.5 analytics-toggle-btn ${showAnalytics ? 'active' : ''}`}
+                >
+                  <BarChart3 size={18} />
+                  {showAnalytics ? 'Hide Analytics' : 'Analytics'}
+                </button>
+                <button
                   onClick={() => navigate('/admin-kuppi')}
                   className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-slate-800 transition-all hover:-translate-y-0.5"
                 >
@@ -186,6 +233,109 @@ const AdminPayments = () => {
                 </button>
               </div>
             </header>
+
+            {/* Analytics Dashboard */}
+            {showAnalytics && statsData && (
+              <div className="analytics-section animate-slide-up stagger-2">
+                <div className="analytics-summary-bar">
+                  <div className="summary-item">
+                    <span className="summary-label">Total Revenue</span>
+                    <span className="summary-value">Rs. {statsData.totalRevenue.toLocaleString()}</span>
+                  </div>
+                  <div className="summary-item text-center">
+                    <span className="summary-label">Approval Rate</span>
+                    <span className="summary-value">
+                      {statsData.totalRecords > 0
+                        ? ((statsData.statusBreakdown.find(s => s.name === 'approved')?.value || 0) / statsData.totalRecords * 100).toFixed(1)
+                        : 0}%
+                    </span>
+                  </div>
+                  <div className="summary-item text-right">
+                    <span className="summary-label">Processed Items</span>
+                    <span className="summary-value">
+                      {(statsData.statusBreakdown.find(s => s.name === 'approved')?.value || 0) +
+                        (statsData.statusBreakdown.find(s => s.name === 'rejected')?.value || 0)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="analytics-dashboard">
+                  <div className="analytics-card">
+                    <h3 className="flex items-center gap-2">
+                      <PieChartIcon size={20} className="text-indigo-600" /> 
+                      Payment Status Distribution
+                    </h3>
+                    <div className="chart-container-inner">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={statsData.statusBreakdown}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={60}
+                            outerRadius={80}
+                            paddingAngle={5}
+                            dataKey="value"
+                            nameKey="name"
+                          >
+                            {statsData.statusBreakdown.map((entry, index) => {
+                              const colors = {
+                                'approved': '#10b981',
+                                'pending': '#f59e0b',
+                                'rejected': '#f43f5e'
+                              };
+                              return <Cell key={`cell-${index}`} fill={colors[entry.name] || COLORS[index % COLORS.length]} />;
+                            })}
+                          </Pie>
+                          <Tooltip 
+                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                          />
+                          <Legend verticalAlign="bottom" height={36}/>
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  <div className="analytics-card">
+                    <h3 className="flex items-center gap-2">
+                      <BarChart3 size={20} className="text-indigo-600" /> 
+                      Approved Revenue by Category
+                    </h3>
+                    <div className="chart-container-inner">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={statsData.categoryBreakdown}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                          <XAxis 
+                            dataKey="_id" 
+                            fontSize={10} 
+                            tick={{ fill: '#64748b', fontWeight: 600 }}
+                            axisLine={false}
+                            tickLine={false}
+                          />
+                          <YAxis 
+                            fontSize={10} 
+                            tick={{ fill: '#64748b', fontWeight: 600 }}
+                            axisLine={false}
+                            tickLine={false}
+                          />
+                          <Tooltip 
+                            cursor={{ fill: '#f8fafc' }}
+                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                          />
+                          <Bar 
+                            dataKey="value" 
+                            name="Revenue (Rs.)"
+                            fill="#4f46e5" 
+                            radius={[6, 6, 0, 0]} 
+                            barSize={40}
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Stats Grid */}
             <section className="stats-grid-admin animate-slide-up stagger-2">

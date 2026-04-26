@@ -28,6 +28,7 @@ import UsersList from './pages/AdminProfile/UsersList';
 import AdminTicketDashboard from './pages/support/AdminTicketDashboard';
 import MyTickets from './pages/support/MyTickets';
 import SubmitTicket from './pages/support/SubmitTicket';
+import StudentManagementAdmin from './modules/student-management/StudentManagementAdmin';
 import { useAuth } from './context/AuthContext';
 
 import './index.css';
@@ -77,6 +78,7 @@ function StudentLayout() {
             <Route path="/pay" element={<PaymentForm />} />
             <Route path="/payments" element={<PaymentHistory />} />
             <Route path="/kuppi-request" element={<KuppiRequest />} />
+            <Route path="/admin-support/tickets" element={<MyTickets />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
@@ -98,8 +100,8 @@ function AdminLayout() {
       <Route path="/admin-support" element={<Navigate to="/admin-support/manage" />} />
       <Route path="/admin-events" element={<PlaceholderPage title="Event Module" />} />
       <Route path="/admin-support/manage" element={<AdminTicketDashboard />} />
-      <Route path="/admin-support/tickets" element={<MyTickets />} />
       <Route path="/admin-support/create" element={<SubmitTicket />} />
+      <Route path="/admin-students-portal/*" element={<StudentManagementAdmin />} />
       <Route path="*" element={<Navigate to="/admin-dashboard" />} />
     </Routes>
   );
@@ -119,9 +121,10 @@ const AppRouter = () => {
     location.pathname.startsWith('/admin-users') ||
     location.pathname.startsWith('/admin-payments') ||
     location.pathname.startsWith('/admin-lost-found') ||
-    location.pathname.startsWith('/admin-support') ||
     location.pathname.startsWith('/admin-events') ||
-    location.pathname.startsWith('/admin/payments');
+    location.pathname.startsWith('/admin/payments') ||
+    location.pathname.startsWith('/admin-students-portal') ||
+    (location.pathname.startsWith('/admin-support') && location.pathname !== '/admin-support/tickets');
 
   if (!isAuthenticated && !isAuthPage) {
     return <Navigate to="/login" />;

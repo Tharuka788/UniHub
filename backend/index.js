@@ -14,9 +14,13 @@ const kuppiRequestRoutes = require('./routes/kuppi/kuppiRequestRoutes');
 const adminRoutes = require('./admin/routes/adminRoutes');
 const userRoutes = require('./routes/user/userRoutes');
 const ticketRoutes = require('./routes/support/ticketRoutes');
+const notificationRoutes = require('./routes/chat/notificationRoutes');
+const connectionRoutes = require('./routes/lost-and-found/connectionRoutes');
+const claimRoutes = require('./routes/lost-and-found/claimRoutes');
+const studentManagementRoutes = require('./routes/student-management');
 
 // Models
-const Message = require('./models/chat/Message');
+const Notification = require('./models/chat/Notification');
 
 // Initialize the Express app
 const app = express();
@@ -31,9 +35,17 @@ const io = new Server(server, {
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5174', 'http://127.0.0.1:5174'],
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 
 // Socket.io logic
 io.on('connection', (socket) => {
@@ -44,23 +56,9 @@ io.on('connection', (socket) => {
     console.log(`User joined room: ${roomId}`);
   });
 
-  socket.on('send_message', async (data) => {
-    try {
-      const newMessage = await Message.create({
-        sender: data.sender,
-        receiver: data.receiver,
-        itemId: data.itemId,
-        content: data.content,
-      });
-
-      io.to(data.roomId).emit('receive_message', {
-        ...data,
-        id: newMessage._id,
-        createdAt: newMessage.createdAt,
-      });
-    } catch (err) {
-      console.error('Error saving message:', err);
-    }
+  socket.on('join_user_room', (userId) => {
+    socket.join(`user-${userId}`);
+    console.log(`User joined private room: user-${userId}`);
   });
 
   socket.on('disconnect', () => {
@@ -78,6 +76,10 @@ app.use('/api/kuppi', kuppiRequestRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/admin-support', ticketRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/connections', connectionRoutes);
+app.use('/api/claims', claimRoutes);
+app.use('/api/students', studentManagementRoutes);
 
 // Connect to Database
 connectDB()

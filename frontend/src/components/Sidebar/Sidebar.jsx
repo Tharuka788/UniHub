@@ -10,7 +10,8 @@ import {
   Settings,
   Circle,
   CreditCard,
-  ShieldCheck
+  ShieldCheck,
+  GraduationCap
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -31,15 +32,18 @@ const Sidebar = () => {
 
   const adminItems = [
     { name: 'Admin Dashboard', path: '/admin-dashboard', icon: ShieldCheck },
+    { name: 'Students Portal', path: '/admin-students-portal', icon: GraduationCap },
   ];
 
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <div className="logo-icon">
-          <Circle size={24} fill="currentColor" />
-        </div>
-        <h1>Uni Hub</h1>
+        <img
+          src="/logo.png"
+          alt="UniHub Logo"
+          className="sidebar-logo-img"
+          style={{ width: '100%', maxHeight: '150px', objectFit: 'contain' }}
+        />
       </div>
 
       <nav className="sidebar-nav">

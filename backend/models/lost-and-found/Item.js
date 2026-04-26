@@ -42,6 +42,15 @@ const itemSchema = new mongoose.Schema(
     isContactShared: {
       type: Boolean,
       default: false
+    },
+    claimedBy: {
+      type: String, // ID of the user who successfully connected (mock/dummy ID support)
+      default: null
+    },
+    status: {
+      type: String,
+      enum: ['Available', 'Pending', 'HandedOver'],
+      default: 'Available'
     }
   },
   {
