@@ -1,19 +1,16 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
-  // For local testing/demonstration, we recommend using Ethereal Email 
-  // or a Gmail App Password in production.
   const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.ethereal.email',
-    port: process.env.EMAIL_PORT || 587,
+    service: 'gmail',
     auth: {
-      user: process.env.EMAIL_USER || 'mock-user@ethereal.email',
-      pass: process.env.EMAIL_PASS || 'mock-password'
-    }
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASS,
+    },
   });
 
   const mailOptions = {
-    from: `"UniHub Support" <support@unihub.com>`,
+    from: `"UniHub Support" <${process.env.GMAIL_USER}>`,
     to: options.email,
     subject: options.subject,
     text: options.message,
