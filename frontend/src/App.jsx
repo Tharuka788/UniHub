@@ -25,8 +25,10 @@ import AdminLostFound from './pages/AdminLostFound/AdminLostFound';
 import AdminPayments from './pages/AdminPayments/AdminPayments';
 import AdminProfile from './pages/AdminProfile/AdminProfile';
 import UsersList from './pages/AdminProfile/UsersList';
+import AdminHandover from './pages/AdminHandover/AdminHandover';
 import AdminTicketDashboard from './pages/support/AdminTicketDashboard';
 import MyTickets from './pages/support/MyTickets';
+import MyClaims from './pages/MyClaims/MyClaims';
 import SubmitTicket from './pages/support/SubmitTicket';
 import StudentManagementAdmin from './modules/student-management/StudentManagementAdmin';
 import { useAuth } from './context/AuthContext';
@@ -55,6 +57,7 @@ function StudentLayout() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/lost-and-found" element={<LostAndFound />} />
+            <Route path="/my-claims" element={<MyClaims />} />
             <Route path="/item/:id" element={<ItemDetails />} />
             <Route path="/report-lost" element={<ItemForm formType="Lost" />} />
             <Route path="/report-found" element={<ItemForm formType="Found" />} />
@@ -97,6 +100,7 @@ function AdminLayout() {
       <Route path="/admin-payments" element={<AdminPayments />} />
       <Route path="/admin/payments" element={<AdminPayments />} />
       <Route path="/admin-lost-found" element={<AdminLostFound />} />
+      <Route path="/admin-handover" element={<AdminHandover />} />
       <Route path="/admin-support" element={<Navigate to="/admin-support/manage" />} />
       <Route path="/admin-events" element={<PlaceholderPage title="Event Module" />} />
       <Route path="/admin-support/manage" element={<AdminTicketDashboard />} />

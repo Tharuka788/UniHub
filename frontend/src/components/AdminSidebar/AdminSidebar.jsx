@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Search, Users, CreditCard,
-  MessageSquare, User, LogOut, ExternalLink
+  MessageSquare, User, LogOut, ExternalLink, QrCode
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './AdminSidebar.css';

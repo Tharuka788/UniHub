@@ -63,7 +63,7 @@ const TopBar = () => {
 
       // Navigate based on notification type
       if (notif.type === 'claim_update') {
-        navigate('/lost-and-found');
+        navigate('/my-claims');
       } else {
         navigate(`/item/${notif.itemId}?chatWith=${notif.senderId}`);
       }

@@ -29,6 +29,16 @@ const claimSchema = new mongoose.Schema(
     finderNotified: {
       type: Boolean,
       default: false
+    },
+    verificationToken: {
+      type: String
+    },
+    qrCode: {
+      type: String
+    },
+    isVerified: {
+      type: Boolean,
+      default: false
     }
   },
   {
