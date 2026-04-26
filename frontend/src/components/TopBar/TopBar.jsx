@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, Moon, ChevronDown, LogOut, User as UserIcon, UserPlus } from 'lucide-react';
+import { Search, Bell, Moon, ChevronDown, LogOut, User as UserIcon, UserPlus, Package, CheckCircle, XCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
@@ -59,10 +59,14 @@ const TopBar = () => {
         setNotifications(prev => prev.map(n => n._id === notif._id ? { ...n, isRead: true } : n));
         setUnreadCount(prev => Math.max(0, prev - 1));
       }
-      
-      // Close dropdown and navigate
       setShowNotifDropdown(false);
-      navigate(`/item/${notif.itemId}?chatWith=${notif.senderId}`);
+
+      // Navigate based on notification type
+      if (notif.type === 'claim_update') {
+        navigate('/lost-and-found');
+      } else {
+        navigate(`/item/${notif.itemId}?chatWith=${notif.senderId}`);
+      }
     } catch (err) {
       console.error('Error handling notification click:', err);
     }
@@ -126,20 +130,36 @@ const TopBar = () => {
                 {notifications.length === 0 ? (
                   <div className="no-notifications">No new messages</div>
                 ) : (
-                  notifications.map((notif) => (
-                    <div 
-                      key={notif._id} 
-                      className={`notification-item ${!notif.isRead ? 'unread' : ''}`}
-                      onClick={() => handleNotificationClick(notif)}
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <UserPlus size={14} className="text-green-500" />
-                        <span className="notif-sender">Connection Request</span>
+                  notifications.map((notif) => {
+                    const isAccepted = notif.type === 'claim_update' && notif.messagePreview?.includes('accepted');
+                    const isRejected = notif.type === 'claim_update' && notif.messagePreview?.includes('rejected');
+                    return (
+                      <div 
+                        key={notif._id} 
+                        className={`notification-item ${!notif.isRead ? 'unread' : ''}`}
+                        onClick={() => handleNotificationClick(notif)}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          {notif.type === 'claim_update' ? (
+                            isAccepted ? (
+                              <CheckCircle size={14} style={{ color: '#10b981' }} />
+                            ) : (
+                              <XCircle size={14} style={{ color: '#ef4444' }} />
+                            )
+                          ) : notif.type === 'claim' ? (
+                            <Package size={14} style={{ color: '#f59e0b' }} />
+                          ) : (
+                            <UserPlus size={14} className="text-green-500" />
+                          )}
+                          <span className="notif-sender">
+                            {notif.type === 'claim_update' ? 'Claim Update' : notif.type === 'claim' ? 'Claim Request' : 'Connection Request'}
+                          </span>
+                        </div>
+                        <p className="notif-message">{notif.messagePreview}</p>
+                        <span className="notif-time">{formatTime(notif.createdAt)}</span>
                       </div>
-                      <p className="notif-message">{notif.messagePreview}</p>
-                      <span className="notif-time">{formatTime(notif.createdAt)}</span>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>

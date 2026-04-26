@@ -34,6 +34,7 @@ import {
   Cell
 } from 'recharts';
 import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
+import AdminTopBar from '../../components/AdminTopBar/AdminTopBar';
 import './AdminPayments.css';
 
 const AdminPayments = () => {
@@ -223,6 +224,7 @@ const AdminPayments = () => {
     <div className="admin-layout">
       <AdminSidebar />
       <main className="admin-main-content">
+        <AdminTopBar />
         <div className="admin-dashboard-container animate-fade-in">
           <div className="max-w-7xl mx-auto">
 

@@ -21,7 +21,11 @@ const Login = () => {
         const result = await login(email, password);
 
         if (result.success) {
-            navigate('/');
+            if (result.isAdmin) {
+                navigate('/admin-dashboard');
+            } else {
+                navigate('/');
+            }
         } else {
             setError(result.message);
         }

@@ -15,6 +15,7 @@ import {
   BarChart2
 } from 'lucide-react';
 import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
+import AdminTopBar from '../../components/AdminTopBar/AdminTopBar';
 import LostFoundAnalytics from './LostFoundAnalytics';
 import './AdminLostFound.css';
 
@@ -118,6 +119,7 @@ const AdminLostFound = () => {
       <AdminSidebar />
       
       <main className="admin-main-content">
+        <AdminTopBar />
         <div className="admin-lost-found-container">
           
           {/* Header */}

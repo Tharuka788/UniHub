@@ -11,6 +11,7 @@ import {
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import AdminSidebar from "../../components/AdminSidebar/AdminSidebar";
+import AdminTopBar from "../../components/AdminTopBar/AdminTopBar";
 import "./AdminKuppiRequests.css";
 
 const AdminKuppiRequests = () => {
@@ -207,7 +208,8 @@ const AdminKuppiRequests = () => {
       <AdminSidebar />
 
       <main className="admin-main-content">
-        <div className="admin-kuppi-page">
+        <AdminTopBar />
+        <div className="admin-kuppi-container">
           <div className="admin-kuppi-header">
             <div>
               <h1>Manage Kuppi Requests</h1>

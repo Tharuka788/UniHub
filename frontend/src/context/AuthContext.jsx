@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
       const { data } = await axios.post('http://localhost:5050/api/users/login', { email, password });
       setUser(data);
       localStorage.setItem('user', JSON.stringify(data));
-      return { success: true };
+      return { success: true, isAdmin: data.isAdmin || false };
     } catch (error) {
       return { 
         success: false, 

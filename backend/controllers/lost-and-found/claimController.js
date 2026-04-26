@@ -45,25 +45,24 @@ exports.createClaim = async (req, res) => {
         await sendEmail({
           email: item.owner.email,
           subject: `New Claim Request for your item: ${item.title}`,
-          message: `Hello ${item.owner.name},\n\nA user has submitted a claim for the item "${item.title}" you posted on UniHub. \n\nPlease log in to review the proof and decide whether to Accept or Reject the claim.\n\nThank you,\nUniHub Support Team`,
+          message: `Hello ${item.owner.name},\n\nA user has submitted a claim for the item "${item.title}" you posted on UniHub.\n\nPlease log in to review the proof and decide whether to Accept or Reject the claim.\n\nThank you,\nUniHub Support Team`,
           html: `<h3>New Claim Request!</h3><p>Hello ${item.owner.name},</p><p>A user has submitted a claim for the item "<b>${item.title}</b>" you posted on UniHub.</p><p>Please log in to review the proof and decide whether to Accept or Reject the claim.</p><br/><p>Thank you,<br/>UniHub Support Team</p>`
         });
         claim.finderNotified = true;
         await claim.save();
       } catch (mailError) {
         console.error('Email notification failed:', mailError);
-        // We still return success for the claim creation even if email fails
       }
     }
 
-    // Notify all system administrators
+    // Notify all system administrators via socket + DB notification
     try {
       const admins = await User.find({ isAdmin: true });
       for (const admin of admins) {
         const adminNotif = await Notification.create({
           recipientId: admin._id ? admin._id.toString() : admin.id.toString(),
           senderId: reqUserIdStr,
-          messagePreview: `New claim submitted for item: ${item.title}`,
+          messagePreview: `📦 New claim submitted for item: "${item.title}"`,
           itemId: item._id ? item._id.toString() : item.id.toString(),
           type: 'claim'
         });
@@ -154,11 +153,30 @@ exports.updateClaimStatus = async (req, res) => {
       await sendEmail({
         email: claim.requester.email,
         subject: `Update on your claim for: ${claim.item.title}`,
-        message: `Hello ${claim.requester.name},\n\nThe owner of the item "${claim.item.title}" has ${status.toLowerCase()} your claim request.\n\nThank you for using UniHub!`,
-        html: `<h3>Claim Update!</h3><p>Hello ${claim.requester.name},</p><p>The owner of the item "<b>${claim.item.title}</b>" has <b>${status.toLowerCase()}</b> your claim request.</p><p>Thank you for using UniHub!</p>`
+        message: `Hello ${claim.requester.name},\n\nYour claim for "${claim.item.title}" has been ${status.toLowerCase()} by the admin.`,
+        html: `<h3>Claim ${status}!</h3><p>Hello ${claim.requester.name},</p><p>Your claim for "<b>${claim.item.title}</b>" has been <b>${status.toLowerCase()}</b> by the admin.</p><p>Thank you for using UniHub!</p>`
       });
     } catch (mailError) {
       console.error('Email notification failed:', mailError);
+    }
+
+    // Notify Requester via real-time socket notification
+    try {
+      const requesterIdStr = (claim.requester._id || claim.requester.id).toString();
+      const emoji = status === 'Accepted' ? '✅' : '❌';
+      const userNotif = await Notification.create({
+        recipientId: requesterIdStr,
+        senderId: requesterIdStr,
+        messagePreview: `${emoji} Your claim for "${claim.item.title}" has been ${status.toLowerCase()} by the admin.`,
+        itemId: claim.item._id.toString(),
+        type: 'claim_update',
+      });
+
+      if (req.io) {
+        req.io.to(`user-${requesterIdStr}`).emit('new_notification', userNotif);
+      }
+    } catch (notifError) {
+      console.error('User socket notification failed:', notifError);
     }
 
     res.json(claim);
