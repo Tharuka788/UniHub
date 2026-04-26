@@ -76,8 +76,8 @@ const getTickets = async (req, res) => {
 const updateTicket = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, response } = req.body;
-
+    const { status, response, subject, message } = req.body;
+    
     const ticket = await Ticket.findById(id);
 
     if (!ticket) {
@@ -86,6 +86,8 @@ const updateTicket = async (req, res) => {
 
     if (status) ticket.status = status;
     if (response) ticket.response = response;
+    if (subject) ticket.subject = subject;
+    if (message) ticket.message = message;
 
     const updatedTicket = await ticket.save();
 

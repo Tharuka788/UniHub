@@ -13,6 +13,7 @@ import {
   Filter
 } from 'lucide-react';
 import AdminSidebar from '../../components/AdminSidebar/AdminSidebar';
+import { appConfig } from '../../app/config';
 import './Support.css';
 
 const AdminTicketDashboard = () => {
@@ -26,6 +27,8 @@ const AdminTicketDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState('');
   const [responseMsg, setResponseMsg] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
 
   // Report states
   const [reportData, setReportData] = useState(null);
@@ -35,7 +38,8 @@ const AdminTicketDashboard = () => {
   const fetchTickets = async (emailQuery = searchEmail, statusQuery = statusFilter) => {
     setLoading(true);
     try {
-      let url = 'http://localhost:5050/admin-support/tickets';
+      const rootUrl = appConfig.apiBaseUrl.replace('/api', '');
+      let url = `${rootUrl}/admin-support/tickets`;
       const params = new URLSearchParams();
       if (emailQuery) params.append('email', emailQuery);
       if (statusQuery && statusQuery !== 'All') params.append('status', statusQuery);
@@ -111,6 +115,8 @@ const AdminTicketDashboard = () => {
     setSelectedTicket(ticket);
     setStatus(ticket.status);
     setResponseMsg(ticket.response || '');
+    setSubject(ticket.subject || '');
+    setMessage(ticket.message || '');
     setIsModalOpen(true);
   };
 
@@ -122,9 +128,12 @@ const AdminTicketDashboard = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5050/admin-support/update/${selectedTicket._id}`, {
+      const rootUrl = appConfig.apiBaseUrl.replace('/api', '');
+      await axios.put(`${rootUrl}/admin-support/update/${selectedTicket._id}`, {
         status,
-        response: responseMsg
+        response: responseMsg,
+        subject,
+        message
       });
       alert('Ticket updated successfully!');
       closeModal();
@@ -138,7 +147,8 @@ const AdminTicketDashboard = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this ticket?')) {
       try {
-        await axios.delete(`http://localhost:5050/admin-support/delete/${id}`);
+        const rootUrl = appConfig.apiBaseUrl.replace('/api', '');
+        await axios.delete(`${rootUrl}/admin-support/delete/${id}`);
         fetchTickets(searchEmail, statusFilter);
       } catch (error) {
         console.error('Error deleting ticket', error);
@@ -321,13 +331,20 @@ const AdminTicketDashboard = () => {
             </div>
             <div style={{ marginBottom: '1.5rem' }}>
               <label style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '800' }}>Subject</label>
-              <div style={{ fontWeight: '700', fontSize: '1.1rem' }}>{selectedTicket.subject}</div>
+              <input 
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                style={{ width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '8px', fontWeight: '700', fontSize: '1.1rem', background: '#fff' }}
+              />
             </div>
             <div style={{ marginBottom: '1.5rem' }}>
               <label style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '800' }}>Student Message</label>
-              <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', color: '#334155', fontSize: '0.95rem', marginTop: '4px', border: '1px solid #e2e8f0' }}>
-                {selectedTicket.message}
-              </div>
+              <textarea 
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                style={{ width: '100%', background: '#f8fafc', padding: '16px', borderRadius: '12px', color: '#334155', fontSize: '0.95rem', marginTop: '4px', border: '1px solid #e2e8f0', minHeight: '100px' }}
+              />
             </div>
 
             <form onSubmit={handleUpdate}>

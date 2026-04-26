@@ -1,4 +1,8 @@
 require('dotenv').config();
+// Override system DNS with Google/Cloudflare DNS to bypass local DNS issues
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
