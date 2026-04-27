@@ -163,7 +163,13 @@ exports.updateClaimStatus = async (req, res) => {
       }
       
       claim.qrCode = qrDataUrl;
-      console.log('Claim token set:', token);
+      
+      // Set expiration to 2 hours from now
+      const expirationDate = new Date();
+      expirationDate.setHours(expirationDate.getHours() + 2);
+      claim.expiresAt = expirationDate;
+
+      console.log('Claim token set:', token, 'Expires at:', expirationDate);
 
       await Item.findByIdAndUpdate(claim.item._id, {
         itemType: 'Reclaimed',
@@ -273,6 +279,43 @@ exports.updateClaimStatus = async (req, res) => {
   }
 };
 
+// @desc    Get claim details by verification token (for scanner)
+// @route   GET /api/claims/token/:token
+// @access  Private/Admin
+exports.getClaimByToken = async (req, res) => {
+  try {
+    const claim = await Claim.findOne({ verificationToken: req.params.token })
+      .populate('item')
+      .populate('requester', 'name email phoneNumber');
+
+    if (!claim) {
+      return res.status(404).json({ message: 'Invalid Verification Token' });
+    }
+
+    if (claim.isVerified) {
+      return res.status(400).json({ message: 'This item has already been handed over' });
+    }
+
+    if (claim.expiresAt && new Date() > claim.expiresAt) {
+      return res.status(400).json({ 
+        message: 'QR Code has expired! Please request the student to generate a new claim.',
+        expired: true 
+      });
+    }
+
+    res.json({
+      claimId: claim._id,
+      item: claim.item.title,
+      itemId: claim.item._id,
+      owner: claim.requester.name,
+      requesterId: claim.requester._id,
+      expiresAt: claim.expiresAt
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Verify handover via QR token
 // @route   PATCH /api/claims/verify/:token
 // @access  Private (Admin only)
@@ -287,6 +330,14 @@ exports.verifyHandover = async (req, res) => {
 
     if (claim.isVerified) {
       return res.status(400).json({ message: 'This item has already been handed over' });
+    }
+
+    // Check for expiration
+    if (claim.expiresAt && new Date() > claim.expiresAt) {
+      return res.status(400).json({ 
+        message: 'QR Code has expired! Please request the student to generate a new claim or contact admin.',
+        expired: true 
+      });
     }
 
     claim.isVerified = true;

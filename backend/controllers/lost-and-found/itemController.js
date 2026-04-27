@@ -11,7 +11,7 @@ const { generateImageEmbedding, cosineSimilarity } = require('../../utils/aiServ
 const getItems = async (req, res) => {
   try {
     const { itemType, search, category, location, owner } = req.query;
-    let matchQuery = {};
+    let matchQuery = { status: { $ne: 'HandedOver' } };
 
     if (itemType && itemType !== 'All') {
       matchQuery.itemType = itemType;

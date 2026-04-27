@@ -15,6 +15,7 @@ const AdminSidebar = () => {
   const menuItems = [
     { name: 'Dashboard',       path: '/admin-dashboard',      icon: LayoutDashboard },
     { name: 'Lost & Found',    path: '/admin-lost-found',     icon: Search },
+    { name: 'Handover Items',  path: '/admin-handover',       icon: QrCode },
     { name: 'Kuppi Sessions',  path: '/admin-kuppi',          icon: Users },
     { name: 'Payments',        path: '/admin-payments',       icon: CreditCard },
     { name: 'Support Tickets', path: '/admin-support/manage', icon: MessageSquare },

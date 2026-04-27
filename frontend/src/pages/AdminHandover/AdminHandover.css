@@ -38,6 +38,73 @@
   text-align: center;
 }
 
+.handover-mode-toggle {
+  display: flex;
+  background: #f1f5f9;
+  padding: 0.4rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.handover-mode-toggle button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.handover-mode-toggle button.active {
+  background: white;
+  color: #1e293b;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.manual-entry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.token-input {
+  padding: 1rem;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  font-size: 1rem;
+  text-align: center;
+  font-family: monospace;
+  letter-spacing: 0.1em;
+}
+
+.token-input:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+.btn-verify-manual {
+  background: #3b82f6;
+  color: white;
+  padding: 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.manual-hint {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
 #reader {
   border: 2px solid #e2e8f0 !important;
   border-radius: 12px;
@@ -147,3 +214,43 @@
 
 .btn-done { background: #3b82f6; color: white; }
 .btn-done:hover { background: #2563eb; transform: translateY(-1px); }
+
+.handover-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+}
+
+.btn-confirm {
+  background: #10b981;
+  color: white;
+  padding: 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-confirm:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.btn-cancel {
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}

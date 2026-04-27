@@ -5,6 +5,7 @@ const {
   getItemClaims,
   updateClaimStatus,
   verifyHandover,
+  getClaimByToken,
   getMyClaims
 } = require('../../controllers/lost-and-found/claimController');
 const { protect } = require('../../middleware/authMiddleware');
@@ -20,6 +21,9 @@ router.route('/item/:itemId')
 
 router.route('/:id/status')
   .patch(protect, updateClaimStatus);
+
+router.route('/token/:token')
+  .get(protect, getClaimByToken);
 
 router.route('/verify/:token')
   .patch(protect, verifyHandover);
