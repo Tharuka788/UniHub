@@ -265,7 +265,66 @@
     font-weight: 500;
 }
 
+.admin-profile-wrapper {
+    position: relative;
+}
+
+.admin-profile-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    width: 180px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    padding: 0.5rem;
+    animation: fadeInScale 0.2s ease;
+    z-index: 1000;
+}
+
+.admin-profile-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: transparent;
+    color: #475569;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.admin-profile-item:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.admin-profile-item.logout {
+    color: #ef4444;
+}
+
+.admin-profile-item.logout:hover {
+    background: #fef2f2;
+}
+
+.admin-profile-divider {
+    height: 1px;
+    background: #f1f5f9;
+    margin: 0.4rem 0;
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}
+
 .admin-chevron {
     color: #94a3b8;
     margin-left: 0.25rem;
+    transition: transform 0.2s;
 }

@@ -7,16 +7,6 @@ const protect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
 
-      // MOCK FOR DEMO: If frontend sends a specific mock token, accept it.
-      if (token === 'mock-jwt-token') {
-        req.user = { id: '65f0123456789abcdef01234', isAdmin: false };
-        return next();
-      }
-      if (token === 'mock-jwt-admin-token') {
-        req.user = { id: '65f0123456789abcdef01235', isAdmin: true };
-        return next();
-      }
-
       const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
       const decoded = jwt.verify(token, JWT_SECRET);
       
@@ -44,15 +34,6 @@ const loadUser = async (req, res, next) => {
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
-
-      if (token === 'mock-jwt-token') {
-        req.user = { id: '65f0123456789abcdef01234', isAdmin: false };
-        return next();
-      }
-      if (token === 'mock-jwt-admin-token') {
-        req.user = { id: '65f0123456789abcdef01235', isAdmin: true };
-        return next();
-      }
 
       const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
       const decoded = jwt.verify(token, JWT_SECRET);

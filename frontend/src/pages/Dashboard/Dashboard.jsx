@@ -10,9 +10,12 @@ import {
   CheckCircle,
   MoreHorizontal,
   ChevronRight,
-  Package
+  Package,
+  QrCode,
+  X
 } from 'lucide-react';
 import KuppiNotices from '../KuppiNotices/KuppiNotices';
+import { useAuth } from '../../context/AuthContext';
 import './Dashboard.css';
 
 /* ─────────────────────────────────────────────
@@ -79,25 +82,40 @@ function AnimatedValue({ value, ready }) {
 ───────────────────────────────────────────── */
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
+  const [acceptedClaims, setAcceptedClaims] = useState([]);
+  const [showQRModal, setShowQRModal] = useState(null);
 
   useEffect(() => {
-    const fetchItems = async () => {
+    console.log('Current Dashboard User:', user);
+    const fetchDashboardData = async () => {
       try {
         const { data } = await axios.get('http://localhost:5050/api/items');
         setItems(data);
+        
+        // Fetch user's accepted claims
+        if (user && user.token) {
+          const claimsRes = await axios.get('http://localhost:5050/api/claims/my-claims', {
+            headers: { Authorization: `Bearer ${user.token}` }
+          });
+          console.log('Dashboard Claims:', claimsRes.data);
+          const pendingCollection = claimsRes.data.filter(c => 
+            c.status === 'Accepted' && !c.isVerified
+          );
+          setAcceptedClaims(pendingCollection);
+        }
       } catch (error) {
-        console.error('Error fetching items for dashboard:', error);
+        console.error('Error fetching dashboard data:', error);
       } finally {
         setLoading(false);
-        // Small delay so counters animate after content paints
         setTimeout(() => setReady(true), 80);
       }
     };
-    fetchItems();
-  }, []);
+    fetchDashboardData();
+  }, [user]);
 
   const stats = [
     {
@@ -181,6 +199,27 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-content">
+      {/* ── Ready for Collection (QR Alerts) ── */}
+      {acceptedClaims.length > 0 && (
+        <div className="collection-alerts animate-slide-up">
+          {acceptedClaims.map(claim => (
+            <div key={claim._id} className="collection-card">
+              <div className="collection-info">
+                <div className="collection-icon">
+                  <QrCode size={24} />
+                </div>
+                <div>
+                  <h4>Ready for Collection!</h4>
+                  <p>Your claim for <strong>{claim.item?.title}</strong> was approved. Show the QR to collect.</p>
+                </div>
+              </div>
+              <button className="view-qr-btn" onClick={() => setShowQRModal(claim)}>
+                View QR Code
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
       {/* ── Stats Grid ── */}
       <div className="stats-grid">
         {loading
@@ -345,7 +384,34 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </div>
+
+       {/* QR Modal */}
+       {showQRModal && (
+         <div className="qr-modal-overlay" onClick={() => setShowQRModal(null)}>
+           <div className="qr-modal-content" onClick={e => e.stopPropagation()}>
+             <button className="close-modal" onClick={() => setShowQRModal(null)}>
+               <X size={20} />
+             </button>
+             <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '0.5rem' }}>Collection QR Code</h3>
+             <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>Show this to the administrator to collect your item.</p>
+             
+             <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '1rem', border: '2px solid #e2e8f0' }}>
+               <img src={showQRModal.qrCode} alt="QR" style={{ width: '100%', maxWidth: '250px', margin: '0 auto' }} />
+               <div style={{ marginTop: '1rem', padding: '0.5rem', background: '#fff', borderRadius: '8px', fontSize: '0.85rem' }}>
+                 <strong>Token:</strong> <code>{showQRModal.verificationToken}</code>
+               </div>
+             </div>
+             
+             <button 
+               onClick={() => setShowQRModal(null)}
+               style={{ marginTop: '1.5rem', width: '100%', padding: '0.75rem', background: '#1e293b', color: '#fff', borderRadius: '12px', fontWeight: '700' }}
+             >
+               Close
+             </button>
+           </div>
+         </div>
+       )}
+     </div>
   );
 };
 

@@ -22,6 +22,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import ClaimModal from '../../components/ClaimModal/ClaimModal';
+import { useAuth } from '../../context/AuthContext';
 import './ItemDetails.css';
 
 const ItemDetails = () => {
@@ -39,8 +40,9 @@ const ItemDetails = () => {
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [fetchingClaims, setFetchingClaims] = useState(false);
 
-  const currentUserId = localStorage.getItem('userId') || '65f0123456789abcdef01234';
-  const token = localStorage.getItem('token') || 'mock-jwt-token';
+  const { user } = useAuth();
+  const currentUserId = user?._id || user?.id;
+  const token = user?.token;
 
   const fetchItemDetails = useCallback(async () => {
     setLoading(true);
