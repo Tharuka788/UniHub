@@ -39,6 +39,10 @@ const claimSchema = new mongoose.Schema(
     isVerified: {
       type: Boolean,
       default: false
+    },
+    expiresAt: {
+      type: Date,
+      required: false
     }
   },
   {

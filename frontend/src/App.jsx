@@ -125,6 +125,7 @@ const AppRouter = () => {
     location.pathname.startsWith('/admin-users') ||
     location.pathname.startsWith('/admin-payments') ||
     location.pathname.startsWith('/admin-lost-found') ||
+    location.pathname.startsWith('/admin-handover') ||
     location.pathname.startsWith('/admin-events') ||
     location.pathname.startsWith('/admin/payments') ||
     location.pathname.startsWith('/admin-students-portal') ||

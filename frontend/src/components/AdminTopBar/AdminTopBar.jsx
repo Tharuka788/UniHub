@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, ChevronDown, CheckCheck, X, Package, Ticket } from 'lucide-react';
+import { Search, Bell, ChevronDown, CheckCheck, X, Package, Ticket, LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import axios from 'axios';
@@ -13,6 +13,9 @@ const AdminTopBar = () => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+    const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+    
+    const { logout } = useAuth();
     
     const displayName = user?.name || user?.username || 'Admin User';
     const initials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -48,6 +51,11 @@ const AdminTopBar = () => {
 
         return () => socket.close();
     }, [user]);
+
+    const handleLogout = () => {
+        if (logout) logout();
+        navigate('/login');
+    };
 
     const handleNotificationClick = async (notif) => {
         try {
@@ -156,15 +164,34 @@ const AdminTopBar = () => {
                     )}
                 </div>
 
-                <div className="admin-user-profile-chip">
-                    <div className="admin-avatar">
-                        <span>{initials}</span>
+                <div className="admin-profile-wrapper">
+                    <div 
+                        className="admin-user-profile-chip" 
+                        onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                    >
+                        <div className="admin-avatar">
+                            <span>{initials}</span>
+                        </div>
+                        <div className="admin-user-details">
+                            <span className="admin-user-name">{displayName}</span>
+                            <span className="admin-user-role">Administrator</span>
+                        </div>
+                        <ChevronDown size={14} className={`admin-chevron ${showProfileDropdown ? 'rotate-180' : ''}`} />
                     </div>
-                    <div className="admin-user-details">
-                        <span className="admin-user-name">{displayName}</span>
-                        <span className="admin-user-role">Administrator</span>
-                    </div>
-                    <ChevronDown size={14} className="admin-chevron" />
+
+                    {showProfileDropdown && (
+                        <div className="admin-profile-dropdown">
+                            <button className="admin-profile-item" onClick={() => navigate('/admin-profile')}>
+                                <User size={16} />
+                                <span>My Profile</span>
+                            </button>
+                            <div className="admin-profile-divider" />
+                            <button className="admin-profile-item logout" onClick={handleLogout}>
+                                <LogOut size={16} />
+                                <span>Log Out</span>
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </header>

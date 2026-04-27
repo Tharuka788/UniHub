@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Search, Users, CreditCard,
-  MessageSquare, User, LogOut, ExternalLink, QrCode
+  MessageSquare, User, ExternalLink, QrCode
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './AdminSidebar.css';
@@ -15,16 +15,15 @@ const AdminSidebar = () => {
   const menuItems = [
     { name: 'Dashboard',       path: '/admin-dashboard',      icon: LayoutDashboard },
     { name: 'Lost & Found',    path: '/admin-lost-found',     icon: Search },
+    { name: 'Handover Items',  path: '/admin-handover',       icon: QrCode },
     { name: 'Kuppi Sessions',  path: '/admin-kuppi',          icon: Users },
     { name: 'Payments',        path: '/admin-payments',       icon: CreditCard },
     { name: 'Support Tickets', path: '/admin-support/manage', icon: MessageSquare },
     { name: 'Profile',         path: '/admin-profile',        icon: User },
+    { name: 'Student Portal',  path: '/admin-students-portal',icon: ExternalLink },
   ];
 
-  const handleLogout = () => {
-    if (logout) logout();
-    navigate('/login');
-  };
+
 
   return (
     <aside className="admin-sidebar-v2">
@@ -53,16 +52,8 @@ const AdminSidebar = () => {
       {/* Footer */}
       <div className="sidebar-footer-v2">
         <div className="sidebar-divider" />
-        <button className="sidebar-nav-item" onClick={() => navigate('/')}
-          style={{ color: '#ef4444' }}>
-          <ExternalLink size={17} className="sidebar-nav-icon" />
-          <span>Student Portal</span>
-        </button>
+
         <div className="sidebar-divider" style={{ margin: '0.25rem 0' }} />
-        <button className="sidebar-nav-item logout-btn" onClick={handleLogout}>
-          <LogOut size={17} className="sidebar-nav-icon" />
-          <span>Log Out</span>
-        </button>
       </div>
     </aside>
   );

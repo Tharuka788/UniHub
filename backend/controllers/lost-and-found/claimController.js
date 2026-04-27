@@ -41,6 +41,8 @@ exports.createClaim = async (req, res) => {
       proofImage
     });
 
+    console.log(`✅ Claim created for user: ${userId} for item: ${itemId}`);
+
     // Notify Finder (Owner) via Email
     if (item.owner && item.owner.email) {
       try {
@@ -148,18 +150,26 @@ exports.updateClaimStatus = async (req, res) => {
     if (status === 'Accepted') {
       const token = crypto.randomBytes(16).toString('hex');
       let qrDataUrl = '';
+      claim.verificationToken = token;
       
       try {
-        // Try local generation first
+        // Try local generation
         qrDataUrl = await QRCode.toDataURL(`http://localhost:5173/verify-claim/${token}`);
+        console.log('✅ QR Code generated locally');
       } catch (qrErr) {
-        console.error('Local QR Generation failed, using Google Charts fallback:', qrErr);
-        // Fallback to Google Charts API URL
+        console.error('❌ Local QR Generation failed:', qrErr.message);
+        // Fallback to Google Charts API URL (very reliable)
         qrDataUrl = `https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=http://localhost:5173/verify-claim/${token}`;
       }
       
-      claim.verificationToken = token;
       claim.qrCode = qrDataUrl;
+      
+      // Set expiration to 2 hours from now
+      const expirationDate = new Date();
+      expirationDate.setHours(expirationDate.getHours() + 2);
+      claim.expiresAt = expirationDate;
+
+      console.log('Claim token set:', token, 'Expires at:', expirationDate);
 
       await Item.findByIdAndUpdate(claim.item._id, {
         itemType: 'Reclaimed',
@@ -238,18 +248,24 @@ exports.updateClaimStatus = async (req, res) => {
     // Notify Requester via real-time socket notification
     if (requesterExists) {
       try {
-        const requesterIdStr = (claim.requester._id || claim.requester.id || claim.requester).toString();
+        const requesterId = claim.requester._id || claim.requester.id || claim.requester;
+        const requesterIdStr = requesterId.toString();
+        const senderId = (req.user._id || req.user.id).toString();
+        
         const emoji = status === 'Accepted' ? '✅' : '❌';
         const userNotif = await Notification.create({
           recipientId: requesterIdStr,
-          senderId: requesterIdStr,
-          messagePreview: `${emoji} Your claim for "${claim.item.title}" was ${status.toLowerCase()}. Check 'My Claims' for your QR!`,
+          senderId: senderId,
+          messagePreview: `${emoji} Your claim for "${claim.item.title}" was ${status.toLowerCase()}. Check 'My Claims' for details.`,
           itemId: claim.item._id.toString(),
           type: 'claim_update',
         });
 
         if (req.io) {
+          console.log(`Emitting notification to user room: user-${requesterIdStr}`);
           req.io.to(`user-${requesterIdStr}`).emit('new_notification', userNotif);
+        } else {
+          console.warn('Socket.io (req.io) not found in request object');
         }
       } catch (notifError) {
         console.error('User socket notification failed:', notifError);
@@ -259,6 +275,43 @@ exports.updateClaimStatus = async (req, res) => {
     res.json(claim);
   } catch (error) {
     console.error('Update Claim Status Error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get claim details by verification token (for scanner)
+// @route   GET /api/claims/token/:token
+// @access  Private/Admin
+exports.getClaimByToken = async (req, res) => {
+  try {
+    const claim = await Claim.findOne({ verificationToken: req.params.token })
+      .populate('item')
+      .populate('requester', 'name email phoneNumber');
+
+    if (!claim) {
+      return res.status(404).json({ message: 'Invalid Verification Token' });
+    }
+
+    if (claim.isVerified) {
+      return res.status(400).json({ message: 'This item has already been handed over' });
+    }
+
+    if (claim.expiresAt && new Date() > claim.expiresAt) {
+      return res.status(400).json({ 
+        message: 'QR Code has expired! Please request the student to generate a new claim.',
+        expired: true 
+      });
+    }
+
+    res.json({
+      claimId: claim._id,
+      item: claim.item.title,
+      itemId: claim.item._id,
+      owner: claim.requester.name,
+      requesterId: claim.requester._id,
+      expiresAt: claim.expiresAt
+    });
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
@@ -277,6 +330,14 @@ exports.verifyHandover = async (req, res) => {
 
     if (claim.isVerified) {
       return res.status(400).json({ message: 'This item has already been handed over' });
+    }
+
+    // Check for expiration
+    if (claim.expiresAt && new Date() > claim.expiresAt) {
+      return res.status(400).json({ 
+        message: 'QR Code has expired! Please request the student to generate a new claim or contact admin.',
+        expired: true 
+      });
     }
 
     claim.isVerified = true;
@@ -301,11 +362,17 @@ exports.verifyHandover = async (req, res) => {
 // @access  Private
 exports.getMyClaims = async (req, res) => {
   try {
-    const claims = await Claim.find({ requester: req.user._id })
+    const userId = req.user._id || req.user.id;
+    console.log(`🔍 Fetching claims for user ID: ${userId}`);
+    
+    const claims = await Claim.find({ requester: userId })
       .populate('item', 'title image status itemType location')
       .sort('-createdAt');
+      
+    console.log(`📊 Found ${claims.length} claims for user ${userId}`);
     res.json(claims);
   } catch (error) {
+    console.error('Error fetching my claims:', error);
     res.status(500).json({ message: error.message });
   }
 };
